@@ -1,0 +1,1 @@
+all HTML, CSS and JS that are exposed to clients will be placed here
