@@ -1,6 +1,23 @@
 {
-	"name": "example-server",
-	"scripts": {
-		"start": "node server.js"
-	}
+  "name": "forus",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "description": "A 5-member project for CS300 Software Engineering.",
+  "version": "1.0.0",
+  "main": "server.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongodb": "^6.2.0",
+    "mongoose": "^8.0.0",
+    "morgan": "^1.10.0",
+    "slugify": "^1.6.6",
+    "validator": "^13.11.0"
+  },
+  "engines": {
+    "node": "14.17.0"
+  }
 }
