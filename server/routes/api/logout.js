@@ -1,5 +1,3 @@
-const { initialization } = require("./login");
-
 module.exports = {
 	default: (req, res, next) => {
 		delete req.session.user_id;
