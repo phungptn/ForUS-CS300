@@ -1,0 +1,32 @@
+{
+  "name": "forus-backend",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "description": "A 5-member project for CS300 Software Engineering.",
+  "version": "1.0.0",
+  "main": "server.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.1.4",
+    "express-session": "^1.17.3",
+    "helmet": "^7.1.0",
+    "mongodb": "^6.2.0",
+    "mongoose": "^8.0.0",
+    "morgan": "^1.10.0",
+    "slugify": "^1.6.6",
+    "validator": "^13.11.0",
+    "xss-clean": "^0.1.4"
+  },
+  "engines": {
+    "node": "14.17.0"
+  }
+}

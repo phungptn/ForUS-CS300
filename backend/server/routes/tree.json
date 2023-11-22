@@ -1,0 +1,5 @@
+[
+	{ "name": "test", "allow_all_methods": true },
+	{ "name": "login", "allowed_methods": ["POST"] },
+	{ "name": "logout", "allowed_methods": ["POST"] }
+]
