@@ -2,8 +2,8 @@
 A 5-member project for CS300 Software Engineering.
 
 ## Running
-### Before starting:
-Do these commands `npm i`, `cd ./backend`, `npm i`, `cd ../frontend`, `npm i`, `cd ../` to repare the NPM installation for everything
+### Before starting
+Do these commands in order `npm i`, `cd ./backend`, `npm i`, `cd ../frontend`, `npm i`, `cd ../` to repare the NPM installation for everything
 ### Available commands
 * **`npm run backend`:** Run the backend process
 * **`npm run frontend`:** Run the frontend process
