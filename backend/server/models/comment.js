@@ -6,6 +6,7 @@ const CommentSchema = new Schema({
     upvoted: [{ type: Schema.Types.ObjectId, ref: 'User'}],
     downvoted: [{ type: Schema.Types.ObjectId, ref: 'User'}],
     author: { type: Schema.Types.ObjectId, ref: 'User'},
+    replyTo: { type: Schema.Types.ObjectId, ref: 'Comment'},
 }, {timestamps: true});
 
 module.exports = mongoose.model('Comment', CommentSchema);
