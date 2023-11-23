@@ -12,9 +12,9 @@ const UserSchema = new Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
-    moderatorOf: [{ type: Schema.Types.ObjectId, ref: 'Subforum'}],
-    bannedFrom: [{ type: Schema.Types.ObjectId, ref: 'Subforum'}],
-    posts: [{ type: Schema.Types.ObjectId, ref: 'Post'}],
+    moderatorOf: [{ type: Schema.Types.ObjectId, ref: 'Box'}],
+    bannedFrom: [{ type: Schema.Types.ObjectId, ref: 'Box'}],
+    threads: [{ type: Schema.Types.ObjectId, ref: 'Thread'}],
     comments: [{ type: Schema.Types.ObjectId, ref: 'Comment'}],
 }, {timestamps: true});
 
