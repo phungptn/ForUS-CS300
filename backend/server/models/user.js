@@ -16,6 +16,7 @@ const UserSchema = new Schema({
     bannedFrom: [{ type: Schema.Types.ObjectId, ref: 'Box'}],
     threads: [{ type: Schema.Types.ObjectId, ref: 'Thread'}],
     comments: [{ type: Schema.Types.ObjectId, ref: 'Comment'}],
+    notifications: [{ type: Schema.Types.ObjectId, ref: 'Notification'}],
 }, {timestamps: true});
 
 module.exports = mongoose.model('User', UserSchema);
