@@ -32,6 +32,7 @@ app.use(session({
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
+ 
 
 // Data sanitization against XSS
 app.use(xss());
