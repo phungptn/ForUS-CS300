@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     username: { type: String, required: true, unique: true, maxLength: 20, minLength: 8},
     passwordHash: { type: String, required: true, maxLength: 32, minLength: 8},
+    fullname: { type: String, required: true, maxLength: 100, minLength: 1},
     email: { type: String },
     avatarUrl: { type: String },
     description: { type: String, maxLength: 512, minLength: 32},
@@ -16,6 +17,7 @@ const UserSchema = new Schema({
     bannedFrom: [{ type: Schema.Types.ObjectId, ref: 'Box'}],
     threads: [{ type: Schema.Types.ObjectId, ref: 'Thread'}],
     comments: [{ type: Schema.Types.ObjectId, ref: 'Comment'}],
+    notifications: [{ type: Schema.Types.ObjectId, ref: 'Notification'}],
 }, {timestamps: true});
 
 module.exports = mongoose.model('User', UserSchema);
