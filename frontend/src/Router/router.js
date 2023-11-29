@@ -9,6 +9,7 @@ const Home = lazy(() => import('../pages/Home/home'));
         <Suspense fallback={<div>Loading...</div>}>
             <Routes>
                 <Route  path="/" element={<Home />} />
+                <Route  path="/login" element={<Login />} />
 
             </Routes>
         </Suspense>
