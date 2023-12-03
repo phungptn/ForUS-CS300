@@ -13,11 +13,26 @@ const UserSchema = new Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
-    moderatorOf: [{ type: Schema.Types.ObjectId, ref: 'Box'}],
-    bannedFrom: [{ type: Schema.Types.ObjectId, ref: 'Box'}],
-    threads: [{ type: Schema.Types.ObjectId, ref: 'Thread'}],
-    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment'}],
-    notifications: [{ type: Schema.Types.ObjectId, ref: 'Notification'}],
+    moderatorOf: {
+        type: [{ type: Schema.Types.ObjectId, ref: 'Box'}],
+        default: [],
+    },
+    bannedFrom:  {
+        type: [{ type: Schema.Types.ObjectId, ref: 'Box'}],
+        default: [],
+    },
+    threads: {
+        type: [{ type: Schema.Types.ObjectId, ref: 'Thread'}],
+        default: [],
+    },
+    comments: {
+        type: [{ type: Schema.Types.ObjectId, ref: 'Comment'}],
+        default: [],
+    },
+    notifications: {
+        type: [{ type: Schema.Types.ObjectId, ref: 'Notification'}],
+        default: [],
+    },
 }, {timestamps: true});
 
 module.exports = mongoose.model('User', UserSchema);
