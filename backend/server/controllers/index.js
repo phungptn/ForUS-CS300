@@ -34,12 +34,14 @@ const setupRoutes = function (app, path, services) {
 module.exports = function (app) {
 	// middleware app
 	app.use((req, res, next) => {
-		let loggedIn = users.userByIdExists(req.session.user_id);
 		let denied = false;
 		if (isPath(req.url, "/login")) {
 			if (req.method != "POST") denied = true;
 		}
-		else if (!loggedIn) denied = true;
+		else {
+			let user = users.findUserById(req.body.token, true);
+			if (user == null) denied = true;
+		}
 
 		if (denied) {
 			res.status(403).json({

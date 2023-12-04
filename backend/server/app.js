@@ -21,14 +21,14 @@ app.use(morgan('dev'));
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(session({
-	secret: process.env.SECRET,
-	cookie: {
-		maxAge: 30 * 24 * 60 * 60 * 1000 // max cookie age 1 month
-	},
-	saveUninitialized: false,
-	resave: false
-}));
+// app.use(session({
+// 	secret: process.env.SECRET,
+// 	cookie: {
+// 		maxAge: 30 * 24 * 60 * 60 * 1000 // max cookie age 1 month
+// 	},
+// 	saveUninitialized: false,
+// 	resave: false
+// }));
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
