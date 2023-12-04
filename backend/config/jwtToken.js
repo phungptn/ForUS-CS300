@@ -1,7 +1,7 @@
 // generating JWT
 const jwt = require("jsonwebtoken");
 
-const DEFAULT_DAY_ALIVE = 10 * 1000;//12 * 30 * 24 * 60 * 60 * 1000;
+const DEFAULT_DAY_ALIVE = 12 * 30 * 24 * 60 * 60 * 1000;
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
 
 const generateToken = (user) => {
