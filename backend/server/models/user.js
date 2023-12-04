@@ -29,4 +29,16 @@ const UserSchema = new Schema({
     sessionStart: { type: Number, default: null},
 }, {timestamps: true});
 
+UserSchema.statics.isAdmin = function (user_id) {
+    return new Promise((resolve, reject) => {
+        this.findById(user_id, (err, user) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(user.role === 'admin');
+            }
+        });
+    });
+};
+
 module.exports = mongoose.model('User', UserSchema);
