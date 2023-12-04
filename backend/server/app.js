@@ -10,7 +10,7 @@ const xss = require('xss-clean');
 const compression = require('compression');
 const cors = require('cors');
 
-const setupRoute = require('./routes');
+const setupRoute = require('./controllers');
 
 // // Middleware
 // if (process.env.NODE_ENV === 'development') {
