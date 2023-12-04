@@ -17,6 +17,7 @@ const ThreadSchema = new Schema({
         default: [],
     },
     author: { type: Schema.Types.ObjectId, ref: 'User'},
+    box: { type: Schema.Types.ObjectId, ref: 'Box'},
 }, {timestamps: true});
 
 module.exports = mongoose.model('Thread', ThreadSchema);

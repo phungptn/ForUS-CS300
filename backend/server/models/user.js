@@ -13,14 +13,6 @@ const UserSchema = new Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
-    moderatorOf: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'Box'}],
-        default: [],
-    },
-    bannedFrom:  {
-        type: [{ type: Schema.Types.ObjectId, ref: 'Box'}],
-        default: [],
-    },
     threads: {
         type: [{ type: Schema.Types.ObjectId, ref: 'Thread'}],
         default: [],
@@ -33,6 +25,8 @@ const UserSchema = new Schema({
         type: [{ type: Schema.Types.ObjectId, ref: 'Notification'}],
         default: [],
     },
+    lastAccessed: { type: Number, default: null},
+    sessionStart: { type: Number, default: null},
 }, {timestamps: true});
 
 module.exports = mongoose.model('User', UserSchema);
