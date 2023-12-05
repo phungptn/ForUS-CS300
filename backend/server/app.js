@@ -10,7 +10,8 @@ const xss = require('xss-clean');
 const compression = require('compression');
 const cors = require('cors');
 
-const setupRoute = require('./controllers');
+const setupRoute = require('./routers');
+const { set } = require('mongoose');
 
 // // Middleware
 // if (process.env.NODE_ENV === 'development') {
@@ -52,7 +53,7 @@ app.use('/api', limiter);
 
 app.use(compression());
 
-// Setup route for the app
+// Routes
 setupRoute(app);
 
 
