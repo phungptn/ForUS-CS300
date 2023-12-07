@@ -120,7 +120,7 @@ const forgotPassword = async (req, res, next) => {
       const resetPasswordToken = userUtil.getResetPasswordToken(user);
       const html = `<h1>Forgot password</h1>
     <p>Click <a href="http://localhost:3000/reset-password/${resetPasswordToken}">here</a> to reset your password.</p>`;
-    const info = await sendEmail({ email: user.username, html });
+    const info = await sendEmail({ email: user.email, html });
       console.log(info);
       res.status(200).json({
         success: info.response?.includes("OK") ? true : false,

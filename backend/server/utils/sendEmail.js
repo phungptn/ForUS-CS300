@@ -1,15 +1,19 @@
 const nodemailer = require("nodemailer");
+const data = require("../../gmail/setup/token.json");
 
 const sendEmail = async function ({ email, html }) {
   try {
     let transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
+      service: 'Gmail',
       auth: {
-        user: process.env.EMAIL_NAME,
-        pass: process.env.EMAIL_APP_PASSWORD,
-      },
+          type: 'OAuth2',
+          user: process.env.EMAIL_NAME,
+          clientId: data.client_id,
+          clientSecret: data.client_secret,
+          refreshToken: data.refresh_token,
+          // accessToken: 'ya29.Xx_XX0xxxxx-xX0X0XxXXxXxXXXxX0x',
+          expires: 1484314697598
+      }
     });
 
     let info = await transporter.sendMail({

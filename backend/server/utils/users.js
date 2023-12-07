@@ -40,6 +40,7 @@ module.exports = {
 			return null
 		}
 	},
+
 	getToken: async function (user, skipReset = false) {
 		if (!skipReset && (user.sessionStart == null || user.lastAccessed == null || Date.now() - user.lastAccessed > tokenGen.DEFAULT_DAY_ALIVE)) {
 			// user is inactive for too long or this is first time, reset session info
@@ -47,6 +48,12 @@ module.exports = {
 		}
 		await this.updateLastAccessed(user);
 		return tokenGen.generateToken(user);
+	},
+	getResetPasswordToken: async function (user) {
+		user.passwordResetExpires = Date.now() + 15 * 60 * 1000; // 15 minutes from now to reset password
+		user.passwordResetToken = tokenGen.generateToken(user);
+		await user.save();
+		return user.passwordResetToken;
 	},
 	updateLastAccessed: async function (user, deferSave = false) {
 		user.lastAccessed = Date.now();
