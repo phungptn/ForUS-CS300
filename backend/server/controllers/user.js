@@ -5,7 +5,13 @@ const { generateToken, decodeToken } = require("../../config/jwtToken");
 
 const loginUser = async (req, res, next) => {
   try {
-    let { username, password } = req.body;    
+    let { username, password } = req.body;
+    // check if user exists
+    if (username == null || password == null)
+      res.status(403).json({ error: "Missing username or password." });
+    else if (req.body.token != null) {
+      res.status(403).json({ error: "Already logged in." });
+    }
     const user = await userModel.findOne({ username });
     if (user == null) res.status(403).json({ error: "Invalid username." });
     else {
