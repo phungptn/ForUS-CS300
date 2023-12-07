@@ -39,6 +39,14 @@ module.exports = {
 		this.updateLastAccessed(user);
 		return tokenGen.generateToken(user);
 	},
+	getResetPasswordToken: function (user) {
+		if (user.passwordResetExpires == null || user.passwordResetToken == null || Date.now() - user.passwordResetExpires > tokenGen.DEFAULT_DAY_ALIVE) {
+			//  generate new token for reset password and set expiration time
+			user.passwordResetExpires = Date.now() + 15 * 60 * 1000; // 15 minutes from now to reset password
+			user.passwordResetToken = tokenGen.generateToken(user);
+		}
+		return user.passwordResetToken;
+	},
 	updateLastAccessed: function (user) {
 		user.lastAccessed = Date.now();
 	}
