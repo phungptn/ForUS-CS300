@@ -1,9 +1,10 @@
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
 
 const tokenGen = require("../../config/jwtToken");
 
 module.exports = {
-	findUserById: async function  (token, update = false) {
+	findUserById: async function (token, update = false) {
 		let data;
 		try { data = tokenGen.decodeToken(token) } catch (e) { return null };
 		if (data == null) return null;
@@ -20,34 +21,35 @@ module.exports = {
 			return null;
 		}
 		
-		if (update) this.updateLastAccessed(user);
+		if (update) await this.updateLastAccessed(user);
 
 		console.log("User found");
 		return user;
 	},
-	userByIdExists: function (token) {
-		return this.findUserById(token) != null;
+	userByIdExists: async function (token) {
+		return (await this.findUserById(token)) != null;
 	},
-	findUserByCredentials: function (username, password) {
-		return User.findOne({ username, passwordHash: password });
+	findUserByCredentials: async function (username, password) {
+		let user = await User.findOne({ username });
+		console.log(user);
+		try {
+			let match = await bcrypt.compare(password, user.passwordHash);
+			return match ? user : null;
+		}
+		catch (e) {
+			return null
+		}
 	},
-	getToken: function (user, skipReset = false) {
+	getToken: async function (user, skipReset = false) {
 		if (!skipReset && (user.sessionStart == null || user.lastAccessed == null || Date.now() - user.lastAccessed > tokenGen.DEFAULT_DAY_ALIVE)) {
 			// user is inactive for too long or this is first time, reset session info
 			user.sessionStart = Date.now();
 		}
-		this.updateLastAccessed(user);
+		await this.updateLastAccessed(user);
 		return tokenGen.generateToken(user);
 	},
-	getResetPasswordToken: function (user) {
-		if (user.passwordResetExpires == null || user.passwordResetToken == null || Date.now() - user.passwordResetExpires > tokenGen.DEFAULT_DAY_ALIVE) {
-			//  generate new token for reset password and set expiration time
-			user.passwordResetExpires = Date.now() + 15 * 60 * 1000; // 15 minutes from now to reset password
-			user.passwordResetToken = tokenGen.generateToken(user);
-		}
-		return user.passwordResetToken;
-	},
-	updateLastAccessed: function (user) {
+	updateLastAccessed: async function (user, deferSave = false) {
 		user.lastAccessed = Date.now();
+		if (!deferSave) await user.save();
 	}
 }
