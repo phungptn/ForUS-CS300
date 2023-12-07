@@ -2,7 +2,7 @@
 	"name": "for-us",
 	"version": "1.0.0",
 	"scripts": {
-		"backend": "cd ./backend && npm run start",
+		"backend": "cd ./backend && npm run start_nodemon",
 		"frontend": "cd ./frontend && npm run start",
 		"deploy": "concurrently -p \"[{name}]\" -n \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run backend\" \"npm run frontend\""
 	},

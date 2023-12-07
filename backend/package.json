@@ -1,7 +1,8 @@
 {
   "name": "forus-backend",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "start_nodemon": "nodemon server.js"
   },
   "description": "A 5-member project for CS300 Software Engineering.",
   "version": "1.0.0",
@@ -9,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -24,6 +26,8 @@
     "mongodb": "^6.2.0",
     "mongoose": "^8.0.0",
     "morgan": "^1.10.0",
+    "ndb": "^1.1.5",
+    "nodemon": "^3.0.2",
     "slugify": "^1.6.6",
     "validator": "^13.11.0",
     "xss-clean": "^0.1.4"
