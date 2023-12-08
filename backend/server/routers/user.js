@@ -9,5 +9,6 @@ router.post("/logout", logoutUser);
 router.post("/register", registerUser);
 router.get("/info", infoUser);
 router.post("/forgot-password", forgotPassword);
+router.put("/reset-password", resetPassword);
 
 module.exports = router;
