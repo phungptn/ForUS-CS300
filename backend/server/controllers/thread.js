@@ -2,10 +2,10 @@ const Thread = require('../models/thread');
 const PageLimit = 10;
 
 module.exports = {
-    create: (req, res) => {
-        res.status(501).json({ error: "Not implemented." });
+    createThread: async (req, res) => {
+        let { title, body } = req.body;
     },
-    read: (req, res) => {
+    readThread: async (req, res) => {
         let thread_id = req.params.thread_id;
         let page = req.params.page;
         if (page == null) {
@@ -15,144 +15,144 @@ module.exports = {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
-            Thread.aggregate([
-                {
-                    $match: {
-                        _id: thread_id
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "User",
-                            let: {
-                                aid: "$author"
-                            },
-                        pipeline: [
-                            {
-                                $match: {
-                                    $expr: {
-                                        $eq: ["$_id", "$$aid"]
-                                    }
-                                }
-                            },
-                            {
-                                $project: {
-                                _id: 0,
-                                username: 1
-                                }
-                            }
-                        ],
-                        as: "author"
-                    }
-                },
-                {
-                    $unwind: "$author"
-                },
-                {
-                    $addFields: {
-                        score: {
-                            $subtract: [
-                                { $size: "$upvoted" },
-                                { $size: "$downvoted" }
-                            ]
-                        },
-                        comments: {
-                            $slice: ["$comments", (page - 1) * PageLimit, PageLimit]
+            try {
+                const threads = await Thread.aggregate([
+                    {
+                        $match: {
+                            _id: thread_id
                         }
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "Comment",
-                        let: {
-                            cid: "$comments"
-                        },
-                        pipeline: [
-                            {
-                                $match: {
-                                    $expr: {
-                                        $in: ["$_id", "$$cid"]
+                    },
+                    {
+                        $lookup: {
+                            from: "User",
+                                let: {
+                                    aid: "$author"
+                                },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ["$_id", "$$aid"]
+                                        }
+                                    }
+                                },
+                                {
+                                    $project: {
+                                    _id: 0,
+                                    username: 1
                                     }
                                 }
+                            ],
+                            as: "author"
+                        }
+                    },
+                    {
+                        $unwind: "$author"
+                    },
+                    {
+                        $addFields: {
+                            score: {
+                                $subtract: [
+                                    { $size: "$upvoted" },
+                                    { $size: "$downvoted" }
+                                ]
                             },
-                            {
-                                $lookup: {
-                                    from: "User",
-                                    let: {
-                                        aid: "$author"
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: {
-                                                $expr: {
-                                                    $eq: ["$_id","$$aid"]
+                            comments: {
+                                $slice: ["$comments", (page - 1) * PageLimit, PageLimit]
+                            }
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "Comment",
+                            let: {
+                                cid: "$comments"
+                            },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $in: ["$_id", "$$cid"]
+                                        }
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: "User",
+                                        let: {
+                                            aid: "$author"
+                                        },
+                                        pipeline: [
+                                            {
+                                                $match: {
+                                                    $expr: {
+                                                        $eq: ["$_id","$$aid"]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                $project: {
+                                                    _id: 0,
+                                                    username: 1
                                                 }
                                             }
-                                        },
-                                        {
-                                            $project: {
-                                                _id: 0,
-                                                username: 1
-                                            }
-                                        }
-                                    ],
-                                    as: "author"
+                                        ],
+                                        as: "author"
+                                    }
+                                },
+                                {
+                                    $unwind: "$author"
+                                },
+                                {
+                                    $addFields: {
+                                    score: {
+                                        $subtract: [
+                                            { $size: "$upvoted" },
+                                            { $size: "$downvoted" }
+                                        ]
+                                    }
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        _id: 0,
+                                        body: 1,
+                                        score: 1,
+                                        author: 1,
+                                        replyTo: 1
+                                    }
                                 }
-                            },
-                            {
-                                $unwind: "$author"
-                            },
-                            {
-                                $addFields: {
-                                score: {
-                                    $subtract: [
-                                        { $size: "$upvoted" },
-                                        { $size: "$downvoted" }
-                                    ]
-                                }
-                                }
-                            },
-                            {
-                                $project: {
-                                    _id: 0,
-                                    body: 1,
-                                    score: 1,
-                                    author: 1,
-                                    replyTo: 1
-                                }
-                            }
-                        ],
-                        as: "comments"
+                            ],
+                            as: "comments"
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            title: 1,
+                            score: 1,
+                            comments: 1,
+                            author: 1
+                        }
                     }
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        title: 1,
-                        score: 1,
-                        comments: 1,
-                        author: 1
-                    }
-                }
-            ]).exec((err, threads) => {
-                if (err) {
-                    res.status(500).json({ error: err });
-                } else {
-                    res.status(200).json(threads);
-                }
-            });
+                ]).exec();
+                res.status(200).json({ threads: threads });
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
         }
     },
-    update: (req, res) => {
+    updateThread: (req, res) => {
         res.status(501).json({ error: "Not implemented." });
     },
-    delete: (req, res) => {
+    deleteThread: (req, res) => {
         res.status(501).json({ error: "Not implemented." });
     },
-    upvote: (req, res) => {
+    upvoteThread: (req, res) => {
         res.status(501).json({ error: "Not implemented." });
     },
-    downvote: (req, res) => {
+    downvoteThread: (req, res) => {
         res.status(501).json({ error: "Not implemented." });
     }
 }

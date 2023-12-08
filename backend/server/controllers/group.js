@@ -1,48 +1,48 @@
 const Group = require('../models/group');
 
 module.exports = {
-    read: (req, res) => {
-        Group.find({}).populate('boxes', 'name description').exec((err, group) => {
-            if (err) {
-                res.status(500).json({ error: err });
-            } else {
-                res.status(200).json(group);
-            }
-        });
+    readGroup: async (req, res) => {
+        try {
+            const groups = await Group.find({}).populate('boxes', 'name description').exec();
+            res.status(200).json(groups);
+        }
+        catch (err) {
+            res.status(500).json({ error: err });
+        }
     },
-    create: (req, res) => {
+    createGroup: async (req, res) => {
         let { name } = req.body;
         if (name == null) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
             let group = new Group({ name: name });
-            group.save((err) => {
-                if (err) {
-                    res.status(500).json({ error: err });
-                } else {
-                    res.status(200).json(group);
-                }
-            });
+            try {
+                await group.save();
+                res.status(201).json({ message: "Group created." });
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
         }
     },
-    update: (req, res) => {
+    updateGroup: async (req, res) => {
         let group_id = req.params.group_id;
         let { name } = req.body;
         if (name == null) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
-            Group.findOneAndUpdate({ _id: group_id }, {name: name}, (err) => {
-                if (err) {
-                    res.status(500).json({ error: err });
-                } else {
-                    res.status(200).json({ message: "Group updated." });
-                }
-            });
+            try {
+                await Group.updateOne({ _id: group_id }, { name: name });
+                res.status(200).json({ message: "Group updated." });
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
         }
     },
-    delete: (req, res) => {
+    deleteGroup: async (req, res) => {
         res.status(501).json({ error: "Not implemented." });    
     }
 }

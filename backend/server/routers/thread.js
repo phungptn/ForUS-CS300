@@ -1,7 +1,9 @@
 const express = require('express');
-const threadController = require('../controllers/thread');
+import { readThread, updateThread, deleteThread, upvoteThread, downvoteThread } from '../controllers/thread';
 const router = express.Router();
 
-router.get('/:thread_id', threadController.read);
-router.put('/:thread_id/upvote', /*isAdmin*/ threadController.upvote);
-router.put('/:thread_id/downvote', /*isAdmin*/ threadController.upvote);
+router.get('/:thread_id', readThread);
+router.update('/:thread_id', /*isBanned*/ updateThread);
+router.put('/:thread_id/upvote', /*isBanned*/ upvoteThread);
+router.put('/:thread_id/downvote', /*isBanned*/ downvoteThread);
+router.delete('/:thread_id', /*isAdmin, isUser*/ deleteThread);
