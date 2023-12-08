@@ -166,6 +166,19 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
+const isAdmin = async (req, res, next) => {
+  try {
+    const user = await userUtil.findUserById(req.body.token);
+    if (user == null) res.status(403).json({ error: "Invalid session." });
+    else {
+      if (user.role === 'admin') next();
+      else res.status(403).json({ error: "Access denied." });
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
 module.exports = {
   loginUser,
   logoutUser,
@@ -173,4 +186,5 @@ module.exports = {
   infoUser,
   forgotPassword,
   resetPassword,
+  isAdmin,
 };
