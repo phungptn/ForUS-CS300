@@ -1,11 +1,12 @@
 const express = require('express');
-const boxController = require('../controller/box');
-const threadController = require('../controller/thread');
+import { readBox, updateBox, deleteBox } from '../controllers/box';
+import { createThread } from '../controllers/thread';
+import { isAdmin } from '../controllers/user';
 const router = express.Router();
 
-router.get('/:box_id', boxController.read);
-router.post('/:box_id/thread', threadController.create);
-router.put('/:box_id', /*isAdmin*/ boxController.update);
-router.delete('/:box_id', /*isAdmin*/ boxController.delete);
+router.get('/:box_id', readBox);
+router.post('/:box_id/thread', /*isBanned*/ createThread);
+router.put('/:box_id', isAdmin, updateBox);
+router.delete('/:box_id', isAdmin, deleteBox);
 
 export default router;

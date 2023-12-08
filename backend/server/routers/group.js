@@ -1,11 +1,12 @@
 const express = require('express');
-const groupController = require('../controllers/group');
-const boxController = require('../controllers/box');
+import { readGroup, updateGroup, deleteGroup } from '../controllers/group';
+import { createBox } from '../controllers/box';
+import { isAdmin } from '../controllers/user';
 const router = express.Router();
 
-router.get('/', groupController.read);
-router.post('/:group_id/box', /*isAdmin*/ boxController.create);
-router.put('/:group_id', /*isAdmin*/ groupController.update);
-router.delete('/:group_id', /*isAdmin*/ groupController.delete);
+router.get('/', readGroup);
+router.post('/:group_id/box', isAdmin, createBox);
+router.put('/:group_id', isAdmin, updateGroup);
+router.delete('/:group_id', isAdmin, deleteGroup);
 
 export default router;

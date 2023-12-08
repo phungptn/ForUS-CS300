@@ -31,18 +31,6 @@ const UserSchema = new Schema({
     passwordResetToken: { type: String, default: null},
 }, {timestamps: true});
 
-UserSchema.statics.isAdmin = function (user_id) {
-    return new Promise((resolve, reject) => {
-        this.findById(user_id, (err, user) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(user.role === 'admin');
-            }
-        });
-    });
-};
-
 UserSchema.methods.changePassword = function (){
     passwordResetExpires = Date.now() + 15 * 60 * 1000; // 15 minutes from now to reset password
 }
