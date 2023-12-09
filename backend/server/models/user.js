@@ -27,13 +27,8 @@ const UserSchema = new Schema({
     },
     lastAccessed: { type: Number, default: null},
     sessionStart: { type: Number, default: null},
-    passwordResetExpires: { type: Number, default: null},
-    passwordResetToken: { type: String, default: null},
+    passwordResetExpiry: { type: Number, default: null},
 }, {timestamps: true});
-
-UserSchema.methods.changePassword = function (){
-    passwordResetExpires = Date.now() + 15 * 60 * 1000; // 15 minutes from now to reset password
-}
 
 
 module.exports = mongoose.model('User', UserSchema);
