@@ -5,7 +5,7 @@ export  function setCookie(name, value, daysToLive) {
     if (typeof daysToLive === "number") {
       /* Sets the max-age attribute so that the cookie expires
           after the specified number of days */
-      cookie += "; max-age=" + daysToLive;
+      cookie += "; max-age=" + (daysToLive * 24 * 60 * 60);
   
       document.cookie = cookie;
     }

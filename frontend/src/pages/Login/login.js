@@ -64,14 +64,14 @@ export default function Login() {
       formData.password.length >= 0 &&
       formData.password.length <= 20
     ) {
-      console.log(formData);
       const response = await login(formData);
       // console.log(response);
       if (response.status === 200) {
+        console.log(rememberMe) ;
         if (rememberMe) {
           setCookie("token", response.data.token, 30);
         } else {
-          setCookie("token", response.data.token);
+          setCookie("token", response.data.token,1);
         }
         axios.defaults.headers.common["Authorization"] = response.data.token;
         // navigate("/");
@@ -126,8 +126,9 @@ export default function Login() {
               type="checkbox"
               value="remember-me"
               id="remember_me"
+              
             />
-            <label className="form-check-label" htmlFor="flexCheckDefault">
+            <label className="form-check-label" htmlFor="remember_me">
               Remember me
             </label>
           </div>
