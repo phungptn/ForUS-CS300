@@ -1,16 +1,28 @@
 import { Route, Routes } from "react-router-dom";
 import React, { Suspense, lazy, useState } from "react";
+import isLogin from "../utils/isLogin";
 const Login = lazy(() => import('../pages/Login/login'));
 const Home = lazy(() => import('../pages/Home/home'));
+const NotFound = lazy(() => import('../pages/NotFound/404'));
 
 
  function Router() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <Routes>
-                <Route  path="/" element={<Home />} />
-                <Route  path="/login" element={<Login />} />
 
+            <Routes>
+            {
+                !isLogin() ?
+                <Route  path="/login" element={<Login />} />
+                :
+                <Route  path="/">
+
+                    <Route  exact path="/" element={<Home />} />
+                </Route>
+
+            }
+
+            <Route  path="*" element={<NotFound />} />
             </Routes>
         </Suspense>
     );

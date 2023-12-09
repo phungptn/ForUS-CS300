@@ -5,16 +5,25 @@ const tokenGen = require("../../config/jwtToken");
 
 const RESET_PASSWORD_EXPIRY = 15 * 60 * 1000;
 
+// find token from request  
 const findToken = function (req) {
+	console.log("Finding token");
+	console.log(req.cookies.token);
+	if (req.body.token == null) return req.cookies.token;
+	else
 	return req.body.token;
 }
 
 module.exports = {
 	findUserById: async function (req, update = false) {
 		let data;
-		try { data = tokenGen.decodeToken(findToken(req)) } catch (e) { return null };
-		if (data == null) return null;
+		console.log("Finding user by id");
+		try { data = tokenGen.decodeToken(await findToken(req)) } catch (e) { 
+			console.log(e);
+			return null };
 		console.log(data);
+
+		if (data == null) return null;
 		let user = await User.findById(data.id);
 		console.log(user);
 		if (user == null || /* No user */
@@ -32,12 +41,17 @@ module.exports = {
 		console.log("User found");
 		return user;
 	},
+
+	// fix bugs add wrong params
 	userByIdExists: async function (req) {
-		return (await this.findUserById(findToken(req))) != null;
+		console.log("Checking if user exists");
+		if (await findToken(req))
+			return (await this.findUserById(req)) != null;
+		return false;
 	},
 	findUserByCredentials: async function (username, password) {
 		let user = await User.findOne({ username });
-		console.log(user);
+		// console.log(user);
 		try {
 			let match = await bcrypt.compare(password, user.passwordHash);
 			return match ? user : null;
