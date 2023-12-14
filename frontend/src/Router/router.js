@@ -1,6 +1,5 @@
 import { Await, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import React, { Suspense, lazy, useState, useEffect } from "react";
-import { useAsync } from "react-async";
 import isLogin from "../utils/isLogin";
 const Login = lazy(() => import('../pages/Login/login'));
 const Home = lazy(() => import('../pages/Home/home'));
