@@ -1,7 +1,7 @@
 const express = require('express');
-import { createGroup, readGroup, updateGroup, deleteGroup } from '../controllers/group';
-import { createBox } from '../controllers/box';
-import { isAdmin } from '../controllers/user';
+const { createGroup, readGroup, updateGroup, deleteGroup } = require('../controllers/group');
+const { createBox } = require('../controllers/box');
+const { isAdmin } = require('../controllers/user');
 const router = express.Router();
 
 router.get('/', readGroup);
@@ -10,4 +10,4 @@ router.post('/:group_id/box', isAdmin, createBox);
 router.put('/:group_id', isAdmin, updateGroup);
 router.delete('/:group_id', isAdmin, deleteGroup);
 
-export default router;
+module.exports = router;

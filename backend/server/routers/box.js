@@ -9,4 +9,4 @@ router.post('/:box_id/thread', /*isBanned*/ createThread);
 router.put('/:box_id', isAdmin, updateBox);
 router.delete('/:box_id', isAdmin, deleteBox);
 
-export default router;
+module.exports = router;

@@ -1,5 +1,5 @@
 const express = require('express');
-import { createComment, updateComment, deleteComment, upvoteComment, downvoteComment } from '../controllers/comment';
+const { createComment, updateComment, deleteComment, upvoteComment, downvoteComment } = require('../controllers/comment');
 
 const router = express.Router();
 
@@ -9,4 +9,4 @@ router.delete('/:comment_id', deleteComment);
 router.put('/:comment_id/upvote', upvoteComment);
 router.put('/:comment_id/downvote', downvoteComment);
 
-export default router;
+module.exports = router;
