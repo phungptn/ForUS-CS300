@@ -4,7 +4,7 @@ import isLogin from "../utils/isLogin";
 const Login = lazy(() => import('../pages/Login/login'));
 const Home = lazy(() => import('../pages/Home/home'));
 const NotFound = lazy(() => import('../pages/NotFound/404'));
-
+const SignUp = lazy(() => import('../pages/Admin/SignUp/signup'));
 
  function Router() {
     return (
@@ -18,6 +18,8 @@ const NotFound = lazy(() => import('../pages/NotFound/404'));
                 <Route  path="/">
 
                     <Route  exact path="/" element={<Home />} />
+                    <Route path="/signup" element={<SignUp />} />
+                    
                 </Route>
 
             }

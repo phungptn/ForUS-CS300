@@ -8,6 +8,7 @@ const UserSchema = new Schema({
     email: { type: String },
     avatarUrl: { type: String },
     description: { type: String, maxLength: 512, minLength: 32},
+    address: { type: String, maxLength: 512, minLength: 32},
     role: {
         type: String,
         enum: ['user', 'admin'],
