@@ -9,6 +9,8 @@ const infoUser = async () => {
     } catch (error) {
         console.error(error);
     }
+
+    return null;
 }
 
 export {

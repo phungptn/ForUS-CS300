@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useReducer, useState } from "react";
 import { login } from "../../api/login";
 import { setCookie } from "../../utils/setCookie";
@@ -25,7 +25,7 @@ const dialogReducer = (state, action) => {
   }
 };
 
-export default function Login() {
+export default function Login({ auth }) {
   // const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
 
@@ -90,7 +90,7 @@ export default function Login() {
       [event.target.placeholder]: event.target.value,
     });
   }
-  return (
+  return auth ? <Navigate to="/" /> : (
     <div className="d-flex align-items-center py-4 bg-body-tertiary vh-100 ">
       <main className="form-signin w-100 m-auto">
         <form>

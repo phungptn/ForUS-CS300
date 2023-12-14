@@ -1,18 +1,9 @@
-import getCookie from './getCookie';
 import { infoUser } from '../api/user';
-export default function isLogin() {
-    const token = getCookie('token');
-    if (token) {
-        // const response = await infoUser();
-        // if (response.data.user) {
-        //     return true;
-        // }
-        // else {
-        //     return false;
-        // }
-        return true;
-    }
-    else {
-        return false;
-    }
+export default async function isLogin () {
+    try {
+        const response = await infoUser();
+        return !!response.data.user;
+    } catch (e) {}
+    
+    return false;
 }
