@@ -2,6 +2,7 @@ const express = require("express");
 
 const users = require("../utils/users");
 const userRouter = require("./user");
+const groupRouter = require("./group");
 
 const isPath = function (url, sample) {
 	return url.startsWith(sample + "/") || url == sample;
@@ -30,6 +31,7 @@ module.exports = function (app) {
 
 	// setup routes
 	app.use("/users", userRouter);
+	app.use("/group", groupRouter);
 	// setup ultimate ending for all routes
 	app.all("*", (req, res) => {
 		res.status(404).json({ error: "Not found" });
