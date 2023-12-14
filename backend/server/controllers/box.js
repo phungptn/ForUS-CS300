@@ -78,6 +78,16 @@ module.exports = {
         }
     },
     deleteBox: async (req, res) => {
-        res.status(501).json({ error: "Not implemented." });
+        let box_id = req.params.box_id;
+        try {
+            await Box.deleteOne({ _id: box_id });
+            res.status(200).json({ message: "Box deleted." });
+        }
+        catch (err) {
+            res.status(500).json({ error: err });
+        }
+        finally {
+            session.endSession();
+        }
     }
 }

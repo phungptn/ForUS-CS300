@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Box = require('./box');
 const Schema = mongoose.Schema;
 
 const GroupSchema = new Schema({
@@ -8,5 +9,15 @@ const GroupSchema = new Schema({
         default: [],
     },
 }, {timestamps: true});
+
+GroupSchema.pre('deleteOne', async function(next) {
+    try {
+        await Box.deleteMany({ _id: { $in: this.boxes } });
+        next();
+    }
+    catch (err) {
+        next(err);
+    }
+});
 
 module.exports = mongoose.model('Group', GroupSchema);

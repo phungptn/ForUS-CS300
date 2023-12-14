@@ -221,12 +221,58 @@ module.exports = {
         }
     },
     deleteThread: async (req, res) => {
-        res.status(501).json({ error: "Not implemented." });
+        const thread_id = req.params.thread_id;
+        try {
+            await Thread.deleteOne({ _id: thread_id });
+        }
+        catch (err) {
+            res.status(500).json({ error: err });
+        }
     },
     upvoteThread: async (req, res) => {
-        res.status(501).json({ error: "Not implemented." });
+        let thread_id = req.params.thread_id;
+        const session = await mongoose.startSession();
+        try {
+            session.withTransaction(async () => {
+                const user = await userUtil.findUserById(req.body.token);
+                const isUpvoted = await Thread.exists({ _id: thread_id, upvoted: user._id });
+                if (isUpvoted) {
+                    await Thread.updateOne({ _id: thread_id }, { $pull: { upvoted: user._id } });
+                }
+                else {
+                    await Thread.updateOne({ _id: thread_id }, { $pull: { downvoted: user._id } });
+                    await Thread.updateOne({ _id: thread_id }, { $push: { upvoted: user._id } });
+                }
+            });
+        }
+        catch (err) {
+            res.status(500).json({ error: err });
+        }
+        finally {
+            session.endSession();
+        }
     },
     downvoteThread: async (req, res) => {
-        res.status(501).json({ error: "Not implemented." });
+        let thread_id = req.params.thread_id;
+        const session = await mongoose.startSession();
+        try {
+            session.withTransaction(async () => {
+                const user = await userUtil.findUserById(req.body.token);
+                const isDownvoted = await Thread.exists({ _id: thread_id, downvoted: user._id });
+                if (isDownvoted) {
+                    await Thread.updateOne({ _id: thread_id }, { $pull: { downvoted: user._id } });
+                }
+                else {
+                    await Thread.updateOne({ _id: thread_id }, { $pull: { upvoted: user._id } });
+                    await Thread.updateOne({ _id: thread_id }, { $push: { downvoted: user._id } });
+                }
+            });
+        }
+        catch (err) {
+            res.status(500).json({ error: err });
+        }
+        finally {
+            session.endSession();
+        }
     }
 }

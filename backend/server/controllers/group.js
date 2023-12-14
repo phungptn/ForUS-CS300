@@ -43,6 +43,13 @@ module.exports = {
         }
     },
     deleteGroup: async (req, res) => {
-        res.status(501).json({ error: "Not implemented." });    
+        let group_id = req.params.group_id;
+        try {
+            await Group.deleteOne({ _id: group_id });
+            res.status(200).json({ message: "Group deleted." });
+        }
+        catch (err) {
+            res.status(500).json({ error: err });
+        }
     }
 }

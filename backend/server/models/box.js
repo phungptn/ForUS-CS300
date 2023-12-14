@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Thread = require('./thread');
 
 const BoxSchema = new Schema({
     name: { type: String, required: true, unique: true, maxLength: 128, minLength: 1},
@@ -17,5 +18,18 @@ const BoxSchema = new Schema({
         default: [],
     },
 }, {timestamps: true});
+
+const deleteChildThreads = async function(next) {
+    try {
+        await Thread.deleteMany({ _id: { $in: this.threads } });
+        next();
+    }
+    catch (err) {
+        next(err);
+    }
+};
+
+BoxSchema.pre('deleteMany', deleteChildThreads);
+BoxSchema.pre('deleteOne', deleteChildThreads);
 
 module.exports = mongoose.model('Box', BoxSchema, 'boxes');
