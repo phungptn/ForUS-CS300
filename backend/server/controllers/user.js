@@ -2,8 +2,10 @@ const userUtil = require("../utils/users");
 const bcrypt = require("bcrypt");
 const userModel = require("../models/user");
 const sendEmail = require("../utils/sendEmail");
+
 const loginUser = async (req, res, next) => {
   try {
+    
     let { username, password } = req.body;
 
     // check if user exists
@@ -13,10 +15,14 @@ const loginUser = async (req, res, next) => {
 
     const user = await userUtil.findUserByCredentials(username, password);
     if (user == null) return res.status(403).json({ error: "Invalid username or password." });
-    
+    const token =  await userUtil.getToken(user);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+    });
     res.status(200).json({
       message: "Login successfully.",
-      token: await userUtil.getToken(user),
+      token: token,
     });
 
   }
@@ -82,6 +88,8 @@ const registerUser = async (req, res, next) => {
 const infoUser = async (req, res, next) => {
   try {
     let user = await userUtil.findUserById(req);
+    console.log('infoUser');
+    console.log(user);
     if (user == null) res.status(403).json({ error: "Invalid session." });
     else {
       res.status(200).json({

@@ -10,9 +10,12 @@ const isPath = function (url, sample) {
 module.exports = function (app) {
 	// middleware app
 	app.use(async (req, res, next) => {
+		console.log("Middleware");
 		let denied = false;
 		if (isPath(req.url, "/users/login") || isPath(req.url, "/users/forgot-password") || isPath(req.url, "/users/reset-password")) denied = false;
 		else {
+			console.log('check  user exist')
+			console.log(req.body)
 			let user = await users.findUserById(req, true);
 			if (user == null) denied = true;
 		}
