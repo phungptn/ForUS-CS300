@@ -61,7 +61,7 @@ module.exports = {
             }
         }
     },
-    updateBox: (req, res) => {
+    updateBox: async (req, res) => {
         let box_id = req.params.box_id;
         let { name, description } = req.body;
         if (box_id == null || name == null || description == null) {
@@ -69,7 +69,7 @@ module.exports = {
         }
         else {
             try {
-                Box.updateOne({ _id: box_id }, { name: name, description: description });
+                await Box.updateOne({ _id: box_id }, { name: name, description: description });
                 res.status(200).json({ message: "Box updated." });
             }
             catch (err) {
