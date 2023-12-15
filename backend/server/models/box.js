@@ -19,17 +19,18 @@ const BoxSchema = new Schema({
     },
 }, {timestamps: true});
 
-const deleteChildThreads = async function(next) {
-    try {
-        await Thread.deleteMany({ _id: { $in: this.threads } });
-        next();
+BoxSchema.post('findOneAndDelete', async (doc) => {
+    if (doc != null) {
+        try {
+            const threads = doc.threads;
+            for (var thread of threads) {
+                await Thread.findOneAndDelete({ _id: thread });
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
-    catch (err) {
-        next(err);
-    }
-};
-
-BoxSchema.pre('deleteMany', deleteChildThreads);
-BoxSchema.pre('deleteOne', deleteChildThreads);
+});
 
 module.exports = mongoose.model('Box', BoxSchema, 'boxes');
