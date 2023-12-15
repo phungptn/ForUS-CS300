@@ -80,7 +80,7 @@ module.exports = {
     deleteBox: async (req, res) => {
         let box_id = req.params.box_id;
         try {
-            await Box.deleteOne({ _id: box_id });
+            await Box.findOneAndDelete({ _id: box_id });
             res.status(200).json({ message: "Box deleted." });
         }
         catch (err) {
