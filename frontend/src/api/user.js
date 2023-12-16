@@ -13,5 +13,14 @@ const infoUser = async () => {
     return null;
 }
 
-export {
+const logout = async () => {
+    try {
+        const response = await instance.post("/users/logout");
+        return response;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export {logout,
     infoUser}

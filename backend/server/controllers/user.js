@@ -11,6 +11,7 @@ const loginUser = async (req, res, next) => {
     // check if user exists
     if (username == null || password == null) return res.status(403).json({ error: "Missing username or password." });
     
+    
     if (await userUtil.userByIdExists(req)) return res.status(403).json({ error: "Already logged in." });
 
     const user = await userUtil.findUserByCredentials(username, password);

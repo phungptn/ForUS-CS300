@@ -21,10 +21,11 @@ module.exports = {
 			return null };
 		console.log(data);
 
+		
 		if (data == null) return null;
 		console.log("Finding user by id");
 		let user = await User.findById(data.id);
-		console.log(user);
+		// console.log(user);
 		if (user == null) {
 			console.log("User not found");
 			return null;
@@ -64,6 +65,7 @@ module.exports = {
 		// console.log(user);
 		try {
 			let match = await bcrypt.compare(password, user.passwordHash);
+			console.log(match);
 			return match ? user : null;
 		}
 		catch (e) {
