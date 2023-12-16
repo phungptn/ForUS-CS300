@@ -19,16 +19,17 @@ const BoxSchema = new Schema({
     },
 }, {timestamps: true});
 
-BoxSchema.post('findOneAndDelete', async (doc) => {
+BoxSchema.post('findOneAndDelete', async (doc, next) => {
     if (doc != null) {
         try {
             const threads = doc.threads;
             for (var thread of threads) {
                 await Thread.findOneAndDelete({ _id: thread });
             }
+            next();
         }
         catch (err) {
-            console.log(err);
+            next(err);
         }
     }
 });

@@ -79,12 +79,24 @@ module.exports = {
     },
     deleteBox: async (req, res) => {
         let box_id = req.params.box_id;
-        try {
-            await Box.findOneAndDelete({ _id: box_id });
-            res.status(200).json({ message: "Box deleted." });
+        if (box_id == null) {
+            res.status(400).json({ error: "Invalid request." });
         }
-        catch (err) {
-            res.status(500).json({ error: err });
+        else {
+            const session = await mongoose.startSession();
+            try {
+                await session.withTransaction(async () => {
+                    await Box.findOneAndDelete({ _id: box_id }, { session: session });
+                    await Group.updateOne({ boxes: box_id }, { $pull: { boxes: box_id } }, { session: session });
+                });
+                res.status(200).json({ message: "Box deleted." });
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+            finally {
+                session.endSession();
+            }
         }
     }
 }
