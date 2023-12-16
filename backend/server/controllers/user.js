@@ -164,7 +164,7 @@ const resetPassword = async (req, res, next) => {
 
 const isAdmin = async (req, res, next) => {
   try {
-    const user = await userUtil.findUserById(req.body.token);
+    const user = await userUtil.findUserById(req);
     if (user == null) res.status(403).json({ error: "Invalid session." });
     else {
       if (user.role === 'admin') next();

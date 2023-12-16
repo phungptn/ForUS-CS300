@@ -1,7 +1,7 @@
 const express = require('express');
-import { readBox, updateBox, deleteBox } from '../controllers/box';
-import { createThread } from '../controllers/thread';
-import { isAdmin } from '../controllers/user';
+const { readBox, updateBox, deleteBox } = require('../controllers/box');
+const { createThread } = require('../controllers/thread');
+const { isAdmin } = require('../controllers/user');
 const router = express.Router();
 
 router.get('/:box_id', readBox);

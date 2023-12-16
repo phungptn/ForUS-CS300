@@ -10,13 +10,17 @@ const GroupSchema = new Schema({
     },
 }, {timestamps: true});
 
-GroupSchema.pre('deleteOne', async function(next) {
-    try {
-        await Box.deleteMany({ _id: { $in: this.boxes } });
-        next();
-    }
-    catch (err) {
-        next(err);
+GroupSchema.post('findOneAndDelete', async (doc) => {
+    if (doc != null) {
+        try {
+            const boxes = doc.boxes;
+            for (var box of boxes) {
+                await Box.findOneAndDelete({ _id: box });
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 });
 

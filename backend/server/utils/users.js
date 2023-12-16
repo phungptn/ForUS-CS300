@@ -9,16 +9,14 @@ const RESET_PASSWORD_EXPIRY = 15 * 60 * 1000;
 const findToken = function (req) {
 	console.log("Finding token");
 	console.log(req.cookies.token);
-	if (req.body.token == null) return req.cookies.token;
-	else
-	return req.body.token;
+	return null;
 }
 
 module.exports = {
 	findUserById: async function (req, update = false) {
 		let data;
 		console.log("Finding user by id");
-		try { data = tokenGen.decodeToken(await findToken(req)) } catch (e) { 
+		try { data = tokenGen.decodeToken(req.cookies.token) } catch (e) { 
 			console.log(e);
 			return null };
 		console.log(data);
@@ -27,13 +25,24 @@ module.exports = {
 		console.log("Finding user by id");
 		let user = await User.findById(data.id);
 		console.log(user);
-		if (user == null || /* No user */
-			data.session == null || user.sessionStart == null || /* No session data? */
-			data.session != user.sessionStart || /* session data in token is different from database */
-			user.lastAccessed == null ||  /* no last accessed time (first time) */
-			Date.now() - user.lastAccessed > tokenGen.DEFAULT_DAY_ALIVE /* last accessed more than 1 year */
-		) {
-			console.log("User not found or session expired");
+		if (user == null) {
+			console.log("User not found");
+			return null;
+		}
+		else if (data.session == null || user.sessionStart == null) {
+			console.log("Session not found");
+			return null;
+		}
+		else if (data.session != user.sessionStart) {
+			console.log("Session mismatch");
+			return null;
+		}
+		else if (user.lastAccessed == null) {
+			console.log("Last accessed not found");
+			return null;
+		}
+		else if (Date.now() - user.lastAccessed > tokenGen.DEFAULT_DAY_ALIVE) {
+			console.log("Last accessed expired");
 			return null;
 		}
 		
@@ -46,7 +55,7 @@ module.exports = {
 	// fix bugs add wrong params
 	userByIdExists: async function (req) {
 		console.log("Checking if user exists");
-		if (await findToken(req))
+		if (req.cookies.token)
 			return (await this.findUserById(req)) != null;
 		return false;
 	},

@@ -21,17 +21,10 @@ const ThreadSchema = new Schema({
     box: { type: Schema.Types.ObjectId, ref: 'Box'},
 }, {timestamps: true});
 
-const deleteChildComments = async function(next) {
-    try {
-        await Comment.deleteMany({ _id: { $in: this.comments } });
-        next();
+ThreadSchema.post('findOneAndDelete', async (doc) => {
+    if (doc != null) {
+        
     }
-    catch (err) {
-        next(err);
-    }
-};
-
-ThreadSchema.pre('deleteMany', deleteChildComments);
-ThreadSchema.pre('deleteOne', deleteChildComments);
+});
 
 module.exports = mongoose.model('Thread', ThreadSchema);

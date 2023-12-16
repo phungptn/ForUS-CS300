@@ -4,7 +4,11 @@ module.exports = {
     readGroup: async (req, res) => {
         try {
             const groups = await Group.find({}).populate('boxes', 'name description').exec();
-            res.status(200).json(groups);
+            const countBoxes = await Group.aggregate([
+                { $unwind: "$boxes" },
+                { $group: { _id: "$_id", count: { $sum: 1 } } },
+            ]).exec();
+            res.status(200).json(countBoxes);
         }
         catch (err) {
             res.status(500).json({ error: err });
@@ -45,7 +49,7 @@ module.exports = {
     deleteGroup: async (req, res) => {
         let group_id = req.params.group_id;
         try {
-            await Group.deleteOne({ _id: group_id });
+            await Group.findOneAndDelete({ _id: group_id });
             res.status(200).json({ message: "Group deleted." });
         }
         catch (err) {

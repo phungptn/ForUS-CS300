@@ -223,7 +223,7 @@ module.exports = {
     deleteThread: async (req, res) => {
         const thread_id = req.params.thread_id;
         try {
-            await Thread.deleteOne({ _id: thread_id });
+            await Thread.findOneAndDelete({ _id: thread_id });
         }
         catch (err) {
             res.status(500).json({ error: err });
