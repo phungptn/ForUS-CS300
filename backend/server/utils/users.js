@@ -24,6 +24,7 @@ module.exports = {
 		console.log(data);
 
 		if (data == null) return null;
+		console.log("Finding user by id");
 		let user = await User.findById(data.id);
 		console.log(user);
 		if (user == null || /* No user */
