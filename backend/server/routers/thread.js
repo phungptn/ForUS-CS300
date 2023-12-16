@@ -4,7 +4,7 @@ const { isAdmin } = require('../controllers/user');
 const router = express.Router();
 
 router.get('/:thread_id', readThread);
-router.update('/:thread_id', /*isBanned*/ updateThread);
+router.update('/:thread_id', updateThread);
 router.put('/:thread_id/upvote', upvoteThread);
 router.put('/:thread_id/downvote', downvoteThread);
 router.delete('/:thread_id', deleteThread);

@@ -5,7 +5,7 @@ const { isAdmin } = require('../controllers/user');
 const router = express.Router();
 
 router.get('/:box_id', readBox);
-router.post('/:box_id/thread', /*isBanned*/ createThread);
+router.post('/:box_id/thread', createThread);
 router.put('/:box_id', isAdmin, updateBox);
 router.delete('/:box_id', isAdmin, deleteBox);
 

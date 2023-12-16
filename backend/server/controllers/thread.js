@@ -16,28 +16,34 @@ module.exports = {
         else {
             const session = await mongoose.startSession();
             try {
-                const user = await userUtil.findUserById(req.body.token);
+                const user = await userUtil.findUserById(req.cookies.token);
                 if (user == null) {
                     res.status(403).json({ error: "Invalid session." });
                 }
                 else {
-                    const thread = new Thread({
-                        title: title,
-                        body: body,
-                        author: user._id,
-                        box: box_id
-                    });
-                    session.withTransaction(async () => {
-                        await thread.save();
-                        await Box.updateOne(
-                            { _id: box_id },
-                            { $push: { threads: thread._id } }
-                        );
-                        await User.updateOne(
-                            { _id: user._id },
-                            { $push: { threads: thread._id } }
-                        );
-                    });
+                    const isBanned = await Box.exists({ _id: box_id, banned: user._id });
+                    if (isBanned) {
+                        res.status(403).json({ error: "You are banned." });
+                    }
+                    else {
+                        const thread = new Thread({
+                            title: title,
+                            body: body,
+                            author: user._id,
+                            box: box_id
+                        });
+                        session.withTransaction(async () => {
+                            await thread.save();
+                            await Box.updateOne(
+                                { _id: box_id },
+                                { $push: { threads: thread._id } }
+                            );
+                            await User.updateOne(
+                                { _id: user._id },
+                                { $push: { threads: thread._id } }
+                            );
+                        });
+                    }
                 }
             }
             catch (err) {
@@ -204,14 +210,17 @@ module.exports = {
                     if (thread == null) {
                         res.status(404).json({ error: "Thread not found." });
                     }
-                    else if (thread.author != user._id) {
-                        res.status(403).json({ error: "Unauthorized." });
-                    }
                     else {
-                        thread.title = title;
-                        thread.body = body;
-                        await thread.save();
-                        res.status(200).json({ message: "Thread updated." });
+                        const isBanned = await Box.exists({ _id: thread.box, banned: user._id });
+                        if (thread.author != user._id || isBanned) {
+                            res.status(403).json({ error: "Unauthorized." });
+                        }
+                        else {
+                            thread.title = title;
+                            thread.body = body;
+                            await thread.save();
+                            res.status(200).json({ message: "Thread updated." });
+                        }
                     }
                 }
             }
@@ -228,11 +237,35 @@ module.exports = {
         else {
             const session = await mongoose.startSession();
             try {
-                await Thread.findOneAndDelete({ _id: thread_id });
-                res.status(200).json({ message: "Thread deleted." });
+                const user = await userUtil.findUserById(req.body.token);
+                if (user == null) {
+                    res.status(403).json({ error: "Invalid session." });
+                }
+                else {
+                    const thread = await Thread.findOne({ _id: thread_id });
+                    if (thread == null) {
+                        res.status(404).json({ error: "Thread not found." });
+                    }
+                    else {
+                        const isBanned = await Box.exists({ _id: thread.box, banned: user._id });
+                        if ((user.role == 'user' && thread.author != user._id) || isBanned) {
+                            res.status(403).json({ error: "Unauthorized." });
+                        }
+                        else {
+                            session.withTransaction(async () => {
+                                // Do not use thread.delete() because it does not trigger the post hook.
+                                await Thread.findOneAndDelete({ _id: thread_id });
+                            });
+                            res.status(200).json({ message: "Thread deleted." });
+                        }
+                    }
+                }
             }
             catch (err) {
                 res.status(500).json({ error: err });
+            }
+            finally {
+                session.endSession();
             }
         }
     },
