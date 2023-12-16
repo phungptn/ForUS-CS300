@@ -87,7 +87,6 @@ module.exports = {
             try {
                 await session.withTransaction(async () => {
                     await Box.findOneAndDelete({ _id: box_id }, { session: session });
-                    await Group.updateOne({ boxes: box_id }, { $pull: { boxes: box_id } }, { session: session });
                 });
                 res.status(200).json({ message: "Box deleted." });
             }

@@ -1,6 +1,5 @@
 const express = require('express');
 const { readThread, updateThread, deleteThread, upvoteThread, downvoteThread } = require('../controllers/thread');
-const { isAdmin } = require('../controllers/user');
 const router = express.Router();
 
 router.get('/:thread_id', readThread);
