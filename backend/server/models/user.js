@@ -23,7 +23,10 @@ const UserSchema = new Schema({
         default: [],
     },
     notifications: {
-        type: [{ type: Schema.Types.ObjectId, ref: 'Notification'}],
+        type: [{
+            notification: { type: Schema.Types.ObjectId, ref: 'Notification'},
+            isRead: { type: Boolean, default: false},
+        }],
         default: [],
     },
     lastAccessed: { type: Number, default: null},
