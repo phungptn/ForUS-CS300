@@ -16,28 +16,34 @@ module.exports = {
         else {
             const session = await mongoose.startSession();
             try {
-                const user = await userUtil.findUserById(req.body.token);
+                const user = await userUtil.findUserById(req.cookies.token);
                 if (user == null) {
                     res.status(403).json({ error: "Invalid session." });
                 }
                 else {
-                    const thread = new Thread({
-                        title: title,
-                        body: body,
-                        author: user._id,
-                        box: box_id
-                    });
-                    session.withTransaction(async () => {
-                        await thread.save();
-                        await Box.updateOne(
-                            { _id: box_id },
-                            { $push: { threads: thread._id } }
-                        );
-                        await User.updateOne(
-                            { _id: user._id },
-                            { $push: { threads: thread._id } }
-                        );
-                    });
+                    const isBanned = await Box.exists({ _id: box_id, banned: user._id });
+                    if (isBanned) {
+                        res.status(403).json({ error: "You are banned." });
+                    }
+                    else {
+                        const thread = new Thread({
+                            title: title,
+                            body: body,
+                            author: user._id,
+                            box: box_id
+                        });
+                        session.withTransaction(async () => {
+                            await thread.save();
+                            await Box.updateOne(
+                                { _id: box_id },
+                                { $push: { threads: thread._id } }
+                            );
+                            await User.updateOne(
+                                { _id: user._id },
+                                { $push: { threads: thread._id } }
+                            );
+                        });
+                    }
                 }
             }
             catch (err) {
@@ -204,14 +210,17 @@ module.exports = {
                     if (thread == null) {
                         res.status(404).json({ error: "Thread not found." });
                     }
-                    else if (thread.author != user._id) {
-                        res.status(403).json({ error: "Unauthorized." });
-                    }
                     else {
-                        thread.title = title;
-                        thread.body = body;
-                        await thread.save();
-                        res.status(200).json({ message: "Thread updated." });
+                        const isBanned = await Box.exists({ _id: thread.box, banned: user._id });
+                        if (thread.author != user._id || isBanned) {
+                            res.status(403).json({ error: "Unauthorized." });
+                        }
+                        else {
+                            thread.title = title;
+                            thread.body = body;
+                            await thread.save();
+                            res.status(200).json({ message: "Thread updated." });
+                        }
                     }
                 }
             }
@@ -222,57 +231,98 @@ module.exports = {
     },
     deleteThread: async (req, res) => {
         const thread_id = req.params.thread_id;
-        try {
-            await Thread.findOneAndDelete({ _id: thread_id });
+        if (thread_id == null) {
+            res.status(400).json({ error: "Invalid request." });
         }
-        catch (err) {
-            res.status(500).json({ error: err });
+        else {
+            const session = await mongoose.startSession();
+            try {
+                const user = await userUtil.findUserById(req.body.token);
+                if (user == null) {
+                    res.status(403).json({ error: "Invalid session." });
+                }
+                else {
+                    const thread = await Thread.findOne({ _id: thread_id });
+                    if (thread == null) {
+                        res.status(404).json({ error: "Thread not found." });
+                    }
+                    else {
+                        const isBanned = await Box.exists({ _id: thread.box, banned: user._id });
+                        if ((user.role == 'user' && thread.author != user._id) || isBanned) {
+                            res.status(403).json({ error: "Unauthorized." });
+                        }
+                        else {
+                            session.withTransaction(async () => {
+                                // Do not use thread.delete() because it does not trigger the post hook.
+                                await Thread.findOneAndDelete({ _id: thread_id });
+                            });
+                            res.status(200).json({ message: "Thread deleted." });
+                        }
+                    }
+                }
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+            finally {
+                session.endSession();
+            }
         }
     },
     upvoteThread: async (req, res) => {
         let thread_id = req.params.thread_id;
-        const session = await mongoose.startSession();
-        try {
-            session.withTransaction(async () => {
-                const user = await userUtil.findUserById(req.body.token);
-                const isUpvoted = await Thread.exists({ _id: thread_id, upvoted: user._id });
-                if (isUpvoted) {
-                    await Thread.updateOne({ _id: thread_id }, { $pull: { upvoted: user._id } });
-                }
-                else {
-                    await Thread.updateOne({ _id: thread_id }, { $pull: { downvoted: user._id } });
-                    await Thread.updateOne({ _id: thread_id }, { $push: { upvoted: user._id } });
-                }
-            });
+        if (thread_id == null) {
+            res.status(400).json({ error: "Invalid request." });
         }
-        catch (err) {
-            res.status(500).json({ error: err });
-        }
-        finally {
-            session.endSession();
+        else {
+            const session = await mongoose.startSession();
+            try {
+                session.withTransaction(async () => {
+                    const user = await userUtil.findUserById(req.body.token);
+                    const isUpvoted = await Thread.exists({ _id: thread_id, upvoted: user._id });
+                    if (isUpvoted) {
+                        await Thread.updateOne({ _id: thread_id }, { $pull: { upvoted: user._id } });
+                    }
+                    else {
+                        await Thread.updateOne({ _id: thread_id }, { $pull: { downvoted: user._id } });
+                        await Thread.updateOne({ _id: thread_id }, { $push: { upvoted: user._id } });
+                    }
+                });
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+            finally {
+                session.endSession();
+            }
         }
     },
     downvoteThread: async (req, res) => {
         let thread_id = req.params.thread_id;
-        const session = await mongoose.startSession();
-        try {
-            session.withTransaction(async () => {
-                const user = await userUtil.findUserById(req.body.token);
-                const isDownvoted = await Thread.exists({ _id: thread_id, downvoted: user._id });
-                if (isDownvoted) {
-                    await Thread.updateOne({ _id: thread_id }, { $pull: { downvoted: user._id } });
-                }
-                else {
-                    await Thread.updateOne({ _id: thread_id }, { $pull: { upvoted: user._id } });
-                    await Thread.updateOne({ _id: thread_id }, { $push: { downvoted: user._id } });
-                }
-            });
+        if (thread_id == null) {
+            res.status(400).json({ error: "Invalid request." });
         }
-        catch (err) {
-            res.status(500).json({ error: err });
-        }
-        finally {
-            session.endSession();
+        else {
+            const session = await mongoose.startSession();
+            try {
+                session.withTransaction(async () => {
+                    const user = await userUtil.findUserById(req.body.token);
+                    const isDownvoted = await Thread.exists({ _id: thread_id, downvoted: user._id });
+                    if (isDownvoted) {
+                        await Thread.updateOne({ _id: thread_id }, { $pull: { downvoted: user._id } });
+                    }
+                    else {
+                        await Thread.updateOne({ _id: thread_id }, { $pull: { upvoted: user._id } });
+                        await Thread.updateOne({ _id: thread_id }, { $push: { downvoted: user._id } });
+                    }
+                });
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+            finally {
+                session.endSession();
+            }
         }
     }
 }

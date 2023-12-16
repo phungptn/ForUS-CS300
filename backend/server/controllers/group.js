@@ -1,4 +1,5 @@
 const Group = require('../models/group');
+const mongoose = require('mongoose');
 
 module.exports = {
     readGroup: async (req, res) => {
@@ -48,12 +49,24 @@ module.exports = {
     },
     deleteGroup: async (req, res) => {
         let group_id = req.params.group_id;
-        try {
-            await Group.findOneAndDelete({ _id: group_id });
-            res.status(200).json({ message: "Group deleted." });
+        
+        if (group_id == null) {
+            res.status(400).json({ error: "Invalid request." });
         }
-        catch (err) {
-            res.status(500).json({ error: err });
+        else{
+            const session = await mongoose.startSession();
+            try {
+                await session.withTransaction(async () => {
+                    await Group.findOneAndDelete({ _id: group_id }, { session: session });
+                });
+                res.status(200).json({ message: "Group deleted." });
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+            finally {
+                session.endSession();
+            }
         }
     }
 }
