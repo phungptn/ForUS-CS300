@@ -1,29 +1,48 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import './header.css';
 import { instance } from "../../api/config";
 import logo from '../../assets/icons/logo.png';
 import {logout} from '../../api/user';
+import { useLocation } from 'react-router-dom';
 
 export default function Header() {
-  const signOut = function () {
-    instance
-      .post("/users/logout")
-      .then((res) => {
-        console.log(res);
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        window.location.href = "/login";
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const signOut = async function () {
+    try {
+      const res = await logout();
+      if (res.status === 200) {
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
   };
+
+  const location = useLocation();
+  const [routes, setRoutes] = React.useState(['Trang chủ']);
+  
+  useEffect(() => {
+    const currentRoutes = location.pathname.split('/');
+      // capitalize first letter and add / at the end
+    currentRoutes.forEach((route, index) => {
+      if (route !== '') {
+        currentRoutes[index] = route.charAt(0).toUpperCase() + route.slice(1) + '/';
+      }
+    });
+    if (currentRoutes.length > 1) {
+      setRoutes(['Trang chủ/', ...currentRoutes]);
+    }
+    else {
+      setRoutes(['Trang chủ']);
+    }
+  }
+    , [location]);
 
   return (
 
 
-    <header className="p-3 mb-3 border-bottom bg-primary ">
+    <header className="p-3 mb-3 border-bottom bg-primary sticky-top ">
       <div className="container">
         <div className="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
           <a
@@ -34,14 +53,15 @@ export default function Header() {
             <img src={logo} alt="logo"  height={32} />
           </a>
           <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            <li>
-              <a href="#" className="nav-link  link-secondary text-white">
-                Trang chủ/
-              </a>
-              
+            {routes.map((route, index) => (
+              <li key={index}>
+                <a href="#" className="nav-link px-0 ps-2 link-secondary text-white">
+                  {route}
+                </a>
+              </li>
+            ))}
             
 
-            </li>
           </ul>
 
           <div className='text-white my-10'>
