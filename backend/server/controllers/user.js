@@ -176,7 +176,25 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-// const updateProfile = async 
+const updateProfile = async (req, res, next) => {
+  try {
+    const user = await userUtil.findUserById(req);
+    if (user == null) res.status(403).json({ error: "Invalid session." });
+    else {
+      const { fullname, email, photoURL, description, address } = req.body;
+      if (fullname != null) user.fullname = fullname;
+      if (email != null) user.email = email;
+      if (description != null) user.description = description;
+      if (address != null) user.address = address;
+
+
+      await user.save();
+      res.status(200).json({ message: "Update profile successfully." });
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
 
 module.exports = {
   loginUser,
@@ -185,5 +203,6 @@ module.exports = {
   infoUser,
   forgotPassword,
   resetPassword,
+  updateProfile,
   isAdmin,
 };

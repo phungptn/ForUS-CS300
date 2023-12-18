@@ -1,8 +1,24 @@
 // import "./profile.css";
 import React, { useState } from "react";
-
+import {storage} from "../../Firebase/config";
+import {ref, uploadBytes, getDownloadURL} from "firebase/storage";
+import {v4} from "uuid";
+ 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("profile");
+  const [imageUpload, setImageUpload] = useState(null);
+  const uploadImage = () => {
+    if (imageUpload == null) return;
+    const imageRef = ref(storage, `images/${imageUpload.name + v4()}`);
+    uploadBytes(imageRef, imageUpload).then((snapshot) => {
+      console.log("Image uploaded successfully");
+      // alert("Image uploaded successfully");
+    });
+
+  }
+
+  
+
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -119,192 +135,51 @@ export default function Profile() {
                         required
                       />
                       <div className="invalid-feedback">
-                        Please enter your shipping address.
+                        Please enter your address.
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="col-md-5 mb-3">
-                        <label htmlFor="country">Country</label>
-                        <select
-                          className="custom-select d-block w-100"
-                          id="country"
-                          required
-                        >
-                          <option value>Choose...</option>
-                          <option>United States</option>
-                        </select>
-                        <div className="invalid-feedback">
-                          Please select a valid country.
-                        </div>
-                      </div>
-                      <div className="col-md-4 mb-3">
-                        <label htmlFor="state">State</label>
-                        <select
-                          className="custom-select d-block w-100"
-                          id="state"
-                          required
-                        >
-                          <option value>Choose...</option>
-                          <option>California</option>
-                        </select>
-                        <div className="invalid-feedback">
-                          Please provide a valid state.
-                        </div>
-                      </div>
-                      <div className="col-md-3 mb-3">
-                        <label htmlFor="zip">Zip</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="zip"
-                          placeholder
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Zip code required.
-                        </div>
-                      </div>
-                    </div>
+
                     <hr className="mb-4" />
-                    <div className="custom-control custom-checkbox">
-                      <input
-                        type="checkbox"
-                        className="custom-control-input"
-                        id="same-address"
-                      />
-                      <label
-                        className="custom-control-label"
-                        htmlFor="same-address"
-                      >
-                        Shipping address is the same as my billing address
+                    <h4 className="mb-3">More information</h4>
+                    <div class="mb-3">
+                      <label for="formFile" class="form-label">
+                        Load your avatar
                       </label>
-                    </div>
-                    <div className="custom-control custom-checkbox">
                       <input
-                        type="checkbox"
-                        className="custom-control-input"
-                        id="save-info"
-                      />
-                      <label
-                        className="custom-control-label"
-                        htmlFor="save-info"
-                      >
-                        Save this information for next time
-                      </label>
+                        class="form-control"
+                        type="file"
+                        id="formFile"
+                        onChange={(e) => {
+                          console.log(e.target.files[0]);
+                          setImageUpload(e.target.files[0])}}
+                      ></input>
                     </div>
-                    <hr className="mb-4" />
-                    <h4 className="mb-3">Payment</h4>
-                    <div className="d-block my-3">
-                      <div className="custom-control custom-radio">
-                        <input
-                          id="credit"
-                          name="paymentMethod"
-                          type="radio"
-                          className="custom-control-input"
-                          defaultChecked
-                          required
-                        />
-                        <label
-                          className="custom-control-label"
-                          htmlFor="credit"
-                        >
-                          Credit card
-                        </label>
-                      </div>
-                      <div className="custom-control custom-radio">
-                        <input
-                          id="debit"
-                          name="paymentMethod"
-                          type="radio"
-                          className="custom-control-input"
-                          required
-                        />
-                        <label className="custom-control-label" htmlFor="debit">
-                          Debit card
-                        </label>
-                      </div>
-                      <div className="custom-control custom-radio">
-                        <input
-                          id="paypal"
-                          name="paymentMethod"
-                          type="radio"
-                          className="custom-control-input"
-                          required
-                        />
-                        <label
-                          className="custom-control-label"
-                          htmlFor="paypal"
-                        >
-                          Paypal
-                        </label>
-                      </div>
-                    </div>
+
                     <div className="row">
-                      <div className="col-md-6 mb-3">
-                        <label htmlFor="cc-name">Name on card</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-name"
-                          placeholder
-                          required
-                        />
-                        <small className="text-muted">
-                          Full name as displayed on card
-                        </small>
-                        <div className="invalid-feedback">
-                          Name on card is required
-                        </div>
-                      </div>
-                      <div className="col-md-6 mb-3">
-                        <label htmlFor="cc-number">Credit card number</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-number"
-                          placeholder
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Credit card number is required
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-md-3 mb-3">
-                        <label htmlFor="cc-expiration">Expiration</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-expiration"
-                          placeholder
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Expiration date required
-                        </div>
-                      </div>
-                      <div className="col-md-3 mb-3">
-                        <label htmlFor="cc-expiration">CVV</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="cc-cvv"
-                          placeholder
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Security code required
-                        </div>
+                      <div class="mb-3">
+                        <label for="bio-text" class="form-label">
+                          Bio
+                        </label>
+                        <textarea
+                          class="form-control"
+                          id="bio-text"
+                          rows="3"
+                        ></textarea>
                       </div>
                     </div>
                     <hr className="mb-4" />
                     <button
-                      className="btn btn-warning btn-lg btn-block "
+                      className="btn btn-warning btn-lg  "
                       type="submit"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        
+                        uploadImage()}}
+                      
                     >
                       Update
                     </button>
+
                   </form>
                 </div>
               </div>
@@ -316,7 +191,76 @@ export default function Profile() {
                 role="tabpanel"
                 aria-labelledby="nav-password-tab"
               >
-                {/* Profile tab content */}
+                <div className="order-md-1 text-start ">
+                  <h1 className="mb-3 text-white">Manage Password</h1>
+
+                  <p>
+                    In order to change your password, you will need to provide
+                    your current password, as well as your new password and a
+                    confirmation of your new password.
+                  </p>
+
+                  <div className="   ">
+                    <div className="mb-3 row ">
+                      <div className="mb-3 col-md-4 "></div>
+                      <div className="mb-3 col-md-4  ">
+                        <label htmlFor="address">Current Password</label>
+                        <input
+                          type="password"
+                          className="form-control "
+                          id="currentPassword"
+                          placeholder="***********"
+                          required
+                        />
+                        <div className="invalid-feedback">
+                          Please enter your current password.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-3 row ">
+                      <div className="mb-3 col-md-4 "></div>
+                      <div className="mb-3 col-md-4">
+                        <label htmlFor="address">New Password</label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          id="newPassword"
+                          placeholder="***********"
+                          required
+                        />
+                        <div className="invalid-feedback">
+                          Please enter your new password.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-3 row ">
+                      <div className="mb-3 col-md-4 "></div>
+
+                      <div className="mb-3 col-md-4">
+                        <label htmlFor="address">Confirm New Password</label>
+                        <input
+                          type="password"
+                          className="form-control"
+                          id="newPassword"
+                          placeholder="***********"
+                          required
+                        />
+                        <div className="invalid-feedback">
+                          Please enter your new password.
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      className="btn btn-warning btn-lg btn-block "
+                      type="submit"
+                    >
+                      Update
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
