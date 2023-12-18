@@ -176,6 +176,8 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
+// const updateProfile = async 
+
 module.exports = {
   loginUser,
   logoutUser,

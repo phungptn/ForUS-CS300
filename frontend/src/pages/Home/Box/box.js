@@ -10,8 +10,8 @@ export default function Box() {
           <div class="card-body">
             
             <ul class="list-unstyled mt-3 mb-4">
-                <li class="mb-2 card-body">Các thông báo chung về hoạt động của trường sẽ được cập nhật liên tục tại đây.</li>
-                <li class="mb-2 card-body">Các thông báo về học tập sẽ được cập nhật liên tục tại đây.</li>
+                <li class="mb-2 card-body border-bottom">Các thông báo chung về hoạt động của trường sẽ được cập nhật liên tục tại đây.</li>
+                <li class="mb-2 card-body border-bottom">Các thông báo về học tập sẽ được cập nhật liên tục tại đây.</li>
 
             </ul>
 

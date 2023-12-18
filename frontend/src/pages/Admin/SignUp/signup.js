@@ -73,9 +73,9 @@ export default function SignUp() {
                   placeholder="you@example.com"
                   required
                 />
-              <div className="invalid-feedback">
+              {/* <div className="invalid-feedback">
                 Please enter a valid email address for shipping updates.
-              </div>
+              </div> */}
               </div>
             </div>
             <div className="mb-3">

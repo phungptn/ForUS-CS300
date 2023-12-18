@@ -10,7 +10,6 @@ export default function Footer() {
             <img src={logo} alt="logo" height={150} />
 
             {/* </a> */}
-            <p class="text-white text-start">©2023 Made with ❤️</p>
             <p class="text-white text-start">This is a sample forum for Project CS300. If you’re interested in using it for your own purposes, please feel free to ask me.</p>
           </div>
 
@@ -90,9 +89,12 @@ export default function Footer() {
             </ul>
           </div>
 
+          <p class="text-white text-center">©2023 Made with ❤️</p>
     
         </div>
+        
       </div>
+      
     </footer>
   );
 }

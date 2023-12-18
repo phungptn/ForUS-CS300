@@ -7,7 +7,8 @@ const NotFound = lazy(() => import('../pages/NotFound/404'));
 const SignUp = lazy(() => import('../pages/Admin/SignUp/signup'));
 const Box = lazy(() => import('../pages/Box/box'));
 const Home = lazy(() => import('../pages/Home/home'));
-
+const Profile = lazy(() => import('../pages/Profile/profile'));
+const Admin = lazy(() => import('../pages/Admin/admin'));
 const AuthRequiredRoute = ({ auth, element }) => {
 	return auth ? element : <Navigate to="/login" />
 }
@@ -29,10 +30,13 @@ function Router() {
             <Route path='/' element={<AuthRequiredRoute auth={state.authenticated} element={<Layout />}/>}>
                 <Route path='box' element={<Box />}/>
                 <Route exact path='/' element={<Home />}/>
+                <Route path='profile' element={<Profile />}/>
             </Route>
             <Route exact path='/signup' element={<AuthRequiredRoute auth={state.authenticated} element={<SignUp />}/>} />
             <Route path="/login" element={< Login auth={state.authenticated} />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="/admin" element={< Admin auth={state.authenticated} />} />
+
         </Routes>
     );
 }

@@ -64,7 +64,7 @@ export default function Header() {
 
           </ul>
 
-          <div className='text-white my-10'>
+          <div className=' py-2 me-3 rounded-3 shadow-sm bg-dark text-white'>
             <i class="bi bi-bell-fill  m-3" ></i>
 
           </div>
@@ -77,6 +77,7 @@ export default function Header() {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
+              
               <img
                 src="https://github.com/mdo.png"
                 alt="mdo"
@@ -85,6 +86,7 @@ export default function Header() {
                 className="rounded-circle"
               />
             </a>
+            
             
             <ul className="dropdown-menu text-small bg-white" style={{}}>
               <li>
