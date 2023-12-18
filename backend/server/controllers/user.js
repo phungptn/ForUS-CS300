@@ -178,17 +178,23 @@ const isAdmin = async (req, res, next) => {
 
 const updateProfile = async (req, res, next) => {
   try {
+    console.log('updateProfile');
     const user = await userUtil.findUserById(req);
+    console.log(user);
     if (user == null) res.status(403).json({ error: "Invalid session." });
     else {
-      const { fullname, email, photoURL, description, address } = req.body;
-      if (fullname != null) user.fullname = fullname;
-      if (email != null) user.email = email;
-      if (description != null) user.description = description;
-      if (address != null) user.address = address;
+      // console.log(req.body);
+      const { fullname, email, avatarUrl, description, address } = req.body;
 
-
+      if (!!fullname) user.fullname = fullname;
+      if (!!email) user.email = email;
+      if (!!description ) user.description = description;
+      if (!!address) user.address = address;
+      if (!!avatarUrl ) user.avatarUrl = avatarUrl;
       await user.save();
+
+      console.log(user);
+      console.log('updateProfile');
       res.status(200).json({ message: "Update profile successfully." });
     }
   } catch (e) {

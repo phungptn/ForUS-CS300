@@ -22,5 +22,14 @@ const logout = async () => {
     }
 }
 
+const updateProfile = async (data) => {
+    try {
+        const response = await instance.put("/users/update-profile", data);
+        return response;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 export {logout,
-    infoUser}
+    infoUser, updateProfile}

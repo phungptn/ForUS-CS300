@@ -65,7 +65,7 @@ export default function Header() {
           </ul>
 
           <div className=' py-2 me-3 rounded-3 shadow-sm bg-dark text-white'>
-            <i class="bi bi-bell-fill  m-3" ></i>
+            <i className="bi bi-bell-fill  m-3" ></i>
 
           </div>
 

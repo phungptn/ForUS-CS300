@@ -7,8 +7,8 @@ const UserSchema = new Schema({
     fullname: { type: String, required: true, maxLength: 100, minLength: 1},
     email: { type: String },
     avatarUrl: { type: String },
-    description: { type: String, maxLength: 512, minLength: 32},
-    address: { type: String, maxLength: 512, minLength: 32},
+    description: { type: String, maxLength: 512, minLength: 0},
+    address: { type: String, maxLength: 512, minLength: 0},
     role: {
         type: String,
         enum: ['user', 'admin'],

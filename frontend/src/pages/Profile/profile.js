@@ -1,24 +1,49 @@
 // import "./profile.css";
 import React, { useState } from "react";
-import {storage} from "../../Firebase/config";
-import {ref, uploadBytes, getDownloadURL} from "firebase/storage";
-import {v4} from "uuid";
- 
+import { storage } from "../../Firebase/config";
+import { updateProfile } from "../../api/user";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { v4 } from "uuid";
+
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("profile");
-  const [imageUpload, setImageUpload] = useState(null);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [bio, setBio] = useState("");
+  const [address, setAddress] = useState("");
+  const [fullname, setFullname] = useState("");
+  const [email, setEmail] = useState("");
+  const [studentId, setStudentId] = useState("");
+  // const [avatarUrl, setAvatarUrl] = useState("");
+
   const uploadImage = () => {
-    if (imageUpload == null) return;
-    const imageRef = ref(storage, `images/${imageUpload.name + v4()}`);
-    uploadBytes(imageRef, imageUpload).then((snapshot) => {
+    if (avatarUrl == null) return;
+    let imgRef = v4();
+    const imageRef = ref(storage, `images/avatar/${imgRef}`);
+    setAvatarUrl(imgRef);
+    uploadBytes(imageRef, avatarUrl).then((snapshot) => {
       console.log("Image uploaded successfully");
-      // alert("Image uploaded successfully");
     });
+  };
 
-  }
-
-  
-
+  const updateProfileFunction = async () => {
+    try {
+      await uploadImage();
+      const data = {
+        fullname,
+        email,
+        studentId,
+        description: bio,
+        address,
+        avatarUrl,
+        // avatarUrl
+      };
+      const response = await updateProfile(data);
+      console.log(response);
+      alert("Update profile successfully");
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -31,8 +56,8 @@ export default function Profile() {
         name="viewport"
         content="width=device-width, initial-scale=1, shrink-to-fit=no"
       />
-      <meta name="description" content />
-      <meta name="author" content />
+      {/* <meta name="description" content />
+      <meta name="author" content /> */}
       <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico" />
       <title>Checkout example for Bootstrap</title>
 
@@ -46,12 +71,12 @@ export default function Profile() {
       {/* Custom styles for this template */}
       <link href="form-validation.css" rel="stylesheet" />
       <div className="py-5 container bg-info rounded-3 shadow-sm">
-        <div class="bd-example-snippet bd-code-snippet">
-          <div class="bd-example m-0 border-0">
+        <div className="bd-example-snippet bd-code-snippet">
+          <div className="bd-example m-0 border-0">
             <nav>
-              <div class="nav nav-tabs mb-3" id="nav-tab" role="tablist">
+              <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
                 <button
-                  class={`nav-link ${activeTab === "profile" ? "active" : ""} `}
+                  className={`nav-link ${activeTab === "profile" ? "active" : ""} `}
                   id="nav-home-tab"
                   onClick={() => handleTabClick("profile")}
                 >
@@ -59,7 +84,7 @@ export default function Profile() {
                 </button>
 
                 <button
-                  class={`nav-link ${activeTab === "password" ? "active" : ""}`}
+                  className={`nav-link ${activeTab === "password" ? "active" : ""}`}
                   id="nav-password-tab"
                   onClick={() => handleTabClick("password")}
                 >
@@ -67,9 +92,9 @@ export default function Profile() {
                 </button>
               </div>
             </nav>
-            <div class="tab-content" id="nav-tabContent">
+            <div className="tab-content" id="nav-tabContent">
               <div
-                class={`tab-pane fade ${
+                className={`tab-pane fade ${
                   activeTab === "profile" ? "show active" : ""
                 }`}
                 id="nav-profile"
@@ -86,7 +111,7 @@ export default function Profile() {
                           type="text"
                           className="form-control"
                           id="firstName"
-                          placeholder
+                          onChange={(e) => setFullname(e.target.value)}
                           required
                         />
                         <div className="invalid-feedback">
@@ -98,12 +123,13 @@ export default function Profile() {
                         <input
                           type="text"
                           className="form-control"
-                          id="lastName"
-                          placeholder
+                          id="studentID"
+                          onChange={(e) => setStudentId(e.target.value)}
+                          // placeholder
                           required
                         />
                         <div className="invalid-feedback">
-                          Valid last name is required.
+                          Valid StudentID is required.
                         </div>
                       </div>
                     </div>
@@ -118,6 +144,7 @@ export default function Profile() {
                           className="form-control"
                           id="email"
                           placeholder="you@example.com"
+                          onChange={(e) => setEmail(e.target.value)}
                           required
                         />
                         {/* <div className="invalid-feedback">
@@ -133,6 +160,7 @@ export default function Profile() {
                         id="address"
                         placeholder="1234 Main St"
                         required
+                        onChange={(e) => setAddress(e.target.value)}
                       />
                       <div className="invalid-feedback">
                         Please enter your address.
@@ -141,29 +169,31 @@ export default function Profile() {
 
                     <hr className="mb-4" />
                     <h4 className="mb-3">More information</h4>
-                    <div class="mb-3">
-                      <label for="formFile" class="form-label">
+                    <div className="mb-3">
+                      <label htmlFor="formFile" className="form-label">
                         Load your avatar
                       </label>
                       <input
-                        class="form-control"
+                        className="form-control"
                         type="file"
                         id="formFile"
                         onChange={(e) => {
                           console.log(e.target.files[0]);
-                          setImageUpload(e.target.files[0])}}
+                          setAvatarUrl(e.target.files[0]);
+                        }}
                       ></input>
                     </div>
 
                     <div className="row">
-                      <div class="mb-3">
-                        <label for="bio-text" class="form-label">
+                      <div className="mb-3">
+                        <label htmlFor="bio-text" className="form-label">
                           Bio
                         </label>
                         <textarea
-                          class="form-control"
+                          className="form-control"
                           id="bio-text"
                           rows="3"
+                          onChange={(e) => setBio(e.target.value)}
                         ></textarea>
                       </div>
                     </div>
@@ -173,18 +203,16 @@ export default function Profile() {
                       type="submit"
                       onClick={(event) => {
                         event.preventDefault();
-                        
-                        uploadImage()}}
-                      
+                        updateProfileFunction();
+                      }}
                     >
                       Update
                     </button>
-
                   </form>
                 </div>
               </div>
               <div
-                class={`tab-pane fade ${
+                className={`tab-pane fade ${
                   activeTab === "password" ? "show active" : ""
                 }`}
                 id="nav-password"
