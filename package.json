@@ -4,7 +4,8 @@
 	"scripts": {
 		"backend": "cd ./backend && npm run start_nodemon",
 		"frontend": "cd ./frontend && npm run start",
-		"deploy": "concurrently -p \"[{name}]\" -n \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run backend\" \"npm run frontend\""
+		"deploy": "concurrently -p \"[{name}]\" -n \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run backend\" \"npm run frontend\"",
+		"sync": "cd ./backend && npm install && cd ../frontend && npm install && cd .. && npm install"
 	},
 	"dependencies": {
 		"bootstrap-icons": "^1.11.2",

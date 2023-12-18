@@ -4,12 +4,45 @@ const mongoose = require('mongoose');
 module.exports = {
     readGroup: async (req, res) => {
         try {
-            const groups = await Group.find({}).populate('boxes', 'name description').exec();
-            const countBoxes = await Group.aggregate([
-                { $unwind: "$boxes" },
-                { $group: { _id: "$_id", count: { $sum: 1 } } },
-            ]).exec();
-            res.status(200).json(countBoxes);
+            // get all groups with name and the thread count of each box
+            const groups = await Group.aggregate([
+                {
+                    $lookup: {
+                        from: 'boxes',
+                        localField: 'boxes',
+                        foreignField: '_id',
+                        as: 'boxes',
+                    }
+                },
+                {
+                    $unwind: '$boxes'
+                },
+                {
+                    $addFields: {
+                        'boxes.threadCount': { $size: '$boxes.threads' }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$_id',
+                        name: { $first: '$name' },
+                        boxes: { $push: '$boxes' }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        name: 1,
+                        boxes: {
+                            _id: 1,
+                            name: 1,
+                            description: 1,
+                            threadCount: 1,
+                        }
+                    }
+                }
+            ]);
+            res.status(200).json(groups);
         }
         catch (err) {
             res.status(500).json({ error: err });
@@ -24,7 +57,7 @@ module.exports = {
             let group = new Group({ name: name });
             try {
                 await group.save();
-                res.status(201).json({ message: "Group created." });
+                res.status(201).json({ message: "Group created.", group: group });
             }
             catch (err) {
                 res.status(500).json({ error: err });
@@ -39,7 +72,7 @@ module.exports = {
         }
         else {
             try {
-                await Group.updateOne({ _id: group_id }, { name: name });
+                await Group.updateOne({ _id: group_id }, { name: name }).exec();
                 res.status(200).json({ message: "Group updated." });
             }
             catch (err) {

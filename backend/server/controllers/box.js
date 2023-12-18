@@ -15,9 +15,11 @@ module.exports = {
             try {
                 await session.withTransaction(async () => {
                     await box.save({ session: session });
-                    await Group.updateOne({ _id: group_id }, { $push: { boxes: box._id } }, { session: session });
+                    await Group.updateOne({ _id: group_id }, { $push: { boxes: box._id } }, {session: session });
                 });
-                res.status(200).json({ message: "Box created." });
+                let jsonBox = box.toJSON();
+                jsonBox.threadCount = 0;
+                res.status(200).json({ message: "Box created.", box: jsonBox});
             }
             catch (err) {
                 res.status(500).json({ error: err });
