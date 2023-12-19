@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Box = require('../models/box');
 const Group = require('../models/group');
+const { findUserById } = require('../utils/users');
 const THREADS_PER_PAGE = 5;
 
 module.exports = {
@@ -40,7 +41,8 @@ module.exports = {
             if (page_limit == null) {
                 page_limit = 1;
             }
-            try {   
+            try {
+                const user = await findUserById(req);
                 const box = await Box.aggregate([
                     { $match: { _id: new mongoose.Types.ObjectId(box_id) } },
                     {
@@ -76,6 +78,19 @@ module.exports = {
                                                 ]
                                             },
                                             commentCount: { $size: "$threads.comments" },
+                                            voteStatus: {
+                                                $cond: {
+                                                    if: { $in: [user._id, "$threads.upvoted"] },
+                                                    then: 1,
+                                                    else: {
+                                                        $cond: {
+                                                            if: { $in: [user._id, "$threads.downvoted"] },
+                                                            then: -1,
+                                                            else: 0
+                                                        }
+                                                    }
+                                                }
+                                            },
                                             createdAt: "$threads.createdAt",
                                             updatedAt: "$threads.updatedAt" 
                                         },

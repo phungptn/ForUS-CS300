@@ -279,9 +279,10 @@ module.exports = {
         else {
             const session = await mongoose.startSession();
             try {
+                const user = await userUtil.findUserById(req);
+                const isUpvoted = await Thread.exists({ _id: thread_id, upvoted: user._id });
+                let voteStatus = isUpvoted ? 0 : 1;
                 session.withTransaction(async () => {
-                    const user = await userUtil.findUserById(req.body.token);
-                    const isUpvoted = await Thread.exists({ _id: thread_id, upvoted: user._id });
                     if (isUpvoted) {
                         await Thread.updateOne({ _id: thread_id }, { $pull: { upvoted: user._id } });
                     }
@@ -290,6 +291,7 @@ module.exports = {
                         await Thread.updateOne({ _id: thread_id }, { $push: { upvoted: user._id } });
                     }
                 });
+                res.status(200).json({ message: "Thread upvoted.",  voteStatus: voteStatus });
             }
             catch (err) {
                 res.status(500).json({ error: err });
@@ -307,9 +309,10 @@ module.exports = {
         else {
             const session = await mongoose.startSession();
             try {
-                session.withTransaction(async () => {
-                    const user = await userUtil.findUserById(req.body.token);
-                    const isDownvoted = await Thread.exists({ _id: thread_id, downvoted: user._id });
+                const user = await userUtil.findUserById(req);
+                const isDownvoted = await Thread.exists({ _id: thread_id, downvoted: user._id });
+                let voteStatus = isDownvoted ? 0 : -1;
+                session.withTransaction(async () => {    
                     if (isDownvoted) {
                         await Thread.updateOne({ _id: thread_id }, { $pull: { downvoted: user._id } });
                     }
@@ -318,6 +321,7 @@ module.exports = {
                         await Thread.updateOne({ _id: thread_id }, { $push: { downvoted: user._id } });
                     }
                 });
+                res.status(200).json({ message: "Thread downvoted.", voteStatus: voteStatus });
             }
             catch (err) {
                 res.status(500).json({ error: err });

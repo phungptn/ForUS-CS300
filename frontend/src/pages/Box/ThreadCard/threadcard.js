@@ -1,4 +1,5 @@
 import './threadcard.css';
+import { HorizontalVoteBar } from '../UserControl/usercontrol';
 
 export default function ( {thread} ) {
     return (
@@ -8,8 +9,12 @@ export default function ( {thread} ) {
                     <div class="col-3 rounded-4 bg-dark ratio p-0 ratio-1x1 w-25 align-middle"/>
                     <div class="col-9 ps-4 pe-0">
                         <h4 class="row m-0 text-start">{thread.title}</h4>
+                        <div class="row">
+                            <HorizontalVoteBar thread={thread} />
+                        </div>
                     </div>
                 </div>
+               
             </div>
         </div>
     );

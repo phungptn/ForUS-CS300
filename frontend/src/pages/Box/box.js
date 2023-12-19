@@ -4,6 +4,7 @@ import { instance } from "../../api/config";
 import BoxDescription from "./BoxDescription/boxdescription";
 import CreateThreadButton from "./CreateThreadButton/createthreadbutton";
 import ThreadCard from "./ThreadCard/threadcard";
+import { BoxContext } from "./context";
 
 export default function Box() {
     let box_id = useParams().box_id;
@@ -27,7 +28,9 @@ export default function Box() {
                             <CreateThreadButton box_id={box_id} />
                         </div>
                         {box.threads && box.threads.map((thread) => (
-                            <ThreadCard thread={thread} />
+                            <BoxContext.Provider value={{ box, setBox }}>
+                                <ThreadCard thread={thread} />
+                            </BoxContext.Provider>
                         ))}
                     </div>
                     <div class="col-4">
