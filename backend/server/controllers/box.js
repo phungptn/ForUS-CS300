@@ -37,26 +37,74 @@ module.exports = {
         else {
             try {   
                 const box = await Box.aggregate([
-                    { $match: { _id: box_id } },
+                    { $match: { _id: new mongoose.Types.ObjectId(box_id) } },
                     {
-                    $lookup: {
-                        from: "Thread",
-                        localField: "threads",
-                        foreignField: "_id",
-                        as: "threads",
+                        $lookup: {
+                            from: "threads",
+                            localField: "threads",
+                            foreignField: "_id",
+                            as: "threads",
+                        },
                     },
+                    { 
+                        $unwind: {
+                            path: "$threads",
+                            preserveNullAndEmptyArrays: true,
+                        }
                     },
-                    { $unwind: "$threads" },
                     {
-                    $addFields: {
-                        name: "$threads.title",
-                        score: { $subtract: [{ $size: "$threads.upvoted" }, { $size: "$threads.downvoted" }] },
-                        replies: { $size: "$threads.comments" },
+                        $addFields: {
+                            score: { 
+                                $subtract: [
+                                    { 
+                                        $cond: {
+                                            if: { $isArray: "$threads.upvoted" },
+                                            then: { $size: "$threads.upvoted" },
+                                            else: 0
+                                        }
+                                    },
+                                    {
+                                        $cond: {
+                                            if: { $isArray: "$threads.downvoted" },
+                                            then: { $size: "$threads.downvoted" },
+                                            else: 0
+                                        }
+                                    }
+                                ] 
+                            },
+                            replies: {
+                                $cond: {
+                                    if: { $isArray: "$threads.replies" },
+                                    then: { $size: "$threads.replies" },
+                                    else: 0
+                                }
+                            }
+                        },
                     },
+                    {
+                        $group: {
+                            _id: "$_id",
+                            name: { $first: "$name" },
+                            description: { $first: "$description" },
+                            threads: { $push: "$threads" }
+                        }
                     },
-                    { $project: { _id: 0, name: 1, score: 1, replies: 1 } },
+                    { 
+                        $project: {
+                            _id: 1,
+                            name: 1,
+                            description: 1,
+                            threads: {
+                                _id: 1,
+                                title: 1,
+                                body: 1,
+                                score: 1,
+                                replies: 1,
+                            }
+                        } 
+                    },
                 ]).exec();
-                res.status(200).json({ box: box });
+                res.status(200).json({ box: box[0] });
             }
             catch (err) {
                 res.status(500).json({ error: err });
