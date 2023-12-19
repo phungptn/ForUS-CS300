@@ -37,19 +37,8 @@ module.exports = {
                                     else: '$boxes'
                                 }
                             }
-                        }
-                    }
-                },
-                {
-                    $project: {
-                        _id: 1,
-                        name: 1,
-                        boxes: {
-                            _id: 1,
-                            name: 1,
-                            description: 1,
-                            threadCount: 1,
-                        }
+                        },
+                        createdAt: { $first: '$createdAt' }
                     }
                 },
                 {
