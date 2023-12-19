@@ -35,7 +35,14 @@ module.exports = {
                     $group: {
                         _id: '$_id',
                         name: { $first: '$name' },
-                        boxes: { $push: '$boxes' }
+                        boxes: { 
+                            $push: {
+                                _id: '$boxes._id',
+                                name: '$boxes.name',
+                                description: '$boxes.description',
+                                threadCount: '$threadCount'
+                            }
+                        }
                     }
                 },
                 {
