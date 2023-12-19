@@ -19,6 +19,11 @@ export default function Header() {
 
   };
 
+  const goToProfile = () => {
+    window.location.href = "/profile";
+  };
+
+
   const location = useLocation();
   const [routes, setRoutes] = React.useState(['Trang chủ']);
   
@@ -100,7 +105,7 @@ export default function Header() {
                 </a>
               </li>
               <li>
-                <a className="dropdown-item" href="#">
+                <a className="dropdown-item" href="#" onClick={goToProfile}>
                   Profile
                 </a>
               </li>

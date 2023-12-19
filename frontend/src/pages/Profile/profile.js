@@ -1,8 +1,9 @@
 // import "./profile.css";
 import React, { useState } from "react";
 import { storage } from "../../Firebase/config";
-import { updateProfile } from "../../api/user";
+import { updateProfile, updatePassword } from "../../api/user";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { setCookie } from "../../utils/setCookie";
 import { v4 } from "uuid";
 
 export default function Profile() {
@@ -13,6 +14,9 @@ export default function Profile() {
   const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
   const [studentId, setStudentId] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   // const [avatarUrl, setAvatarUrl] = useState("");
 
   const uploadImage = () => {
@@ -23,6 +27,26 @@ export default function Profile() {
     uploadBytes(imageRef, avatarUrl).then((snapshot) => {
       console.log("Image uploaded successfully");
     });
+  };
+
+
+  const updatePasswordFunction = async () => {
+    try {
+      const data = {
+        currentPassword,
+        newPassword,
+        confirmNewPassword,
+      };
+      const response = await updatePassword(data);
+      console.log(response);
+      if (response.status === 200) {
+        alert("Update password successfully");
+      }
+
+    } catch (e) {
+      alert("Update password failed");
+      console.log(e);
+    }
   };
 
   const updateProfileFunction = async () => {
@@ -238,6 +262,7 @@ export default function Profile() {
                           className="form-control "
                           id="currentPassword"
                           placeholder="***********"
+                          onChange={(e) => setCurrentPassword(e.target.value)} 
                           required
                         />
                         <div className="invalid-feedback">
@@ -255,6 +280,7 @@ export default function Profile() {
                           className="form-control"
                           id="newPassword"
                           placeholder="***********"
+                          onChange={(e) => setNewPassword(e.target.value)}
                           required
                         />
                         <div className="invalid-feedback">
@@ -271,7 +297,8 @@ export default function Profile() {
                         <input
                           type="password"
                           className="form-control"
-                          id="newPassword"
+                          id="confirmNewPassword"
+                          onChange={(e) => setConfirmNewPassword(e.target.value)}
                           placeholder="***********"
                           required
                         />
@@ -284,6 +311,10 @@ export default function Profile() {
                     <button
                       className="btn btn-warning btn-lg btn-block "
                       type="submit"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        updatePasswordFunction();
+                      }}
                     >
                       Update
                     </button>

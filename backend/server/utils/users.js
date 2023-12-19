@@ -111,7 +111,8 @@ module.exports = {
 
 		console.log(user);
 
-		if (user.passwordResetExpiry == null || user.passwordResetExpiry != data.session || Date.now() - user.passwordResetExpiry > RESET_PASSWORD_EXPIRY) {
+		if (user.passwordResetExpiry == null || user.passwordResetExpiry != data.session 
+			|| Date.now() - user.passwordResetExpiry > RESET_PASSWORD_EXPIRY) {
 			return null;
 		}
 

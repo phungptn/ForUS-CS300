@@ -16,9 +16,13 @@ export default function Home() {
     };
 
     async function checkAdmin() {
+        try{
         const response = await instance.get("/users/is-admin");
         if (response.status === 200) {
             setAdminStatus(true);
+        }}
+        catch(e){
+            console.log(e);
         }
     };
 
@@ -26,6 +30,8 @@ export default function Home() {
         readGroups();
         checkAdmin();
     }, []);
+
+    
 
     return (
         <>

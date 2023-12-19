@@ -133,10 +133,11 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
-// This code is not completed yet
+
 const resetPassword = async (req, res, next) => {
   try {
     const { passwordResetToken, newPassword, confirmNewPassword } = req.body;
+
 
     if (newPassword != confirmNewPassword) return res.status(403).json({
       code: "PASSWORD_MISMATCH",
@@ -144,6 +145,7 @@ const resetPassword = async (req, res, next) => {
     });
 
     let user = await userUtil.findUserWithPasswordTokenRequest(passwordResetToken);
+
 
     if (user == null) return res.status(403).json({
       code: "INVALID_REQUEST_TOKEN",
@@ -162,6 +164,39 @@ const resetPassword = async (req, res, next) => {
     res.status(500).json({ error: e.message });
   }
 };
+
+// The updatePassword function is used to update password when user is logged in
+const updatePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+    if (newPassword != confirmNewPassword) return res.status(403).json({
+      code: "PASSWORD_MISMATCH",
+      message: "Password and password retype doesn't match"
+    });
+
+    let user = await userUtil.findUserById(req);
+
+    if (user == null) return res.status(403).json({
+      code: "INVALID_SESSION",
+      message: "Invalid session"
+    });
+
+    let match = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!match) return res.status(403).json({
+      code: "WRONG_PASSWORD",
+      message: "Wrong password"
+    });
+
+    await userUtil.setPassword(user, newPassword);
+
+    res.status(200).json({
+      code: "SUCCESS",
+      message: "Password updated successfully"
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+}
 
 const isAdmin = async (req, res, next) => {
   try {
@@ -216,4 +251,5 @@ module.exports = {
   updateProfile,
   isAdmin,
   adminConfirmation,
+  updatePassword
 };
