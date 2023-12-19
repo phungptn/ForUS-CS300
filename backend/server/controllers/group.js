@@ -21,26 +21,21 @@ module.exports = {
                     }
                 },
                 {
-                    $addFields: {
-                        threadCount: {
-                            $cond: {
-                                if: { $isArray: '$boxes.threads' },
-                                then: { $size: '$boxes.threads' },
-                                else: 0
-                            }
-                        }
-                    }
-                },
-                {
                     $group: {
                         _id: '$_id',
                         name: { $first: '$name' },
                         boxes: { 
                             $push: {
-                                _id: '$boxes._id',
-                                name: '$boxes.name',
-                                description: '$boxes.description',
-                                threadCount: '$threadCount'
+                                $cond: {
+                                    if: { $isArray: '$boxes.threads' },
+                                    then: {
+                                        _id: '$boxes._id',
+                                        name: '$boxes.name',
+                                        description: '$boxes.description',
+                                        threadCount: { $size: '$boxes.threads' },
+                                    },
+                                    else: '$boxes'
+                                }
                             }
                         }
                     }
