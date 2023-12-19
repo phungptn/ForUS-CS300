@@ -10,7 +10,7 @@ export default function Footer() {
             <img src={logo} alt="logo" height={150} />
 
             {/* </a> */}
-            <p className="text-white text-start">This is a sample forum for Project CS300. If you’re interested in using it for your own purposes, please feel free to ask me.</p>
+            <p className="text-white text-start">This is a sample forum for Project CS300. If you’re interested in using it for your own purposes, please feel free to ask us.</p>
           </div>
 
           <div className="col mb-3"></div>

@@ -65,14 +65,14 @@ export default function Login({ auth }) {
       formData.password.length <= 20
     ) {
       const response = await login(formData);
-      // console.log(response);
+      console.log(response);
       if (response.status === 200) {
         console.log(rememberMe) ;
-        if (rememberMe) {
-          setCookie("token", response.data.token, 30);
-        } else {
-          setCookie("token", response.data.token,1);
-        }
+        // if (rememberMe) {
+        //   setCookie("token", response.data.token, 30);
+        // } else {
+        //   setCookie("token", response.data.token,1);
+        // }
         axios.defaults.headers.common["Authorization"] = response.data.token;
         // navigate("/");
         window.location.href = "/";
