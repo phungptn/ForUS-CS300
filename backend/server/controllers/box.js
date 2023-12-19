@@ -65,17 +65,17 @@ module.exports = {
                             threads: { 
                                 $push: {
                                     $cond: {
-                                        if: { $isArray: "$threads.replies" },
+                                        if: { $isArray: "$threads.comments" },
                                         then: {
                                             _id: "$threads._id",
                                             title: "$threads.title",
                                             score: {
                                                 $subtract: [
-                                                    { $size: "$threads.upvotes" },
-                                                    { $size: "$threads.downvotes" }
+                                                    { $size: "$threads.upvoted" },
+                                                    { $size: "$threads.downvoted" }
                                                 ]
                                             },
-                                            replies: { $size: "$threads.replies" },
+                                            commentCount: { $size: "$threads.comments" },
                                             createdAt: "$threads.createdAt",
                                             updatedAt: "$threads.updatedAt" 
                                         },
@@ -83,7 +83,7 @@ module.exports = {
                                     }
                                 },
                             }
-                        }
+                        },
                     },
                     {
                         $project: {
@@ -101,7 +101,6 @@ module.exports = {
                                     (page_limit - 1) * THREADS_PER_PAGE,
                                     THREADS_PER_PAGE
                                 ],
-                                
                             }
                         }
                     }
