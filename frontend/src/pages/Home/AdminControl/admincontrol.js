@@ -67,17 +67,17 @@ export function GroupControl({ group_id}) {
                 className="btn btn-info text-white btn-sm mx-1"
                 type="submit"
                 onClick={() => askForBox(groups, setGroups, group_id)}
-            >+ Box</button>
+            ><i class="bi bi-plus-lg"></i> Tạo box mới</button>
             <button
                 className="btn btn-info text-white btn-sm mx-1"
                 type="submit"
                 onClick={() => renameGroup(groups, setGroups, group_id)}
-            >🖉 Rename</button>
+            ><i class="bi bi-pencil"></i> Đổi tên</button>
             <button 
-                className="btn btn-danger btn-sm mx-1" 
+                className="btn btn-danger text-white btn-sm mx-1" 
                 type="submit"
                 onClick={() => deleteGroup(groups, setGroups, group_id)}
-            >X Delete</button>
+            ><i class="bi bi-trash3"></i> Xóa group</button>
         </div>
     );
 }
@@ -88,8 +88,12 @@ export function CreateNewGroup() {
     return (
         <div className="container">
             <div class="card mb-4 rounded-3 shadow-sm border-dashed py-3 text-white" onClick={() => createGroup(groups, setGroups)}>
-                <h4>+ New group</h4>
+                <h4 class="user-select-none"><i class="bi bi-plus-lg"></i> Tạo group mới</h4>
             </div>
         </div>
     );
+}
+
+export function DeleteBoxButton() {
+
 }
