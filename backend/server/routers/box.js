@@ -5,6 +5,7 @@ const { isAdmin } = require('../controllers/user');
 const router = express.Router();
 
 router.get('/:box_id', readBox);
+router.get('/:box_id/:page_limit', readBox);
 router.post('/:box_id/thread', createThread);
 router.put('/:box_id', isAdmin, updateBox);
 router.delete('/:box_id', isAdmin, deleteBox);

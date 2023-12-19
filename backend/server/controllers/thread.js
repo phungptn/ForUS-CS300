@@ -8,15 +8,15 @@ const PageLimit = 10;
 module.exports = {
     createThread: async (req, res) => {
         let { title, body } = req.body;
+        console.log(title, body);
         let box_id = req.params.box_id;
-        let token = req.body.token;
-        if (title == null || body == null || box_id == null || token == null) {
+        if (title == null || body == null || box_id == null) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
             const session = await mongoose.startSession();
             try {
-                const user = await userUtil.findUserById(req.cookies.token);
+                const user = await userUtil.findUserById(req);
                 if (user == null) {
                     res.status(403).json({ error: "Invalid session." });
                 }
@@ -26,6 +26,7 @@ module.exports = {
                         res.status(403).json({ error: "You are banned." });
                     }
                     else {
+                        console.log("Creating thread...");
                         const thread = new Thread({
                             title: title,
                             body: body,
@@ -43,6 +44,7 @@ module.exports = {
                                 { $push: { threads: thread._id } }
                             );
                         });
+                        res.status(201).json({ message: "Thread created." });
                     }
                 }
             }
@@ -68,7 +70,7 @@ module.exports = {
                 const threads = await Thread.aggregate([
                     {
                         $match: {
-                            _id: thread_id
+                            _id: new mongoose.Types.ObjectId(thread_id)
                         }
                     },
                     {

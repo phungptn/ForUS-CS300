@@ -2,6 +2,8 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { instance } from "../../api/config";
 import BoxDescription from "./BoxDescription/boxdescription";
+import CreateThreadButton from "./CreateThreadButton/createthreadbutton";
+import ThreadCard from "./ThreadCard/threadcard";
 
 export default function Box() {
     let box_id = useParams().box_id;
@@ -20,7 +22,13 @@ export default function Box() {
             <div class="container">
                 <div class="row">
                     <div class="col-8">
-                        
+                        <div class="d-flex justify-content-between">
+                            <h3 class="text-white">{box.name}</h3>
+                            <CreateThreadButton box_id={box_id} />
+                        </div>
+                        {box.threads && box.threads.map((thread) => (
+                            <ThreadCard thread={thread} />
+                        ))}
                     </div>
                     <div class="col-4">
                         <BoxDescription box={box} />

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Box = require('../models/box');
 const Group = require('../models/group');
+const THREADS_PER_PAGE = 5;
 
 module.exports = {
     createBox: async (req, res) => {
@@ -31,10 +32,14 @@ module.exports = {
     },
     readBox: async (req, res) => {
         let box_id = req.params.box_id;
+        let page_limit = req.params.page_limit;
         if (box_id == null) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
+            if (page_limit == null) {
+                page_limit = 1;
+            }
             try {   
                 const box = await Box.aggregate([
                     { $match: { _id: new mongoose.Types.ObjectId(box_id) } },
@@ -53,56 +58,53 @@ module.exports = {
                         }
                     },
                     {
-                        $addFields: {
-                            score: { 
-                                $subtract: [
-                                    { 
-                                        $cond: {
-                                            if: { $isArray: "$threads.upvoted" },
-                                            then: { $size: "$threads.upvoted" },
-                                            else: 0
-                                        }
-                                    },
-                                    {
-                                        $cond: {
-                                            if: { $isArray: "$threads.downvoted" },
-                                            then: { $size: "$threads.downvoted" },
-                                            else: 0
-                                        }
-                                    }
-                                ] 
-                            },
-                            replies: {
-                                $cond: {
-                                    if: { $isArray: "$threads.replies" },
-                                    then: { $size: "$threads.replies" },
-                                    else: 0
-                                }
-                            }
-                        },
-                    },
-                    {
                         $group: {
                             _id: "$_id",
                             name: { $first: "$name" },
                             description: { $first: "$description" },
-                            threads: { $push: "$threads" }
+                            threads: { 
+                                $push: {
+                                    $cond: {
+                                        if: { $isArray: "$threads.replies" },
+                                        then: {
+                                            _id: "$threads._id",
+                                            title: "$threads.title",
+                                            score: {
+                                                $subtract: [
+                                                    { $size: "$threads.upvotes" },
+                                                    { $size: "$threads.downvotes" }
+                                                ]
+                                            },
+                                            replies: { $size: "$threads.replies" },
+                                            createdAt: "$threads.createdAt",
+                                            updatedAt: "$threads.updatedAt" 
+                                        },
+                                        else: "$threads"
+                                    }
+                                },
+                            }
                         }
                     },
-                    { 
+                    {
                         $project: {
                             _id: 1,
                             name: 1,
                             description: 1,
                             threads: {
-                                _id: 1,
-                                title: 1,
-                                body: 1,
-                                score: 1,
-                                replies: 1,
+                                $slice: [
+                                    {
+                                        $sortArray: {
+                                            input: "$threads",
+                                            sortBy: { updatedAt: -1}
+                                        }
+                                    },
+                                    (page_limit - 1) * THREADS_PER_PAGE,
+                                    THREADS_PER_PAGE
+                                ],
+                                
                             }
-                        } 
-                    },
+                        }
+                    }
                 ]).exec();
                 res.status(200).json({ box: box[0] });
             }
