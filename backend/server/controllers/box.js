@@ -60,6 +60,20 @@ module.exports = {
                         }
                     },
                     {
+                        $lookup: {
+                            from: "users",
+                            let: { "id": "$threads.author" },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
+                                { $project: { fullname: 1 } }
+                            ],
+                            as: "threads.author",
+                        },
+                    },
+                    {
+                        $unwind: "$threads.author"
+                    },
+                    {
                         $group: {
                             _id: "$_id",
                             name: { $first: "$name" },
@@ -71,6 +85,7 @@ module.exports = {
                                         then: {
                                             _id: "$threads._id",
                                             title: "$threads.title",
+                                            author: "$threads.author",
                                             score: {
                                                 $subtract: [
                                                     { $size: "$threads.upvoted" },
