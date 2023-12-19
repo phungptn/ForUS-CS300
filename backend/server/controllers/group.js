@@ -15,11 +15,20 @@ module.exports = {
                     }
                 },
                 {
-                    $unwind: '$boxes'
+                    $unwind: {
+                        path: '$boxes',
+                        preserveNullAndEmptyArrays: true
+                    }
                 },
                 {
                     $addFields: {
-                        'boxes.threadCount': { $size: '$boxes.threads' }
+                        threadCount: {
+                            $cond: {
+                                if: { $isArray: '$boxes.threads' },
+                                then: { $size: '$boxes.threads' },
+                                else: 0
+                            }
+                        }
                     }
                 },
                 {
