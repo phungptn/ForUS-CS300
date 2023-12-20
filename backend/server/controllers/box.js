@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Box = require('../models/box');
 const Group = require('../models/group');
 const { findUserById } = require('../utils/users');
-const THREADS_PER_PAGE = 2;
+const THREADS_PER_PAGE = 1;
 
 module.exports = {
     createBox: async (req, res) => {
@@ -154,7 +154,12 @@ module.exports = {
                         }
                     }
                 ]).exec();
-                res.status(200).json({ box: box[0] });
+                if (box[0].pageCount < page) {
+                    res.status(404).json({ error: "Page not found." });
+                }
+                else {
+                    res.status(200).json({ box: box[0] });
+                }
             }
             catch (err) {
                 res.status(500).json({ error: err });
