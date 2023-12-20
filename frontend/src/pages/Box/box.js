@@ -17,8 +17,8 @@ export default function Box() {
     }
     else {
         page = parseInt(page);
-        if (page < 1) {
-            navigate(`/box/${box_id}`);
+        if (page < 2) {
+            navigate(`/box/${box_id}`, { replace: true });
         }
     }
     const [box, setBox] = useState({});
