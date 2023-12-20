@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { instance } from "../../api/config";
-import { BoxDescription, CreateThreadButton } from "./UserControl/usercontrol";
+import { BoxDescription, CreateThreadButton, Pagination } from "./UserControl/usercontrol";
 import ThreadCard from "./ThreadCard/threadcard";
 import { BoxContext } from "./context";
 import { checkAdmin } from "../../utils/checkAdmin";
@@ -37,9 +37,12 @@ export default function Box() {
             <div class="container">
                 <div class="row">
                     <div class="col-8">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between py-2">
                             <h3 class="text-white">{box.name}</h3>
                             <CreateThreadButton box_id={box_id} />
+                        </div>
+                        <div class="py-2">
+                            <Pagination box={box} page={page} />
                         </div>
                         {box.threads && box.threads.map((thread) => (
                             <BoxContext.Provider value={{ box, setBox }}>

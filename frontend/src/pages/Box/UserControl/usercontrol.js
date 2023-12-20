@@ -89,6 +89,52 @@ export function ThreadInformation({ thread }) {
     );
 }
 
-export function Pagination () {
+function PreviousPage({ box, page }) {
+    if (page === 1) {
+        return (null);
+    }
+    return (
+        <a href={`/box/${box._id}/${page - 1}`} class="rounded-start-2 rounded-end-0 btn btn-light">{'<'}</a>
+    );
+}
 
+function NextPage({ box, page }) {
+    if (page === parseInt(box.pageCount)) {
+        return (null);
+    }
+    return (
+        <a href={`/box/${box._id}/${page + 1}`} class="rounded-start-0 rounded-end-2 btn btn-light">{'>'}</a>
+    );
+}
+
+function NearbyPages({ box, page }) {
+    let pageCount = parseInt(box.pageCount);
+    if (pageCount < 4) {
+        return (
+            <>
+                {
+                    [...Array(pageCount).keys()].map((i) => (
+                        <a href={`/box/${box._id}/${i + 1}`} class={"rounded-0 border-start border-end btn btn-light" + (page === i + 1 ? " active" : "")}>{i + 1}</a>
+                    ))
+                }
+            </>
+        );
+    }
+    return (
+        <>
+            <a href={`/box/${box._id}/${page - 1}`} class="rounded-0 border-start border-end btn btn-light">{[page - 1]}</a>
+            <a href={`/box/${box._id}/${page}`} class={"rounded-0 border-start border-end btn btn-light active"}>{page}</a>
+            <a href={`/box/${box._id}/${page + 1}`} class={"rounded-0 border-start border-end btn btn-light"}>{page + 1}</a>
+        </>
+    )
+}
+
+export function Pagination ({ box, page }) {
+    return (
+        <div class="d-flex justify-content-start">
+            <PreviousPage box={box} page={page}/>
+            <NearbyPages box={box} page={page}/>
+            <NextPage box={box} page={page}/>
+        </div>
+    );
 }

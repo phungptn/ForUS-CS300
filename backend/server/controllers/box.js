@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Box = require('../models/box');
 const Group = require('../models/group');
 const { findUserById } = require('../utils/users');
-const THREADS_PER_PAGE = 5;
+const THREADS_PER_PAGE = 2;
 
 module.exports = {
     createBox: async (req, res) => {
@@ -113,19 +113,32 @@ module.exports = {
                                                 }
                                             },
                                             createdAt: "$threads.createdAt",
-                                            updatedAt: "$threads.updatedAt" 
+                                            updatedAt: "$threads.updatedAt"
                                         },
                                         else: "$$REMOVE"
                                     }
                                 },
-                            }
+                            },
                         },
+                    },
+                    {
+                        $addFields: {
+                            pageCount: {
+                                $ceil: {
+                                    $divide: [
+                                        { $size: "$threads" },
+                                        THREADS_PER_PAGE
+                                    ]
+                                }
+                            }
+                        }
                     },
                     {
                         $project: {
                             _id: 1,
                             name: 1,
                             description: 1,
+                            pageCount: 1,
                             threads: {
                                 $slice: [
                                     {
