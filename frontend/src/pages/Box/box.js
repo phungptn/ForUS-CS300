@@ -1,8 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { instance } from "../../api/config";
-import BoxDescription from "./BoxDescription/boxdescription";
-import CreateThreadButton from "./CreateThreadButton/createthreadbutton";
+import { BoxDescription, CreateThreadButton } from "./UserControl/usercontrol";
 import ThreadCard from "./ThreadCard/threadcard";
 import { BoxContext } from "./context";
 import { checkAdmin } from "../../utils/checkAdmin";
