@@ -1,28 +1,10 @@
 import { instance } from "../../../api/config";
 import { useContext, useState } from "react";
 import { BoxContext } from "../context";
+import './usercontrol.scss';
 
-async function upvoteThread(box, setBox, thread_id) {
-    const response = await instance.put(`/thread/${thread_id}/upvote`);
-    if (response.status === 200) {
-        setBox(
-            {
-                ...box,
-                threads: box.threads.map((thread) => {
-                    if (thread._id === thread_id) {
-                        let d = response.data.voteStatus - thread.voteStatus;
-                        thread.voteStatus = response.data.voteStatus;
-                        thread.score += d;
-                    }
-                    return thread;
-                })
-            }
-        );
-    }
-}
-
-async function downvoteThread(box, setBox, thread_id) {
-    const response = await instance.put(`/thread/${thread_id}/downvote`);
+async function voteThread(box, setBox, thread_id, vote) {
+    const response = await instance.put(`/thread/${thread_id}/${vote}`);
     if (response.status === 200) {
         setBox(
             {
@@ -42,16 +24,33 @@ async function downvoteThread(box, setBox, thread_id) {
 
 export function HorizontalVoteBar({ thread }) {
     const { box, setBox } = useContext(BoxContext);
-    console.log(thread.thread);
     return (
-        <div class="d-flex">
+        <div class="row rounded-4 border">
             <i 
-                class="bi bi-arrow-up-circle"
-                onClick={() => upvoteThread(box, setBox, thread._id)}/>
-            <div class="border-start border-end">{thread.score}</div>
+                class={"col border-0 btn btn-upvote bi " + (thread.voteStatus === 1 ? "bi-arrow-up-circle-fill active" : "bi-arrow-up-circle")}
+                onClick={() => voteThread(box, setBox, thread._id, 'upvote')}/>
+            <div class="col border-start border-end w-75" style={{paddingBlock: '6px 6px'}}>{thread.score}</div>
             <i 
-                class="bi bi-arrow-down-circle"
-                onClick={() => downvoteThread(box, setBox, thread._id)}/>
+                class={"col border-0 btn btn-downvote bi " + (thread.voteStatus === -1 ? "bi-arrow-down-circle-fill active" : "bi-arrow-down-circle")}
+                onClick={() => voteThread(box, setBox, thread._id, 'downvote')}/>
         </div>
+    );
+}
+
+export function CommentsCounter({ thread }) {
+    return (
+        <div class="row rounded-4 border align-middle">
+            <span class="my-auto">{thread.commentCount + " comments"}</span>
+        </div>
+    );
+}
+
+export function AuthorInfomation({ thread }) {
+    return (
+        <div class="d-flex justify-content-start py-1 gap-2">
+            <img class="rounded-circle bg-dark" width={32} height={32}/>
+            <div>{thread.author.fullname}</div>
+        </div>
+        
     );
 }

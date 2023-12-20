@@ -1,0 +1,13 @@
+.btn-upvote {
+    --bs-btn-color: var(--bs-white);
+    --bs-btn-hover-color: #04AF70;
+    --bs-btn-active-color: #04AF70;
+    --bs-btn-border-color: #04AF70;
+}
+
+.btn-downvote {
+    --bs-btn-color: var(--bs-white);
+    --bs-btn-hover-color: var(--bs-red);
+    --bs-btn-active-color: var(--bs-red);
+    --bs-btn-border-color: var(--bs-red);
+}
