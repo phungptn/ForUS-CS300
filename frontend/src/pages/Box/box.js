@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { instance } from "../../api/config";
 import BoxDescription from "./BoxDescription/boxdescription";
@@ -9,11 +9,22 @@ import { checkAdmin } from "../../utils/checkAdmin";
 import { BoxControl } from "./AdminControl/admincontrol";
 
 export default function Box() {
+    const navigate = useNavigate();
     let box_id = useParams().box_id;
+    let page = useParams().page;
+    if (page == null) {
+        page = 1;
+    }
+    else {
+        page = parseInt(page);
+        if (page < 1) {
+            navigate(`/box/${box_id}`);
+        }
+    }
     const [box, setBox] = useState({});
     const [adminStatus, setAdminStatus] = useState(false);
     async function getBox() {
-        const response = await instance.get(`/box/${box_id}`);
+        const response = await instance.get(`/box/${box_id}/${page}`);
         if (response.status === 200) {
             setBox(response.data.box);
         }

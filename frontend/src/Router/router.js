@@ -29,6 +29,7 @@ function Router() {
         <Routes>
             <Route path='/' element={<AuthRequiredRoute auth={state.authenticated} element={<Layout />}/>}>
                 <Route path='box/:box_id' element={<Box />}/>
+                <Route path='box/:box_id/:page' element={<Box />}/>
                 <Route exact path='/' element={<Home />}/>
                 <Route path='profile' element={<Profile />}/>
             </Route>

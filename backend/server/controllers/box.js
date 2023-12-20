@@ -33,13 +33,16 @@ module.exports = {
     },
     readBox: async (req, res) => {
         let box_id = req.params.box_id;
-        let page_limit = req.params.page_limit;
+        let page = req.params.page;
         if (box_id == null) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
-            if (page_limit == null) {
-                page_limit = 1;
+            if (page == null) {
+                page = 1;
+            }
+            else {
+                page = parseInt(page);
             }
             try {
                 const user = await findUserById(req);
@@ -131,7 +134,7 @@ module.exports = {
                                             sortBy: { updatedAt: -1}
                                         }
                                     },
-                                    (page_limit - 1) * THREADS_PER_PAGE,
+                                    (page - 1) * THREADS_PER_PAGE,
                                     THREADS_PER_PAGE
                                 ],
                             }

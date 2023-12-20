@@ -1,7 +1,8 @@
 import { instance } from "../../../api/config";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { BoxContext } from "../context";
 import './usercontrol.scss';
+import { getTimePassed } from "../../../utils/getTimePassed";
 
 async function voteThread(box, setBox, thread_id, vote) {
     const response = await instance.put(`/thread/${thread_id}/${vote}`);
@@ -25,7 +26,7 @@ async function voteThread(box, setBox, thread_id, vote) {
 export function HorizontalVoteBar({ thread }) {
     const { box, setBox } = useContext(BoxContext);
     return (
-        <div class="row rounded-4 border">
+        <div class="row me-0 rounded-4 border">
             <i 
                 class={"col border-0 btn btn-upvote bi " + (thread.voteStatus === 1 ? "bi-arrow-up-circle-fill active" : "bi-arrow-up-circle")}
                 onClick={() => voteThread(box, setBox, thread._id, 'upvote')}/>
@@ -45,12 +46,18 @@ export function CommentsCounter({ thread }) {
     );
 }
 
-export function AuthorInfomation({ thread }) {
+export function ThreadInformation({ thread }) {
     return (
-        <div class="d-flex justify-content-start py-1 gap-2">
-            <img class="rounded-circle bg-dark" width={32} height={32}/>
-            <div>{thread.author.fullname}</div>
+        <div class="d-flex gap-2">
+            <img class="rounded-circle bg-dark my-auto" width={32} height={32}/>
+            <div class="d-flex flex-column justify-content-start">
+                <span class="text-white text-start">{thread.author.fullname}</span>
+                <small class="text-gray text-start">{getTimePassed(thread.createdAt)}</small>
+            </div>
         </div>
-        
     );
+}
+
+export function Pagination () {
+
 }
