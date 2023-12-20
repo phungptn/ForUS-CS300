@@ -5,10 +5,13 @@ import BoxDescription from "./BoxDescription/boxdescription";
 import CreateThreadButton from "./CreateThreadButton/createthreadbutton";
 import ThreadCard from "./ThreadCard/threadcard";
 import { BoxContext } from "./context";
+import { checkAdmin } from "../../utils/checkAdmin";
+import { BoxControl } from "./AdminControl/admincontrol";
 
 export default function Box() {
     let box_id = useParams().box_id;
     const [box, setBox] = useState({});
+    const [adminStatus, setAdminStatus] = useState(false);
     async function getBox() {
         const response = await instance.get(`/box/${box_id}`);
         if (response.status === 200) {
@@ -17,6 +20,7 @@ export default function Box() {
     }
     useEffect(() => {
         getBox();
+        checkAdmin(setAdminStatus);
     }, []);
     return (
         <>
@@ -33,8 +37,13 @@ export default function Box() {
                             </BoxContext.Provider>
                         ))}
                     </div>
-                    <div class="col-4">
-                        <BoxDescription box={box} />
+                    <div class="col-4 text-start">
+                        <div className="card rounded-3 shadow-sm bg-primary">
+                            <BoxContext.Provider value={{ adminStatus }}>
+                                <BoxDescription box={box}/>
+                                <BoxControl box={box}/>
+                            </BoxContext.Provider>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -3,6 +3,7 @@ import { instance } from "../../api/config";
 import { GroupsContext } from "./context";
 import Group from "./Group/group";
 import LatestThread from "./LatestThread/latestThread";
+import { checkAdmin } from "../../utils/checkAdmin";
 import "./home.css";
 import { CreateNewGroup } from "./AdminControl/admincontrol";
 
@@ -15,23 +16,10 @@ export default function Home() {
         setGroups(response.data);
     };
 
-    async function checkAdmin() {
-        try{
-        const response = await instance.get("/users/is-admin");
-        if (response.status === 200) {
-            setAdminStatus(true);
-        }}
-        catch(e){
-            console.log(e);
-        }
-    };
-
     useEffect(() => {
         readGroups();
-        checkAdmin();
+        checkAdmin(setAdminStatus);
     }, []);
-
-    
 
     return (
         <>
