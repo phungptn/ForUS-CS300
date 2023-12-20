@@ -71,7 +71,10 @@ module.exports = {
                         },
                     },
                     {
-                        $unwind: "$threads.author"
+                        $unwind: {
+                            path: "$threads.author",
+                            preserveNullAndEmptyArrays: true,
+                        }
                     },
                     {
                         $group: {
@@ -109,7 +112,7 @@ module.exports = {
                                             createdAt: "$threads.createdAt",
                                             updatedAt: "$threads.updatedAt" 
                                         },
-                                        else: "$threads"
+                                        else: "$$REMOVE"
                                     }
                                 },
                             }
