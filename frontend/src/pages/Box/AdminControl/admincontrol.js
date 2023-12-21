@@ -13,13 +13,17 @@ async function deleteBox(navigate, box_id) {
     }
 }
 
-export function DeleteBoxButton({ box }) {
+export function DeleteBoxButton() {
     const navigate = useNavigate();
-    const { adminStatus } = useContext(BoxContext);
-    if (!adminStatus) return (null);
+    const { box, moderatorStatus } = useContext(BoxContext);
+    if (moderatorStatus !== 'admin') {
+        return null;
+    }
     return (
-        <button type="button" class="col btn btn-danger" onClick={() => deleteBox(navigate, box._id)}>
-            <i class="bi bi-trash"/> Xóa box
+        <button type="button" className="col btn btn-danger rounded-0" onClick={() => deleteBox(navigate, box._id)}>
+            <div className="text-center">
+                <i className="bi bi-trash-fill me-2"/>
+            </div>Xóa box
         </button>
     );
 };

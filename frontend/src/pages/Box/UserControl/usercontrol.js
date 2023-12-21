@@ -3,6 +3,8 @@ import { useContext, useEffect } from "react";
 import { BoxContext } from "../context";
 import './usercontrol.scss';
 import { getTimePassed } from "../../../utils/getTimePassed";
+// dropdowns will not work without this import
+import { Dropdown } from "bootstrap";
 
 async function voteThread(box, setBox, thread_id, vote) {
     const response = await instance.put(`/thread/${thread_id}/${vote}`);
@@ -36,7 +38,8 @@ async function TempCreateThread(box_id) {
 }
 
 
-export function BoxDescription({ box }) {
+export function BoxDescription() {
+    const { box } = useContext(BoxContext);
     return (
         <>
             <div className="card-header fw-bold text-white">About Box</div>
@@ -49,7 +52,7 @@ export function CreateThreadButton({ box_id }) {
     return (
         <button 
             type="button" 
-            class="btn btn-warning"
+            className="btn btn-warning"
             onClick={() => TempCreateThread(box_id)}>Tạo thread mới</button>
     );    
 }
@@ -57,13 +60,13 @@ export function CreateThreadButton({ box_id }) {
 export function HorizontalVoteBar({ thread }) {
     const { box, setBox } = useContext(BoxContext);
     return (
-        <div class="row me-0 rounded-4 border">
+        <div className="row me-0 rounded-4 border">
             <i 
-                class={"col border-0 btn btn-upvote bi " + (thread.voteStatus === 1 ? "bi-arrow-up-circle-fill active" : "bi-arrow-up-circle")}
+                className={"col border-0 btn btn-upvote bi " + (thread.voteStatus === 1 ? "bi-arrow-up-circle-fill active" : "bi-arrow-up-circle")}
                 onClick={() => voteThread(box, setBox, thread._id, 'upvote')}/>
-            <div class="col border-start border-end w-75" style={{paddingBlock: '6px 6px'}}>{thread.score}</div>
+            <div className="col border-start border-end w-75" style={{paddingBlock: '6px 6px'}}>{thread.score}</div>
             <i 
-                class={"col border-0 btn btn-downvote bi " + (thread.voteStatus === -1 ? "bi-arrow-down-circle-fill active" : "bi-arrow-down-circle")}
+                className={"col border-0 btn btn-downvote bi " + (thread.voteStatus === -1 ? "bi-arrow-down-circle-fill active" : "bi-arrow-down-circle")}
                 onClick={() => voteThread(box, setBox, thread._id, 'downvote')}/>
         </div>
     );
@@ -71,19 +74,19 @@ export function HorizontalVoteBar({ thread }) {
 
 export function CommentsCounter({ thread }) {
     return (
-        <div class="row rounded-4 border align-middle">
-            <span class="my-auto">{thread.commentCount + " comments"}</span>
+        <div className="row rounded-4 border align-middle">
+            <span className="my-auto">{thread.commentCount + " comments"}</span>
         </div>
     );
 }
 
 export function ThreadInformation({ thread }) {
     return (
-        <div class="d-flex gap-2">
-            <img class="rounded-circle bg-dark my-auto" width={32} height={32}/>
-            <div class="d-flex flex-column justify-content-start">
-                <span class="text-white text-start">{thread.author.fullname}</span>
-                <small class="text-gray text-start">{getTimePassed(thread.createdAt)}</small>
+        <div className="d-flex gap-2">
+            <img className="rounded-circle bg-dark my-auto" width={32} height={32}/>
+            <div className="d-flex flex-column justify-content-start">
+                <span className="text-white text-start">{thread.author.fullname}</span>
+                <small className="text-gray text-start">{getTimePassed(thread.createdAt)}</small>
             </div>
         </div>
     );
@@ -94,7 +97,7 @@ function PreviousPage({ box, page }) {
         return (null);
     }
     return (
-        <a href={`/box/${box._id}/${page - 1}`} class="rounded-0 btn btn-light">{'<'}</a>
+        <a href={`/box/${box._id}/${page - 1}`} className="rounded-0 btn btn-light">{'<'}</a>
     );
 }
 
@@ -103,7 +106,7 @@ function NextPage({ box, page }) {
         return (null);
     }
     return (
-        <a href={`/box/${box._id}/${page + 1}`} class="rounded-0 btn btn-light">{'>'}</a>
+        <a href={`/box/${box._id}/${page + 1}`} className="rounded-0 btn btn-light">{'>'}</a>
     );
 }
 
@@ -114,7 +117,7 @@ function NearbyPages({ box, page }) {
             <>
                 {
                     [...Array(pageCount).keys()].map((i) => (
-                        <a href={`/box/${box._id}/${i + 1}`} class={"rounded-0 border-start border-end btn btn-light" + (page === i + 1 ? " active" : "")}>{i + 1}</a>
+                        <a href={`/box/${box._id}/${i + 1}`} className={"rounded-0 border-start border-end btn btn-light" + (page === i + 1 ? " active" : "")}>{i + 1}</a>
                     ))
                 }
             </>
@@ -123,51 +126,51 @@ function NearbyPages({ box, page }) {
     if (page === pageCount) {
         return (
             <>
-                <a href={`/box/${box._id}/${page - 2}`} class="rounded-0 border-start border-end btn btn-light">{page - 2}</a>
-                <a href={`/box/${box._id}/${page - 1}`} class="rounded-0 border-start border-end btn btn-light">{page - 1}</a>
-                <a href={`/box/${box._id}/${page}`} class={"rounded-0 border-start border-end btn btn-light active"}>{page}</a>
+                <a href={`/box/${box._id}/${page - 2}`} className="rounded-0 border-start border-end btn btn-light">{page - 2}</a>
+                <a href={`/box/${box._id}/${page - 1}`} className="rounded-0 border-start border-end btn btn-light">{page - 1}</a>
+                <a href={`/box/${box._id}/${page}`} className={"rounded-0 border-start border-end btn btn-light active"}>{page}</a>
             </>
         );
     }
     if (page === 1) {
         return (
             <>
-                <a href={`/box/${box._id}/${page}`} class={"rounded-0 border-start border-end btn btn-light active"}>{page}</a>
-                <a href={`/box/${box._id}/${page + 1}`} class="rounded-0 border-start border-end btn btn-light">{page + 1}</a>
-                <a href={`/box/${box._id}/${page + 2}`} class="rounded-0 border-start border-end btn btn-light">{page + 2}</a>
+                <a href={`/box/${box._id}/${page}`} className={"rounded-0 border-start border-end btn btn-light active"}>{page}</a>
+                <a href={`/box/${box._id}/${page + 1}`} className="rounded-0 border-start border-end btn btn-light">{page + 1}</a>
+                <a href={`/box/${box._id}/${page + 2}`} className="rounded-0 border-start border-end btn btn-light">{page + 2}</a>
             </>
         );
     }
     return (
         <>
-            <a href={`/box/${box._id}/${page - 1}`} class="rounded-0 border-start border-end btn btn-light">{[page - 1]}</a>
-            <a href={`/box/${box._id}/${page}`} class={"rounded-0 border-start border-end btn btn-light active"}>{page}</a>
-            <a href={`/box/${box._id}/${page + 1}`} class={"rounded-0 border-start border-end btn btn-light"}>{page + 1}</a>
+            <a href={`/box/${box._id}/${page - 1}`} className="rounded-0 border-start border-end btn btn-light">{[page - 1]}</a>
+            <a href={`/box/${box._id}/${page}`} className={"rounded-0 border-start border-end btn btn-light active"}>{page}</a>
+            <a href={`/box/${box._id}/${page + 1}`} className={"rounded-0 border-start border-end btn btn-light"}>{page + 1}</a>
         </>
     )
 }
 
 function GoToPageForm({ box, page, d }) {
     const defaultPage = page;
+    console.log(box, page, d);
     if (d <= 2) {
         return (null);
     }
     return (
-        <div class="dropdown-center">
-            <button class="btn btn-light dropdown rounded-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+        <div className="dropdown-center">
+            <button className="btn btn-light dropdown rounded-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
                 ...
             </button>
-            <form class="dropdown-menu p-0">
-                <div class="card">
-                    <label for="pageInput" class="card-header form-label text-light bg-primary rounded-top-2">Đi đến</label>
-                    <div class="card-body bg-light d-flex rounded-bottom-2">
-                        <input type="number" class="form-control bg-light me-2" id="pageInput" style={{width: '80px'}} defaultValue={defaultPage}/>
+            <form className="dropdown-menu p-0">
+                <div className="card">
+                    <label htmlFor="pageInput" className="card-header form-label text-light bg-primary rounded-top-2">Đi đến</label>
+                    <div className="card-body bg-light d-flex rounded-bottom-2">
+                        <input type="number" className="form-control bg-light me-2" id="pageInput" style={{width: '80px'}} defaultValue={defaultPage}/>
                         <button 
                         type="submit" 
-                        class="btn btn-info ms-2 text-light"
+                        className="btn btn-info ms-2 text-light"
                         onClick={
-                            (e) => {
-                                e.preventDefault();
+                            () => {
                                 let newPage = document.getElementById('pageInput').value;
                                 window.location.href = `/box/${box._id}/${newPage}`;
                             }
@@ -193,7 +196,7 @@ function GoToPage({ box, page, place }) {
     if (place === 'start') {
         return (
             <>
-                <a href={`/box/${box._id}`} class="rounded-0 btn btn-light">1</a>
+                <a href={`/box/${box._id}`} className="rounded-0 btn btn-light">1</a>
                 <GoToPageForm box={box} page={page} d={d}/>
             </>
         );
@@ -202,7 +205,7 @@ function GoToPage({ box, page, place }) {
         return (
             <>
                 <GoToPageForm box={box} page={page} d={d}/>
-                <a href={`/box/${box._id}/${box.pageCount}`} class="rounded-0 btn btn-light">{box.pageCount}</a>
+                <a href={`/box/${box._id}/${box.pageCount}`} className="rounded-0 btn btn-light">{box.pageCount}</a>
             </>
         );
     }
@@ -217,7 +220,7 @@ export function Pagination ({ box, page }) {
         children[children.length - 1].classList.add('rounded-end-2');
     }, []);
     return (
-        <div class="d-inline-flex" id="pagination">
+        <div className="d-inline-flex" id="pagination">
             <PreviousPage box={box} page={page}/>
             <GoToPage box={box} page={page} place='start'/>
             <NearbyPages box={box} page={page}/>

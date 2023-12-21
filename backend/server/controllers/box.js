@@ -219,7 +219,17 @@ module.exports = {
             }
         }
     },
-    isModerator: async (req, res, next) => {
+    isModerator:
+    /**
+     * Internal middleware to check if the user is a moderator of the box
+     * 
+     * @param {string} box_id box id
+     * @throw {400} Invalid request
+     * @throw {403} Invalid session
+     * @throw {403} You are not a moderator of this box
+     * @throw {500} Internal server error
+    */
+    async (req, res, next) => {
         let box_id = req.params.box_id;
         if (box_id == null) {
             res.status(400).json({ error: "Invalid request." });
@@ -241,7 +251,46 @@ module.exports = {
                     else {
                         next();
                     }
-                
+                }
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+        }
+    },
+    getModeratorStatus: 
+    /**
+     * External API endpoint to check if the user is a moderator of the box
+     * 
+     * [GET] /box/:box_id/is-moderator
+     * @param {string} box_id box id
+     * @returns {object} { moderatorStatus: 'admin' | 'moderator' | 'user' }
+     * @throws {400} Invalid request
+     * @throws {403} Invalid session
+     * @throws {500} Internal server error
+    */
+    async (req, res) => {
+        let box_id = req.params.box_id;
+        if (box_id == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            try {
+                const user = await findUserById(req);
+                if (user == null) {
+                    res.status(403).json({ error: "Invalid session." });
+                }
+                else if (user.role === "admin") {
+                    res.status(200).json({ moderatorStatus: 'admin' });
+                }
+                else {
+                    const box = await Box.findOne({ _id: box_id, moderators: user._id });
+                    if (box == null) {
+                        res.status(200).json({ moderatorStatus: 'user' });
+                    }
+                    else {
+                        res.status(200).json({ moderatorStatus: 'moderator' });
+                    }
                 }
             }
             catch (err) {

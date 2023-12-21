@@ -4,7 +4,7 @@ import { instance } from "../../api/config";
 import { BoxDescription, CreateThreadButton, Pagination } from "./UserControl/usercontrol";
 import ThreadCard from "./ThreadCard/threadcard";
 import { BoxContext } from "./context";
-import { checkAdmin } from "../../utils/checkAdmin";
+import { checkModerator } from "../../utils/checkModerator";
 import { BoxControl } from "./BoxManagement/boxmanagement";
 
 export default function Box() {
@@ -21,7 +21,7 @@ export default function Box() {
         }
     }
     const [box, setBox] = useState({});
-    const [adminStatus, setAdminStatus] = useState(false);
+    const [moderatorStatus, setModeratorStatus] = useState('user');
     async function getBox() {
         try {
             const response = await instance.get(`/box/${box_id}/${page}`);
@@ -36,18 +36,18 @@ export default function Box() {
     }
     useEffect(() => {
         getBox();
-        checkAdmin(setAdminStatus);
+        checkModerator(box_id, setModeratorStatus);
     }, []);
     return (
         <>
-            <div class="container">
-                <div class="row">
-                    <div class="col-8">
-                        <div class="d-flex justify-content-between pb-2">
-                            <h3 class="text-white">{box.name}</h3>
+            <div className="container">
+                <div className="row">
+                    <div className="col-8">
+                        <div className="d-flex justify-content-between pb-2">
+                            <h3 className="text-white">{box.name}</h3>
                             <CreateThreadButton box_id={box_id} />
                         </div>
-                        <div class="d-flex py-2">
+                        <div className="d-flex py-2">
                             <Pagination box={box} page={page} />
                         </div>
                         {box.threads && box.threads.map((thread) => (
@@ -56,11 +56,11 @@ export default function Box() {
                             </BoxContext.Provider>
                         ))}
                     </div>
-                    <div class="col-4 text-start">
+                    <div className="col-4 text-start">
                         <div className="card rounded-3 shadow-sm bg-primary">
-                            <BoxContext.Provider value={{ adminStatus }}>
+                            <BoxContext.Provider value={{ box, setBox, moderatorStatus }}>
                                 <BoxDescription box={box}/>
-                                <BoxControl box={box} />
+                                <BoxControl />
                             </BoxContext.Provider>
                         </div>
                     </div>

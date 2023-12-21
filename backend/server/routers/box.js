@@ -1,9 +1,10 @@
 const express = require('express');
-const { readBox, renameBox, updateBoxDescription, deleteBox, isModerator, addModerator, removeModerator } = require('../controllers/box');
+const { readBox, renameBox, updateBoxDescription, deleteBox, isModerator, addModerator, removeModerator, getModeratorStatus } = require('../controllers/box');
 const { createThread } = require('../controllers/thread');
 const { isAdmin } = require('../controllers/user');
 const router = express.Router();
 
+router.get("/:box_id/is-moderator", getModeratorStatus);
 router.get('/:box_id/:page', readBox);
 router.post('/:box_id/thread', createThread);
 router.put('/:box_id/name', isModerator, renameBox);
