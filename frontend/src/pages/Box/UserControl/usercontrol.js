@@ -226,10 +226,15 @@ function GoToPage({ box, page, place }) {
 export function Pagination ({ box, page }) {
     useEffect(() => {
         let pagination = document.getElementById('pagination');
-        let children = pagination.children;
-        children[0].classList.add('rounded-start-2');
-        children[children.length - 1].classList.add('rounded-end-2');
+        if (pagination) {
+            let children = pagination.children;
+            children[0].classList.add('rounded-start-2');
+            children[children.length - 1].classList.add('rounded-end-2');
+        }
     }, [box]);
+    if (box.pageCount === 0) {
+        return (null);
+    }
     return (
         <div className="d-inline-flex" id="pagination">
             <PreviousPage box={box} page={page}/>

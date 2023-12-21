@@ -29,6 +29,9 @@ export default function Box() {
             const response = await instance.get(`/box/${box_id}/${page}`);
             if (response.status === 200) {
                 setBox(response.data.box);
+                if (page > 1 && response.data.box.pageCount === 0) {
+                    navigate(`/box/${box_id}`, { replace: true });
+                }
             }
         }
         catch (e) {
