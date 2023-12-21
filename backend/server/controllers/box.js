@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Box = require('../models/box');
 const Group = require('../models/group');
 const { findUserById } = require('../utils/users');
-const THREADS_PER_PAGE = 1;
+const THREADS_PER_PAGE = 2;
 
 module.exports = {
     createBox: async (req, res) => {

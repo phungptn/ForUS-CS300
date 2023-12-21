@@ -52,7 +52,7 @@ export default function Box() {
                         </div>
                         {box.threads && box.threads.map((thread) => (
                             <BoxContext.Provider value={{ box, setBox }}>
-                                <ThreadCard thread={thread} />
+                                <ThreadCard thread={thread}/>
                             </BoxContext.Provider>
                         ))}
                     </div>

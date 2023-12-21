@@ -239,7 +239,7 @@ module.exports = {
         else {
             const session = await mongoose.startSession();
             try {
-                const user = await userUtil.findUserById(req.body.token);
+                const user = await userUtil.findUserById(req);
                 if (user == null) {
                     res.status(403).json({ error: "Invalid session." });
                 }
@@ -256,6 +256,7 @@ module.exports = {
                         else {
                             session.withTransaction(async () => {
                                 // Do not use thread.delete() because it does not trigger the post hook.
+                                await Box.updateOne({ _id: thread.box }, { $pull: { threads: thread_id } });
                                 await Thread.findOneAndDelete({ _id: thread_id });
                             });
                             res.status(200).json({ message: "Thread deleted." });
