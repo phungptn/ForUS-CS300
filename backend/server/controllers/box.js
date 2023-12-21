@@ -154,7 +154,10 @@ module.exports = {
                         }
                     }
                 ]).exec();
-                if (box[0].pageCount < page) {
+                if (box[0].pageCount === 0) {
+                    res.status(200).json({ box: box[0] });
+                }
+                else if (box[0].pageCount < page) {
                     res.status(404).json({ error: "Page not found." });
                 }
                 else {
