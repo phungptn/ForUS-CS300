@@ -201,7 +201,7 @@ function GoToPage({ box, page, place }) {
     else if (place === 'end') {
         d = page - parseInt(box.pageCount);
     }
-    if (Math.abs(d) < 2) {
+    if (Math.abs(d) < 2 || (Math.abs(d) === 2 && (page === 1 || page === parseInt(box.pageCount)))) {
         return (null);
     }
     if (place === 'start') {
