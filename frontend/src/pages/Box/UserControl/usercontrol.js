@@ -49,7 +49,7 @@ export function CreateThreadButton({ box_id }) {
     return (
         <button 
             type="button" 
-            class="btn btn-info text-white"
+            class="btn btn-warning"
             onClick={() => TempCreateThread(box_id)}>Tạo thread mới</button>
     );    
 }

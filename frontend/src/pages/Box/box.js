@@ -5,7 +5,7 @@ import { BoxDescription, CreateThreadButton, Pagination } from "./UserControl/us
 import ThreadCard from "./ThreadCard/threadcard";
 import { BoxContext } from "./context";
 import { checkAdmin } from "../../utils/checkAdmin";
-import { BoxControl } from "./AdminControl/admincontrol";
+import { BoxControl } from "./BoxManagement/boxmanagement";
 
 export default function Box() {
     const navigate = useNavigate();
@@ -60,7 +60,7 @@ export default function Box() {
                         <div className="card rounded-3 shadow-sm bg-primary">
                             <BoxContext.Provider value={{ adminStatus }}>
                                 <BoxDescription box={box}/>
-                                <BoxControl box={box}/>
+                                <BoxControl box={box} />
                             </BoxContext.Provider>
                         </div>
                     </div>
