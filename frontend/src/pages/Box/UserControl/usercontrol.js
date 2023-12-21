@@ -82,7 +82,7 @@ export function CommentsCounter({ thread }) {
 
 export function ThreadInformation({ thread }) {
     return (
-        <div className="d-flex gap-2">
+        <div className="d-flex gap-2 p-0">
             <img className="rounded-circle bg-dark my-auto" width={32} height={32}/>
             <div className="d-flex flex-column justify-content-start">
                 <span className="text-white text-start">{thread.author.fullname}</span>
