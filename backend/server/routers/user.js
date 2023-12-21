@@ -8,7 +8,7 @@ const {
   resetPassword,
   updateProfile,
   isAdmin,
-  adminConfirmation,
+  privilegeConfirmation,
   updatePassword
 } = require("../controllers/user");
 
@@ -21,7 +21,7 @@ router.get("/info", infoUser);
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password", resetPassword);
 router.put("/update-profile", updateProfile);
-router.get("/is-admin", isAdmin, adminConfirmation);
+router.get("/is-admin", isAdmin, privilegeConfirmation);
 router.put("/update-password", updatePassword);
 
 

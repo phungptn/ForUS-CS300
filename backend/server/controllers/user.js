@@ -211,7 +211,7 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-const adminConfirmation = async (req, res) => {
+const privilegeConfirmation = async (req, res) => {
   res.status(200).json({ message: "Access granted." });
 }
 
@@ -250,6 +250,6 @@ module.exports = {
   resetPassword,
   updateProfile,
   isAdmin,
-  adminConfirmation,
+  privilegeConfirmation,
   updatePassword
 };

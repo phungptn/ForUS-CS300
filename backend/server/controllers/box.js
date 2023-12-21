@@ -166,16 +166,32 @@ module.exports = {
             }
         }
     },
-    updateBox: async (req, res) => {
+    renameBox: async (req, res) => {
         let box_id = req.params.box_id;
-        let { name, description } = req.body;
-        if (box_id == null || name == null || description == null) {
+        let { name } = req.body;
+        if (box_id == null || name == null) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
             try {
-                await Box.updateOne({ _id: box_id }, { name: name, description: description });
-                res.status(200).json({ message: "Box updated." });
+                await Box.updateOne({ _id: box_id }, { name: name });
+                res.status(200).json({ message: "Box renamed." });
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+        }
+    },
+    updateBoxDescription: async (req, res) => {
+        let box_id = req.params.box_id;
+        let { description } = req.body;
+        if (box_id == null || description == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            try {
+                await Box.updateOne({ _id: box_id }, { description: description });
+                res.status(200).json({ message: "Box description updated." });
             }
             catch (err) {
                 res.status(500).json({ error: err });
@@ -202,5 +218,67 @@ module.exports = {
                 session.endSession();
             }
         }
-    }
+    },
+    isModerator: async (req, res, next) => {
+        let box_id = req.params.box_id;
+        if (box_id == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            try {
+                const user = await findUserById(req);
+                if (user == null) {
+                    res.status(403).json({ error: "Invalid session." });
+                }
+                else if (user.role === "admin") {
+                    next();
+                }
+                else {
+                    const box = await Box.findOne({ _id: box_id, moderators: user._id });
+                    if (box == null) {
+                        res.status(403).json({ error: "You are not a moderator of this box." });
+                    }
+                    else {
+                        next();
+                    }
+                
+                }
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+        }
+    },
+    addModerator: async (req, res) => {
+        let box_id = req.params.box_id;
+        let { user_id } = req.body;
+        if (box_id == null || user_id == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            try {
+                await Box.updateOne({ _id: box_id }, { $push: { moderators: user_id } });
+                res.status(200).json({ message: "Moderator added." });
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+        }
+    },
+    removeModerator: async (req, res) => {
+        let box_id = req.params.box_id;
+        let { user_id } = req.body;
+        if (box_id == null || user_id == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            try {
+                await Box.updateOne({ _id: box_id }, { $pull: { moderators: user_id } });
+                res.status(200).json({ message: "Moderator removed." });
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+        }
+    },
 }

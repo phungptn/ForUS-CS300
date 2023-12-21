@@ -1,12 +1,15 @@
 const express = require('express');
-const { readBox, updateBox, deleteBox } = require('../controllers/box');
+const { readBox, renameBox, updateBoxDescription, deleteBox, isModerator, addModerator, removeModerator } = require('../controllers/box');
 const { createThread } = require('../controllers/thread');
 const { isAdmin } = require('../controllers/user');
 const router = express.Router();
 
 router.get('/:box_id/:page', readBox);
 router.post('/:box_id/thread', createThread);
-router.put('/:box_id', isAdmin, updateBox);
+router.put('/:box_id/name', isModerator, renameBox);
+router.put('/:box_id/description', isModerator, updateBoxDescription);
+router.put('/:box_id/moderators', isAdmin, addModerator);
+router.delete('/:box_id/moderators', isAdmin, removeModerator);
 router.delete('/:box_id', isAdmin, deleteBox);
 
 module.exports = router;
