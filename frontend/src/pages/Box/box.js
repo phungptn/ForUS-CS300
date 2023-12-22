@@ -60,7 +60,7 @@ export default function Box() {
                     <div className="col-8">
                         <div className="d-flex justify-content-between pb-2">
                             <h3 className="text-white">{box.name}</h3>
-                            <CreateThreadButton box_id={box_id} />
+                            <CreateThreadButton box={box} />
                         </div>
                         <div className="d-flex py-2">
                             <Pagination box={box} page={page} />

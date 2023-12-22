@@ -42,18 +42,21 @@ export function BoxDescription() {
     const { box } = useContext(BoxContext);
     return (
         <>
-            <div className="card-header fw-bold text-white">About Box</div>
+            <div className="card-header fw-bold text-white">Về box</div>
             <div className="card-body text-white">{box.description}</div>
         </>
     );
 }
 
-export function CreateThreadButton({ box_id }) {
+export function CreateThreadButton({ box }) {
+    if (box.pageCount == null) {
+        return (null);
+    }
     return (
         <button 
             type="button" 
             className="btn btn-warning"
-            onClick={() => TempCreateThread(box_id)}>Tạo thread mới</button>
+            onClick={() => TempCreateThread(box._id)}>Tạo thread mới</button>
     );    
 }
 
@@ -232,7 +235,7 @@ export function Pagination ({ box, page }) {
             children[children.length - 1].classList.add('rounded-end-2');
         }
     }, [box]);
-    if (box.pageCount === 0) {
+    if (box.pageCount == null || box.pageCount === 0) {
         return (null);
     }
     return (
