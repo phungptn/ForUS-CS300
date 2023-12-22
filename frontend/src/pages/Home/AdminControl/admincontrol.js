@@ -87,7 +87,7 @@ export function CreateNewGroup() {
     if (!adminStatus) return (null);
     return (
         <div className="container">
-            <div className="card mb-4 rounded-3 shadow-sm border-dashed py-3 text-white" onClick={() => createGroup(groups, setGroups)}>
+            <div className="card mb-4 rounded-3 shadow-sm btn-newgroup py-3 text-white" onClick={() => createGroup(groups, setGroups)}>
                 <h4 className="user-select-none"><i className="bi bi-plus-lg"></i> Tạo group mới</h4>
             </div>
         </div>

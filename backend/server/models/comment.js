@@ -14,6 +14,7 @@ const CommentSchema = new Schema({
     author: { type: Schema.Types.ObjectId, ref: 'User'},
     replyTo: { type: Schema.Types.ObjectId, ref: 'Comment'},
     box: { type: Schema.Types.ObjectId, ref: 'Box'},
+    thread: { type: Schema.Types.ObjectId, ref: 'Thread'},
 }, {timestamps: true});
 
 module.exports = mongoose.model('Comment', CommentSchema);

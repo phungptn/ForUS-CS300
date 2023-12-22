@@ -1,8 +1,6 @@
 import { instance } from "../../../api/config";
 import { useContext } from "react";
 import { BoxContext } from "../context";
-import { useNavigate } from "react-router-dom";
-
 
 export function RenameBoxButton() {
     const { box, setBox, moderatorStatus } = useContext(BoxContext);
@@ -61,23 +59,15 @@ export function ChangeBoxDescriptionButton() {
 }
 
 export function DeleteThreadButton({thread}) {
-    const navigate = useNavigate();
-    const { box, setBox, moderatorStatus, page } = useContext(BoxContext);
+    const { box, setBox, moderatorStatus, setAutoRedirect } = useContext(BoxContext);
     async function deleteThread(thread_id) {
         try {
             const response = await instance.delete(`/thread/${thread_id}`);
             if (response.status === 200) {
                 const newThreads = box.threads.filter((thread) => thread._id !== thread_id);
+                setBox({ ...box, threads: newThreads });
                 if (newThreads.length === 0) {
-                    if (page > 1) {
-                        navigate(`/box/${box._id}/${page - 1}`, { replace: true });
-                    }
-                    else {
-                        navigate(-1, { replace: true });
-                    }
-                }
-                else {
-                    setBox({ ...box, threads: newThreads });
+                    setAutoRedirect(true);
                 }
             }
         }
@@ -86,7 +76,7 @@ export function DeleteThreadButton({thread}) {
         }
     }
     if (moderatorStatus === 'user') {
-        return null;
+        return (null);
     }
     return (
         <button type="button" title="Xóa thread" className="btn btn-danger text-white rounded-2" style={{marginInlineStart: '12px', width: '48px', height: '48px'}} onClick={() => deleteThread(thread._id)}>

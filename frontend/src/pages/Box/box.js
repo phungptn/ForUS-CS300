@@ -1,5 +1,5 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import {  useEffect, useState } from "react";
 import { instance } from "../../api/config";
 import { BoxDescription, CreateThreadButton, Pagination } from "./UserControl/usercontrol";
 import ThreadCard from "./ThreadCard/threadcard";
@@ -8,6 +8,7 @@ import { checkModerator } from "../../utils/checkModerator";
 import { BoxControl } from "./BoxManagement/boxmanagement";
 
 export default function Box() {
+    const location = useLocation();
     const navigate = useNavigate();
     let box_id = useParams().box_id;
     let page = useParams().page;
@@ -22,11 +23,15 @@ export default function Box() {
     }
     const [box, setBox] = useState({});
     const [moderatorStatus, setModeratorStatus] = useState('user');
+    const [autoRedirect, setAutoRedirect] = useState(false);
     async function getBox() {
         try {
             const response = await instance.get(`/box/${box_id}/${page}`);
             if (response.status === 200) {
                 setBox(response.data.box);
+                if (page > 1 && response.data.box.pageCount === 0) {
+                    navigate(`/box/${box_id}`, { replace: true });
+                }
             }
         }
         catch (e) {
@@ -35,9 +40,19 @@ export default function Box() {
         }
     }
     useEffect(() => {
+        if (autoRedirect) {
+            if (page > 1) {
+                navigate(`/box/${box_id}/${page - 1}`, { replace: true });
+            }
+            else {
+                navigate(-1, { replace: true });
+            }
+        }
+    }, [autoRedirect]);
+    useEffect(() => {
         getBox();
         checkModerator(box_id, setModeratorStatus);
-    }, []);
+    }, [location.key]);
     return (
         <>
             <div className="container">
@@ -51,7 +66,7 @@ export default function Box() {
                             <Pagination box={box} page={page} />
                         </div>
                         {box.threads && box.threads.map((thread) => (
-                            <BoxContext.Provider value={{ box, setBox }}>
+                            <BoxContext.Provider value={{ box, setBox, moderatorStatus, setAutoRedirect }}>
                                 <ThreadCard thread={thread}/>
                             </BoxContext.Provider>
                         ))}

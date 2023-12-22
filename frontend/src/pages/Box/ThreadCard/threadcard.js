@@ -13,11 +13,9 @@ export default function ( {thread} ) {
                             <h4 className="col text-start text-white m-0">{thread.title}</h4>
                             <DeleteThreadButton thread={thread}/>
                         </div>
-                        <div className="row m-0">
-                            <div className="col p-0 my-auto">
-                                <ThreadInformation thread={thread} />
-                            </div>
-                            <div className="col py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
+                        <div className="d-flex justify-content-between">
+                            <ThreadInformation thread={thread} />
+                            <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
                                 <HorizontalVoteBar thread={thread} />
                                 <CommentsCounter thread={thread} />
                             </div>
