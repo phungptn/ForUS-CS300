@@ -20,7 +20,7 @@ const forgotPassword = async (data) => {
 
 const resetPassword = async (data) => {
     try {
-        const response = await instance.post("/users/reset-password", data);
+        const response = await instance.put("/users/reset-password", data);
         return response;
     } catch (error) {
         console.error(error);

@@ -10,8 +10,8 @@ const Box = lazy(() => import('../pages/Box/box'));
 const Home = lazy(() => import('../pages/Home/home'));
 const Profile = lazy(() => import('../pages/Profile/profile'));
 const Admin = lazy(() => import('../pages/Admin/admin'));
-// const ResetPassword = lazy(() => import('../pages/ResetPassword/resetPassword'));
-const ForgotPassword = lazy(() => import('../pages/ForgotPassword/forgotPassword'));
+const ForgotPassword = lazy(() => import('../pages/Login/ForgotPassword/forgotPassword'));
+const ResetPassword = lazy(() => import('../pages/Login/ForgotPassword/resetPassword'));
 const AuthRequiredRoute = ({ auth, element }) => {
 	return auth ? element : <Navigate to="/login" />
 }
@@ -40,6 +40,8 @@ function Router() {
             <Route path="/login" element={< LoginLayout auth={state.authenticated} />} >
                 <Route exact path="/login" element={<Login />} />
                 <Route path="forgot-password" element={<ForgotPassword />} />
+<Route path="reset-password/:reset_token" element={<ResetPassword />} />
+
 
             </Route>
             <Route path="*" element={<NotFound />} />

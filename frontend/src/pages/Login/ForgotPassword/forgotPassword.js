@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { forgotPassword } from "../../api/login";
+import { forgotPassword } from "../../../api/login";
 
 export default function ForgotPassword() {
   const [username, setUsername] = useState("");
@@ -20,7 +20,7 @@ export default function ForgotPassword() {
       <h3 className="text-center mb-4">Forgot Password</h3>
       <p className="text-start  mb-4 ">
         To reset your password, submit your username below. If we can find you,
-        an email will sent to your to your email address, with instructions how
+        an email will sent to your email address, with instructions how
         to get access again.
       </p>
       <div className="form-floating">

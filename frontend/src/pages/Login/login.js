@@ -131,6 +131,17 @@ export default function Login() {
       >
         Sign in
       </button>
+      <hr className="my-4" />
+      <button
+        className="btn btn-outline-dark w-100 py-2"
+        type="submit"
+        onClick={(event) => {
+          event.preventDefault();
+          window.location.href = "/login/forgot-password";
+        }}
+      >
+        Forgot Password
+      </button>
     </>
   );
 }

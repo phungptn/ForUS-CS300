@@ -118,7 +118,7 @@ const forgotPassword = async (req, res, next) => {
     const resetPasswordToken = await userUtil.getPasswordResetToken(user, true);
     console.log("token reset" , resetPasswordToken);
     const html = `<h1>Forgot password request</h1>
-  <p>Click <a target="_blank" href="http://localhost:3000/reset-password/${resetPasswordToken}">here</a> to reset your password.</p>
+  <p>Click <a target="_blank" href="http://localhost:3000/login/reset-password/${resetPasswordToken}">here</a> to reset your password.</p>
   <p>If you didn't make this request, please ignore this message.</p>`;
     
     const info = await sendEmail({ email: user.email, html });
@@ -138,6 +138,7 @@ const forgotPassword = async (req, res, next) => {
 const resetPassword = async (req, res, next) => {
   try {
     const { passwordResetToken, newPassword, confirmNewPassword } = req.body;
+    console.log('resetPassword', passwordResetToken, newPassword, confirmNewPassword);
 
 
     if (newPassword != confirmNewPassword) return res.status(403).json({
