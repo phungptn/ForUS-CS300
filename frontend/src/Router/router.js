@@ -2,6 +2,7 @@ import { Await, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import React, { Suspense, lazy, useState, useEffect } from "react";
 import isLogin from "../utils/isLogin";
 const Login = lazy(() => import('../pages/Login/login'));
+const LoginLayout = lazy(() => import('../pages/Login/loginLayout'));
 const Layout = lazy(() => import('../pages/Layout/layout'));
 const NotFound = lazy(() => import('../pages/NotFound/404'));
 const SignUp = lazy(() => import('../pages/Admin/SignUp/signup'));
@@ -9,6 +10,8 @@ const Box = lazy(() => import('../pages/Box/box'));
 const Home = lazy(() => import('../pages/Home/home'));
 const Profile = lazy(() => import('../pages/Profile/profile'));
 const Admin = lazy(() => import('../pages/Admin/admin'));
+// const ResetPassword = lazy(() => import('../pages/ResetPassword/resetPassword'));
+const ForgotPassword = lazy(() => import('../pages/ForgotPassword/forgotPassword'));
 const AuthRequiredRoute = ({ auth, element }) => {
 	return auth ? element : <Navigate to="/login" />
 }
@@ -34,7 +37,11 @@ function Router() {
                 <Route path='box/:box_id/:page' element={<Box />}/>
             </Route>
             <Route exact path='/signup' element={<AuthRequiredRoute auth={state.authenticated} element={<SignUp />}/>} />
-            <Route path="/login" element={< Login auth={state.authenticated} />} />
+            <Route path="/login" element={< LoginLayout auth={state.authenticated} />} >
+                <Route exact path="/login" element={<Login />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+
+            </Route>
             <Route path="*" element={<NotFound />} />
             <Route path="/admin" element={< Admin auth={state.authenticated} />} />
 

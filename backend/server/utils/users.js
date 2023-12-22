@@ -92,7 +92,9 @@ module.exports = {
 	},
 	getPasswordResetToken: async function (user, forceCreate = false) {
 		if (forceCreate || user.passwordResetExpiry == null || Date.now() - user.passwordResetExpiry > RESET_PASSWORD_EXPIRY) {
-			if (forceCreate) await this.createPasswordResetSession(user);
+			if (forceCreate){
+				await this.createPasswordResetSession(user);
+			}
 			else return null;
 		}
 
