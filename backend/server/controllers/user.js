@@ -61,8 +61,9 @@ const registerUser = async (req, res, next) => {
         .status(403)
         .json({ error: "Access denied because you are not admin." });
     else {
-      let { username, password, fullname, email } = req.body;
-      if (username == null || password == null || fullname == null || email == null) return res.status(403).json({ error: "Missing required fields." });
+      let { username, fullname, email , dateOfBirth, address, role} = req.body;
+      if (username == null  || fullname == null || email == null || address == null || role == null || dateOfBirth == null) return res.status(403).json({ error: "Missing required fields." });
+      const password = dateOfBirth.split("-").join("");
 
       let exists = await userModel.findOne({ username })
       if (exists != null) return res.status(403).json({ error: "User already exists." });
@@ -70,8 +71,14 @@ const registerUser = async (req, res, next) => {
       let newUser = new userModel();
       newUser.username = username;
       newUser.fullname = fullname;
+      newUser.address = address;
       newUser.email = email;
+      newUser.dateOfBirth = dateOfBirth;
+      newUser.role = role.toLowerCase();
+
       await userUtil.setPassword(newUser, password);
+
+
 
       res
         .status(200)

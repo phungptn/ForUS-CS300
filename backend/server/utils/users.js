@@ -76,6 +76,7 @@ module.exports = {
 		// generate password hash, with salt 10
 		const salt = await bcrypt.genSalt(10);
     	user.passwordHash = await bcrypt.hash(password, salt);
+		console.log(user);
 		await user.save();
 	},
 	resetTokenLifespan: async function (user) {

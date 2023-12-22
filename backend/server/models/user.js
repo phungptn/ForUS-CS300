@@ -8,6 +8,7 @@ const UserSchema = new Schema({
     email: { type: String },
     avatarUrl: { type: String },
     description: { type: String, maxLength: 512, minLength: 0},
+    dateOfBirth: { type: Date },
     address: { type: String, maxLength: 512, minLength: 0},
     role: {
         type: String,
