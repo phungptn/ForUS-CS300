@@ -1,10 +1,9 @@
-
-import React, { useEffect } from 'react';
-import './header.css';
+import React, { useEffect } from "react";
+import "./header.css";
 import { instance } from "../../api/config";
-import logo from '../../assets/icons/logo.png';
-import {logout} from '../../api/user';
-import { useLocation } from 'react-router-dom';
+import logo from "../../assets/icons/logo.png";
+import { logout } from "../../api/user";
+import { useLocation } from "react-router-dom";
 
 export default function Header() {
   const signOut = async function () {
@@ -16,37 +15,32 @@ export default function Header() {
     } catch (error) {
       console.log(error);
     }
-
   };
 
   const goToProfile = () => {
     window.location.href = "/profile";
   };
 
-
   const location = useLocation();
-  const [routes, setRoutes] = React.useState(['Trang chủ']);
-  
+  const [routes, setRoutes] = React.useState(["Trang chủ"]);
+
   useEffect(() => {
-    const currentRoutes = location.pathname.split('/');
-      // capitalize first letter and add / at the end
+    const currentRoutes = location.pathname.split("/");
+    // capitalize first letter and add / at the end
     currentRoutes.forEach((route, index) => {
-      if (route !== '') {
-        currentRoutes[index] = route.charAt(0).toUpperCase() + route.slice(1) + '/';
+      if (route !== "") {
+        currentRoutes[index] =
+          route.charAt(0).toUpperCase() + route.slice(1) + "/";
       }
     });
     if (currentRoutes.length > 1) {
-      setRoutes(['Trang chủ/', ...currentRoutes]);
+      setRoutes(["Trang chủ/", ...currentRoutes]);
+    } else {
+      setRoutes(["Trang chủ"]);
     }
-    else {
-      setRoutes(['Trang chủ']);
-    }
-  }
-    , [location]);
+  }, [location]);
 
   return (
-
-
     <header className="p-3 mb-3 border-bottom bg-primary sticky-top ">
       <div className="container">
         <div className="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
@@ -54,26 +48,33 @@ export default function Header() {
             href="/"
             className="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none "
           >
-
-            <img src={logo} alt="logo"  height={32} />
+            <img src={logo} alt="logo" height={32} />
           </a>
           <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
             {routes.map((route, index) => (
               <li key={index}>
-                <a href="#" className="nav-link px-0 ps-2 link-secondary text-white">
+                <a
+                  href="#"
+                  className="nav-link px-0 ps-2 link-secondary text-white"
+                >
                   {route}
                 </a>
               </li>
             ))}
-            
-
           </ul>
 
-          <div className=' py-2 me-3 rounded-3 shadow-sm bg-dark text-white'>
-            <i className="bi bi-bell-fill  m-3" ></i>
-
+          <div
+            className="d-flex align-items-center justify-content-center p-3 rounded-3 shadow-sm bg-dark text-white"
+            style={{ width: "50px", height: "40px", marginRight: "10px" }}
+          >
+            <i className="bi bi-bell-fill me-2"></i>
+            <a
+              href="#"
+              className="link-body-emphasis text-decoration-none dropdown-toggle"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            ></a>
           </div>
-
 
           <div className="dropdown text-end  ">
             <a
@@ -82,7 +83,6 @@ export default function Header() {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              
               <img
                 src="https://github.com/mdo.png"
                 alt="mdo"
@@ -91,8 +91,7 @@ export default function Header() {
                 className="rounded-circle"
               />
             </a>
-            
-            
+
             <ul className="dropdown-menu text-small bg-white" style={{}}>
               <li>
                 <a className="dropdown-item" href="#">
