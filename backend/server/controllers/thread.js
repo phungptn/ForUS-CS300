@@ -4,6 +4,7 @@ const User = require('../models/user');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
 const PageLimit = 10;
+const COMMENTS_PER_PAGE = 2;
 
 module.exports = {
     createThread: async (req, res) => {
@@ -59,135 +60,78 @@ module.exports = {
     readThread: async (req, res) => {
         let thread_id = req.params.thread_id;
         let page = req.params.page;
-        if (page == null) {
-            page = 1;
-        }
         if (thread_id == null) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
+            if (page == null) {
+                page = 1;
+            }
+            else {
+                page = parseInt(page);
+            }
             try {
-                const threads = await Thread.aggregate([
-                    {
-                        $match: {
-                            _id: new mongoose.Types.ObjectId(thread_id)
-                        }
-                    },
+                const thread = await Thread.aggregate([
+                    { $match: { _id: new mongoose.Types.ObjectId(thread_id)}},
                     {
                         $lookup: {
-                            from: "User",
-                                let: {
-                                    aid: "$author"
-                                },
-                            pipeline: [
-                                {
-                                    $match: {
-                                        $expr: {
-                                            $eq: ["$_id", "$$aid"]
-                                        }
-                                    }
-                                },
-                                {
-                                    $project: {
-                                    _id: 0,
-                                    username: 1
-                                    }
-                                }
-                            ],
-                            as: "author"
+                            from: "comments",
+                            localField: "_id",
+                            foreignField: "thread",
+                            as: "comments"
                         }
                     },
-                    {
-                        $unwind: "$author"
-                    },
+                    // { 
+                    //     $unwind: {
+                    //         path: "$comments",
+                    //         preserveNullAndEmptyArrays: true,
+                    //     }
+                    // },
                     {
                         $addFields: {
-                            score: {
-                                $subtract: [
-                                    { $size: "$upvoted" },
-                                    { $size: "$downvoted" }
-                                ]
-                            },
-                            comments: {
-                                $slice: ["$comments", (page - 1) * PageLimit, PageLimit]
+                            pageCount: {
+                                $ceil: {
+                                    $divide: [
+                                        { $size: "$comments" },
+                                        COMMENTS_PER_PAGE
+                                    ]
+                                }
                             }
                         }
                     },
                     {
-                        $lookup: {
-                            from: "Comment",
-                            let: {
-                                cid: "$comments"
-                            },
-                            pipeline: [
-                                {
-                                    $match: {
-                                        $expr: {
-                                            $in: ["$_id", "$$cid"]
-                                        }
-                                    }
-                                },
-                                {
-                                    $lookup: {
-                                        from: "User",
-                                        let: {
-                                            aid: "$author"
-                                        },
-                                        pipeline: [
-                                            {
-                                                $match: {
-                                                    $expr: {
-                                                        $eq: ["$_id","$$aid"]
-                                                    }
-                                                }
-                                            },
-                                            {
-                                                $project: {
-                                                    _id: 0,
-                                                    username: 1
-                                                }
-                                            }
-                                        ],
-                                        as: "author"
-                                    }
-                                },
-                                {
-                                    $unwind: "$author"
-                                },
-                                {
-                                    $addFields: {
-                                    score: {
-                                        $subtract: [
-                                            { $size: "$upvoted" },
-                                            { $size: "$downvoted" }
-                                        ]
-                                    }
-                                    }
-                                },
-                                {
-                                    $project: {
-                                        _id: 0,
-                                        body: 1,
-                                        score: 1,
-                                        author: 1,
-                                        replyTo: 1
-                                    }
-                                }
-                            ],
-                            as: "comments"
-                        }
-                    },
-                    {
                         $project: {
-                            _id: 0,
+                            _id: 1,
                             title: 1,
-                            score: 1,
-                            comments: 1,
-                            author: 1
+                            author: 1,
+                            body: 1,
+                            pageCount: 1,
+                            comments: {
+                                $slice: [
+                                    {
+                                        $sortArray: {
+                                            input: "$comments",
+                                            sortBy: { updatedAt: -1}
+                                        }
+                                    },
+                                    (page - 1) * COMMENTS_PER_PAGE,
+                                    COMMENTS_PER_PAGE
+                                ],
+                            }
                         }
                     }
+                    
                 ]).exec();
-                res.status(200).json({ threads: threads });
+                if (thread[0].pageCount === 0) {
+                    thread[0].pageCount = 1;
+                    res.status(200).json({ thread: thread[0] });
+                }
+                else if (thread[0].pageCount < page) {
+                    res.status(404).json({ error: "Page not found." });
+                }
+                else {
+                    res.status(200).json({ thread: thread[0] });
+                }
             }
             catch (err) {
                 res.status(500).json({ error: err });
