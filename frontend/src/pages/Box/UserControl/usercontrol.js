@@ -102,7 +102,7 @@ function PreviousPage({ box, page, order, direction }) {
         return (null);
     }
     return (
-        <a href={route(box._id, page - 1, order, direction)} className="rounded-0 btn btn-light">{'<'}</a>
+        <a href={route(box._id, page - 1, order, direction)} className="rounded-0 border-end btn btn-light">{'<'}</a>
     );
 }
 
@@ -111,7 +111,7 @@ function NextPage({ box, page, order, direction }) {
         return (null);
     }
     return (
-        <a href={route(box._id, page + 1, order, direction)} className="rounded-0 btn btn-light">{'>'}</a>
+        <a href={route(box._id, page + 1, order, direction)} className="rounded-0 border-start btn btn-light">{'>'}</a>
     );
 }
 
@@ -162,20 +162,20 @@ function GoToPageForm({ box, page, order, direction, d }) {
     if (d === 3) {
         return (
             <>
-                <a href={route(box._id, page - 2, order, direction)} className="rounded-0 btn btn-light">{page - 2}</a>
+                <a href={route(box._id, page - 2, order, direction)} className="rounded-0 border-start border-end btn btn-light">{page - 2}</a>
             </>
         );
     }
     if (d === -3) {
         return (
             <>
-                <a href={route(box._id, page + 2, order, direction)} className="rounded-0 btn btn-light">{page + 2}</a>
+                <a href={route(box._id, page + 2, order, direction)} className="rounded-0 border-start border-end btn btn-light">{page + 2}</a>
             </>
         );
     }
     return (
         <div className="dropdown-center">
-            <button className="btn btn-light dropdown rounded-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+            <button className="btn btn-light border-start border-end dropdown rounded-0" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
                 ...
             </button>
             <form className="dropdown-menu p-0" onSubmit={(e) => {
