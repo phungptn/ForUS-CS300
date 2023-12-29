@@ -3,8 +3,8 @@ const userUtil = require('../utils/users');
 const User = require('../models/user');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
-const PageLimit = 10;
 const COMMENTS_PER_PAGE = 2;
+const SEARCH_RESULTS_PER_PAGE = 5;
 
 module.exports = {
     createThread: async (req, res) => {
@@ -75,24 +75,79 @@ module.exports = {
                     { $match: { _id: new mongoose.Types.ObjectId(thread_id)}},
                     {
                         $lookup: {
-                            from: "comments",
-                            localField: "_id",
-                            foreignField: "thread",
-                            as: "comments"
+                            from: 'comment',
+                            localField: '_id',
+                            foreignField: 'thread',
+                            as: 'comments'
                         }
                     },
-                    // { 
-                    //     $unwind: {
-                    //         path: "$comments",
-                    //         preserveNullAndEmptyArrays: true,
-                    //     }
-                    // },
+                    { 
+                        $unwind: {
+                            path: "$comments",
+                            preserveNullAndEmptyArrays: true,
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            let: { "id": "$author" },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
+                                { $project: { fullname: 1 } }
+                            ],
+                            as: "author",
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            let: { "id": "$comments.author" },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
+                                { $project: { fullname: 1 } }
+                            ],
+                            as: "comments.author",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$comments.author",
+                            preserveNullAndEmptyArrays: true,
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: '$_id',
+                            title: { $first: '$title' },
+                            body: { $first: '$body' },
+                            author: { $first: '$author' },
+                            createdAt: { $first: '$createdAt' },
+                            updatedAt: { $first: '$updatedAt' },
+                            comments: {
+                                $push: {
+                                    $cond: {
+                                        if: { $isArray: "$comments" },
+                                        then: {
+                                            body: '$comments.body',
+                                            author: '$comments.author',
+                                            replyTo: '$comments.replyto',
+                                            createdAt: "$comments.createdAt",
+                                            updatedAt: "$comments.updatedAt"
+                                        },
+                                        else: "$$REMOVE"
+                                    }
+                                }
+                            }
+                        }
+                    },
                     {
                         $addFields: {
+                            createdAt: "$createdAt",
+                            updatedAt: "$updatedAt",
                             pageCount: {
                                 $ceil: {
                                     $divide: [
-                                        { $size: "$comments" },
+                                        { $size: '$comments' },
                                         COMMENTS_PER_PAGE
                                     ]
                                 }
@@ -103,8 +158,10 @@ module.exports = {
                         $project: {
                             _id: 1,
                             title: 1,
-                            author: 1,
+                            author: { $arrayElemAt: ['$author', 0] },
                             body: 1,
+                            createdAt: 1,
+                            updatedAt: 1,
                             pageCount: 1,
                             comments: {
                                 $slice: [
@@ -120,7 +177,6 @@ module.exports = {
                             }
                         }
                     }
-                    
                 ]).exec();
                 if (thread[0].pageCount === 0) {
                     thread[0].pageCount = 1;
@@ -273,6 +329,102 @@ module.exports = {
             }
             finally {
                 session.endSession();
+            }
+        }
+    },
+    searchThread: async (req, res) => {
+        let page = req.params.page;
+        let q = req.query.q;
+        let order = req.query.order;
+        let direction = req.query.direction;
+        if (page == null) {
+            page = 1;
+        }
+        else {
+            page = parseInt(page);
+        }
+        if (!Boolean(order)) {
+            order = 'updatedAt';
+        }
+        if (order !== 'title' && order !== 'updatedAt' && order !== 'createdAt' && order !== 'score' && order !== 'commentCount') {
+            res.status(400).json({ error: "Invalid request." });
+            return;
+        }
+        if (!Boolean(direction)) {
+            direction = 'desc';
+        }
+        if (direction !== 'asc' && direction !== 'desc') {
+            res.status(400).json({ error: "Invalid request." });
+            return;
+        }
+        if (direction === 'asc') {
+            direction = 1;
+        }
+        else {
+            direction = -1;
+        }
+        if (q == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            try {
+                const threads = await Thread.aggregate([
+                    {
+                        $match: {
+                            $text: {
+                                $search: q,
+                                $caseSensitive: true
+                            }
+                        }
+                    },
+                    {
+                        $addFields: {
+                            score: {
+                                $subtract: [
+                                    { $size: "$upvoted" },
+                                    { $size: "$downvoted" }
+                                ]
+                            },
+                            commentCount: {
+                                $size: "$comments"
+                            }
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            let: { "id": "$author" },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
+                                { $project: { _id: 1, username: 1 } }
+                            ],
+                            as: "author"
+                        }
+                    },
+                    {
+                        $sort: {
+                            [order]: direction
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            title: 1,
+                            body: 1,
+                            score: 1,
+                            commentCount: 1,
+                        }
+                    },
+                    {
+                        $skip: (page - 1) * SEARCH_RESULTS_PER_PAGE
+                    },
+                    {
+                        $limit: SEARCH_RESULTS_PER_PAGE
+                    }
+                ]);
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
             }
         }
     }

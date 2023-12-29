@@ -8,6 +8,7 @@ const NotFound = lazy(() => import('../pages/NotFound/404'));
 const SignUp = lazy(() => import('../pages/Admin/SignUp/signup'));
 const Box = lazy(() => import('../pages/Box/box'));
 const Thread = lazy(() => import('../pages/Thread/thread'));
+const Search = lazy(() => import('../pages/Search/search'));
 const Home = lazy(() => import('../pages/Home/home'));
 const Profile = lazy(() => import('../pages/Profile/profile'));
 const Admin = lazy(() => import('../pages/Admin/admin'));
@@ -42,6 +43,7 @@ function Router() {
                 <Route path='box/:box_id/:page' element={<Box />}/>
                 <Route path='thread/:thread_id' element={<Thread />}/>
                 <Route path='thread/:thread_id/:page' element={<Thread />}/>
+                <Route path='search' element={<Search />}/>
             </Route>
             <Route exact path='/signup' element={<AuthRequiredRoute auth={state.authenticated} element={<SignUp />}/>} />
             <Route path="/login" element={< LoginLayout auth={state.authenticated} />} >

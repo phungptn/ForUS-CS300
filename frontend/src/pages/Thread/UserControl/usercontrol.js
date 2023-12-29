@@ -1,9 +1,15 @@
 import { instance } from "../../../api/config";
 import { useContext, useEffect } from "react";
+import { ThreadContext } from "../context";
 import './usercontrol.scss';
 import { getTimePassed } from "../../../utils/getTimePassed";
 // dropdowns will not work without this import
 import { Dropdown } from "bootstrap";
+
+export function formatDateToDDMMYYYY(date) {
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    return new Intl.DateTimeFormat('en-GB', options).format(new Date(date));
+}
 
 function PreviousPage({ thread, page }) {
     if (page === 1) {
@@ -157,4 +163,65 @@ export function Pagination ({ thread, page }) {
             <NextPage thread={thread} page={page}/>
         </div>
     );
+}
+
+export function CommentInformation({ comment }) {
+    return (
+        <div className="d-flex gap-2 p-0">
+            <img className="rounded-circle bg-dark my-auto" width={32} height={32}/>
+            <div className="d-flex flex-column justify-content-start">
+                <span className="text-white text-start">{comment.author.fullname}</span>
+                <small className="text-gray text-start">{getTimePassed(comment.createdAt)}</small>
+            </div>
+        </div>
+    );
+}
+
+async function voteComment(thread, setThread, comment_id, vote) {
+    const response = await instance.put(`/comment/${comment_id}/${vote}`);
+    if (response.status === 200) {
+        setThread(
+            {
+                ...thread,
+                comments: thread.comments.map((comment) => {
+                    if (comment._id === comment_id) {
+                        let d = response.data.voteStatus - comment.voteStatus;
+                        comment.voteStatus = response.data.voteStatus;
+                        comment.score += d;
+                    }
+                    return comment;
+                })
+            }
+        );
+    }
+}
+
+export function HorizontalVoteBar({ comment }) {
+    const { thread, setThread } = useContext(ThreadContext);
+    return (
+        <div className="row me-0 rounded-4 border">
+            <i 
+                className={"col border-0 btn btn-upvote bi " + (comment.voteStatus === 1 ? "bi-arrow-up-circle-fill active" : "bi-arrow-up-circle")}
+                onClick={() => voteComment(thread, setThread, comment._id, 'upvote')}/>
+            <div className="col border-start border-end w-75" style={{paddingBlock: '6px 6px'}}>{comment.score}</div>
+            <i 
+                className={"col border-0 btn btn-downvote bi " + (comment.voteStatus === -1 ? "bi-arrow-down-circle-fill active" : "bi-arrow-down-circle")}
+                onClick={() => voteComment(thread, setThread, comment._id, 'downvote')}/>
+        </div>
+    );
+}
+
+export function ThreadHorizontalVoteBar({ thread }) {
+    // const { box, setBox } = useContext(BoxContext);
+    // return (
+    //     <div className="row me-0 rounded-4 border">
+    //         <i 
+    //             className={"col border-0 btn btn-upvote bi " + (thread.voteStatus === 1 ? "bi-arrow-up-circle-fill active" : "bi-arrow-up-circle")}
+    //             onClick={() => voteThread(box, setBox, thread._id, 'upvote')}/>
+    //         <div className="col border-start border-end w-75" style={{paddingBlock: '6px 6px'}}>{thread.score}</div>
+    //         <i 
+    //             className={"col border-0 btn btn-downvote bi " + (thread.voteStatus === -1 ? "bi-arrow-down-circle-fill active" : "bi-arrow-down-circle")}
+    //             onClick={() => voteThread(box, setBox, thread._id, 'downvote')}/>
+    //     </div>
+    // );
 }
