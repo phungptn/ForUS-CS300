@@ -75,24 +75,79 @@ module.exports = {
                     { $match: { _id: new mongoose.Types.ObjectId(thread_id)}},
                     {
                         $lookup: {
-                            from: "comments",
-                            localField: "_id",
-                            foreignField: "thread",
-                            as: "comments"
+                            from: 'comment',
+                            localField: '_id',
+                            foreignField: 'thread',
+                            as: 'comments'
                         }
                     },
-                    // { 
-                    //     $unwind: {
-                    //         path: "$comments",
-                    //         preserveNullAndEmptyArrays: true,
-                    //     }
-                    // },
+                    { 
+                        $unwind: {
+                            path: "$comments",
+                            preserveNullAndEmptyArrays: true,
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            let: { "id": "$author" },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
+                                { $project: { fullname: 1 } }
+                            ],
+                            as: "author",
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            let: { "id": "$comments.author" },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
+                                { $project: { fullname: 1 } }
+                            ],
+                            as: "comments.author",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$comments.author",
+                            preserveNullAndEmptyArrays: true,
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: '$_id',
+                            title: { $first: '$title' },
+                            body: { $first: '$body' },
+                            author: { $first: '$author' },
+                            createdAt: { $first: '$createdAt' },
+                            updatedAt: { $first: '$updatedAt' },
+                            comments: {
+                                $push: {
+                                    $cond: {
+                                        if: { $isArray: "$comments" },
+                                        then: {
+                                            body: '$comments.body',
+                                            author: '$comments.author',
+                                            replyTo: '$comments.replyto',
+                                            createdAt: "$comments.createdAt",
+                                            updatedAt: "$comments.updatedAt"
+                                        },
+                                        else: "$$REMOVE"
+                                    }
+                                }
+                            }
+                        }
+                    },
                     {
                         $addFields: {
+                            createdAt: "$createdAt",
+                            updatedAt: "$updatedAt",
                             pageCount: {
                                 $ceil: {
                                     $divide: [
-                                        { $size: "$comments" },
+                                        { $size: '$comments' },
                                         COMMENTS_PER_PAGE
                                     ]
                                 }
@@ -103,8 +158,10 @@ module.exports = {
                         $project: {
                             _id: 1,
                             title: 1,
-                            author: 1,
+                            author: { $arrayElemAt: ['$author', 0] },
                             body: 1,
+                            createdAt: 1,
+                            updatedAt: 1,
                             pageCount: 1,
                             comments: {
                                 $slice: [
