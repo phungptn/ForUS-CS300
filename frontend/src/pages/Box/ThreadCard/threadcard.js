@@ -7,10 +7,12 @@ export default function ( {thread} ) {
         <div className="card rounded-4 card-style my-4">
             <div className="card-body p-4">
                 <div className="row m-0 p-0">
-                    <div className="col-3 rounded-4 bg-dark ratio p-0 ratio-1x1 w-25 align-middle"/>
+                    <div className="col-3 rounded-4 bg-dark ratio p-0 ratio-1x1 w-25 align-middle"/> 
                     <div className="col-9 ps-4 pe-0 d-flex flex-column justify-content-between">
-                        <div className='card-title m-0 row justify-content-between'>
-                            <h4 className="col text-start text-white m-0">{thread.title}</h4>
+                        <div className='card-title m-0 d-flex justify-content-between'>
+                            <a href={`/thread/${thread._id}`} className="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
+                                <h4 className="text-start text-white m-0">{thread.title}</h4>
+                            </a>
                             <DeleteThreadButton thread={thread}/>
                         </div>
                         <div className="d-flex justify-content-between">

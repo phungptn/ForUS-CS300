@@ -3,6 +3,7 @@ const { readThread, updateThread, deleteThread, upvoteThread, downvoteThread } =
 const router = express.Router();
 
 router.get('/:thread_id', readThread);
+router.get('/:thread_id/:page', readThread);
 router.put('/:thread_id', updateThread);
 router.put('/:thread_id/upvote', upvoteThread);
 router.put('/:thread_id/downvote', downvoteThread);

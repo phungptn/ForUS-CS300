@@ -34,6 +34,8 @@ module.exports = {
     readBox: async (req, res) => {
         let box_id = req.params.box_id;
         let page = req.params.page;
+        let order = req.query.order;
+        let direction = req.query.direction;
         if (box_id == null) {
             res.status(400).json({ error: "Invalid request." });
         }
@@ -43,6 +45,20 @@ module.exports = {
             }
             else {
                 page = parseInt(page);
+            }
+            if (Boolean(order)) {
+                order = "updatedAt";
+            }
+            if (order !== "createdAt" && order !== "updatedAt" && order !== "score" && order !== "commentCount" && order !== "title") {
+                res.status(400).json({ error: "Invalid request." });
+                return;
+            }
+            if (Boolean(direction)) {
+                direction = "desc";
+            }
+            if (direction !== "asc" && direction !== "desc") {
+                res.status(400).json({ error: "Invalid request." });
+                return;
             }
             try {
                 const user = await findUserById(req);
@@ -144,7 +160,7 @@ module.exports = {
                                     {
                                         $sortArray: {
                                             input: "$threads",
-                                            sortBy: { updatedAt: -1}
+                                            sortBy: { [order]: -1 }
                                         }
                                     },
                                     (page - 1) * THREADS_PER_PAGE,
