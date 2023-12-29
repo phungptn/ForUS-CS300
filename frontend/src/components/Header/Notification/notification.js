@@ -25,7 +25,7 @@ export default function Notification() {
     <>
 
 
-      <div class="btn-group dropdown">
+      <div class="btn-group dropdown-center">
   <button type="button" class="btn btn-dark  dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
   <i className="bi bi-bell-fill me-2"></i>
   </button>
