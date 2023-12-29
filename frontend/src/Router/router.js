@@ -26,7 +26,11 @@ function Router() {
         checkAuth();
     }, []);
     if(state.isLoading) {
-       return <p>Loading...</p>
+       return (
+        <div class="d-flex justify-content-cente " role="status">
+  <span class="visually-hidden">Loading...</span>
+</div>
+       );
     }
     return (
         <Routes>
