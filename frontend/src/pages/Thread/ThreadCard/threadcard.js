@@ -11,7 +11,7 @@ export default function ( {thread} ) {
                             {/* <img src={thread.author.avatar} alt="User Avatar" className="avatar" /> */}
                         </div>
                         <div className="username text-center mt-2">
-                            {thread.title}
+                            {thread.author && thread.author.fullname}
                         </div>
                     </div>
                     <div className="col-10 d-flex flex-column justify-content-between">

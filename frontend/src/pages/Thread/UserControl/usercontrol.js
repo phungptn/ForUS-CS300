@@ -6,6 +6,11 @@ import { getTimePassed } from "../../../utils/getTimePassed";
 // dropdowns will not work without this import
 import { Dropdown } from "bootstrap";
 
+export function formatDateToDDMMYYYY(date) {
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    return new Intl.DateTimeFormat('en-GB', options).format(new Date(date));
+}
+
 function PreviousPage({ thread, page }) {
     if (page === 1) {
         return (null);
