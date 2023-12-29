@@ -46,19 +46,26 @@ module.exports = {
             else {
                 page = parseInt(page);
             }
-            if (Boolean(order)) {
+            console.log(order, direction);
+            if (!Boolean(order)) {
                 order = "updatedAt";
             }
             if (order !== "createdAt" && order !== "updatedAt" && order !== "score" && order !== "commentCount" && order !== "title") {
                 res.status(400).json({ error: "Invalid request." });
                 return;
             }
-            if (Boolean(direction)) {
+            if (!Boolean(direction)) {
                 direction = "desc";
             }
             if (direction !== "asc" && direction !== "desc") {
                 res.status(400).json({ error: "Invalid request." });
                 return;
+            }
+            if (direction === "asc") {
+                direction = 1;
+            }
+            else if (direction === "desc") {
+                direction = -1;
             }
             try {
                 const user = await findUserById(req);
@@ -84,7 +91,7 @@ module.exports = {
                             let: { "id": "$threads.author" },
                             pipeline: [
                                 { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
-                                { $project: { fullname: 1 } }
+                                { $project: { _id: 1, fullname: 1 } }
                             ],
                             as: "threads.author",
                         },
@@ -160,7 +167,7 @@ module.exports = {
                                     {
                                         $sortArray: {
                                             input: "$threads",
-                                            sortBy: { [order]: -1 }
+                                            sortBy: { [order]: direction }
                                         }
                                     },
                                     (page - 1) * THREADS_PER_PAGE,

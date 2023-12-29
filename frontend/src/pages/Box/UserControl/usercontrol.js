@@ -261,7 +261,6 @@ function RemoveFilterButton({ box, page, is_filtered }) {
 }
 
 export function ThreadFilter({ box, page, order, direction }) {
-    let box_id = box._id;
     let is_filtered = Boolean(order) && Boolean(direction);
     if (!Boolean(order)) {
         order = 'updatedAt';
@@ -269,7 +268,7 @@ export function ThreadFilter({ box, page, order, direction }) {
     if (!Boolean(direction)) {
         direction = 'desc';
     }
-    if (box_id == null) {
+    if (box.pageCount == 0) {
         return (null);
     }
     return (
@@ -283,7 +282,7 @@ export function ThreadFilter({ box, page, order, direction }) {
                     let newOrder = document.getElementById('sortOption').children[0].value;
                     let newDirection = document.getElementById('sortOption').children[1].value;
                     console.log(order, direction);
-                    window.location.href = route(box_id, page, newOrder, newDirection);
+                    window.location.href = route(box._id, page, newOrder, newDirection);
                 }}>
                     <div className="card">
                         <div className="card-header form-label text-light bg-primary rounded-top-2">Lọc</div>
