@@ -1,6 +1,6 @@
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useReducer, useState } from "react";
-import { login } from "../../api/login";
+import { login } from "../../api/user";
 import { setCookie } from "../../utils/setCookie";
 import axios from "axios";
 import Logo from "../../components/icons/logo";

@@ -231,15 +231,18 @@ const updateProfile = async (req, res, next) => {
     console.log(user);
     if (user == null) res.status(403).json({ error: "Invalid session." });
     else {
-      // console.log(req.body);
+      console.log(req.body);
       const { fullname, email, avatarUrl, description, address } = req.body;
+      
 
       if (!!fullname) user.fullname = fullname;
       if (!!email) user.email = email;
       if (!!description ) user.description = description;
       if (!!address) user.address = address;
       if (!!avatarUrl ) user.avatarUrl = avatarUrl;
+      // throw error if not save user
       await user.save();
+
 
       console.log(user);
       console.log('updateProfile');

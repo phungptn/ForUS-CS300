@@ -1,4 +1,4 @@
-import { signup } from "../../../api/signup";
+import { signup } from "../../../api/admin";
 import { useState } from "react";
 
 import { Input, Ripple, initMDB } from "mdb-ui-kit";

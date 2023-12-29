@@ -25,7 +25,7 @@ export default function Home() {
         <>
             <div className="container">
                 <div className="row" >
-                    <div className="col-8">
+                    <div className="col-md-8">
                         {groups && groups.map((group) => (
                             <GroupsContext.Provider value={{ groups, setGroups, adminStatus }}>
                                 <Group group={group} adminStatus={adminStatus} />
@@ -35,7 +35,7 @@ export default function Home() {
                             <CreateNewGroup />
                         </GroupsContext.Provider>
                     </div>
-                    <div className="col-4">
+                    <div className="col-md-4">
                         <LatestThread />
                     </div>
                 </div>

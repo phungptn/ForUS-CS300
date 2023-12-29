@@ -1,14 +1,15 @@
 // import "./profile.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { infoUser } from "../../api/user";
 import { storage } from "../../Firebase/config";
+import {downloadImage} from "../../utils/loadImage";
 import { updateProfile, updatePassword } from "../../api/user";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { setCookie } from "../../utils/setCookie";
 import { v4 } from "uuid";
+import "./profile.css";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("profile");
-  const [avatarUrl, setAvatarUrl] = useState(null);
   const [bio, setBio] = useState("");
   const [address, setAddress] = useState("");
   const [fullname, setFullname] = useState("");
@@ -17,18 +18,44 @@ export default function Profile() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  // const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarFile, setAvatarFile] = useState(null); // [file, setFile]
+  const [avatar, setAvatar] = useState("");
 
-  const uploadImage = () => {
-    if (avatarUrl == null) return;
-    let imgRef = v4();
-    const imageRef = ref(storage, `images/avatar/${imgRef}`);
-    setAvatarUrl(imgRef);
-    uploadBytes(imageRef, avatarUrl).then((snapshot) => {
-      console.log("Image uploaded successfully");
-    });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await infoUser();
+        console.log(response);
+        if (response.status === 200) {
+          setFullname(response.data.user.fullname);
+          setEmail(response.data.user.email);
+          setStudentId(response.data.user.username);
+          setAddress(response.data.user.address);
+          setBio(response.data.user.description);
+
+          const imageUrl = await downloadImage('images/avatar/' + response.data.user.avatarUrl);
+          console.log(imageUrl);
+          setAvatar(imageUrl);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const uploadImage = async () => {
+    try {
+      if (avatarFile == null) return;
+      const imgRef = v4();
+
+      const imageRef = ref(storage, `images/avatar/${imgRef}`);
+      await uploadBytes(imageRef, avatarFile);
+      return imgRef
+    } catch (e) {
+      console.log(e);
+    }
   };
-
 
   const updatePasswordFunction = async () => {
     try {
@@ -42,7 +69,6 @@ export default function Profile() {
       if (response.status === 200) {
         alert("Update password successfully");
       }
-
     } catch (e) {
       alert("Update password failed");
       console.log(e);
@@ -51,7 +77,9 @@ export default function Profile() {
 
   const updateProfileFunction = async () => {
     try {
-      await uploadImage();
+      const avatarUrl = await uploadImage();
+      console.log(avatarUrl);
+      
       const data = {
         fullname,
         email,
@@ -59,7 +87,6 @@ export default function Profile() {
         description: bio,
         address,
         avatarUrl,
-        // avatarUrl
       };
       const response = await updateProfile(data);
       console.log(response);
@@ -69,30 +96,16 @@ export default function Profile() {
     }
   };
 
+  const handleUploadButtonClick = () => {
+    document.getElementById("uploadAvatar").click();
+  };
+
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
   return (
     <div className="container">
-      <meta charSet="utf-8" />
-      <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1, shrink-to-fit=no"
-      />
-      {/* <meta name="description" content />
-      <meta name="author" content /> */}
-      <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico" />
-      <title>Checkout example for Bootstrap</title>
-
-      <link
-        rel="canonical"
-        href="https://getbootstrap.com/docs/4.0/examples/checkout/"
-      />
-      {/* Bootstrap core CSS */}
-      <link href="../../dist/css/bootstrap.min.css" rel="stylesheet" />
-
-      {/* Custom styles for this template */}
       <link href="form-validation.css" rel="stylesheet" />
       <div className="py-5 container bg-info rounded-3 shadow-sm">
         <div className="bd-example-snippet bd-code-snippet">
@@ -100,7 +113,9 @@ export default function Profile() {
             <nav>
               <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
                 <button
-                  className={`nav-link ${activeTab === "profile" ? "active" : ""} `}
+                  className={`nav-link ${
+                    activeTab === "profile" ? "active" : ""
+                  } text-white`}
                   id="nav-home-tab"
                   onClick={() => handleTabClick("profile")}
                 >
@@ -108,7 +123,9 @@ export default function Profile() {
                 </button>
 
                 <button
-                  className={`nav-link ${activeTab === "password" ? "active" : ""}`}
+                  className={`nav-link ${
+                    activeTab === "password" ? "active" : ""
+                  } + text-white`}
                   id="nav-password-tab"
                   onClick={() => handleTabClick("password")}
                 >
@@ -127,46 +144,115 @@ export default function Profile() {
               >
                 <div className="order-md-1 text-start">
                   <h1 className="mb-3 text-white">Profile</h1>
+                  <p className="lead text-white">
+                    This is your profile information. Please update your profile
+                    information to make sure that it is up to date.
+                  </p>
+                  <hr className="mb-4" />
+                  <div className="row">
+                    <div className="col-md-3 mb-3">
+                      <div className="text-center">
+                        <div>
+                          <label htmlFor="avatar" className="form-label">
+                            Your avatar
+                          </label>
+                        </div>
+
+                        <img
+                          src={
+                            avatar
+                              ? avatar
+                              : "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
+                          }
+                          className="rounded-5 text-center centered-and-cropped"
+                          id="avatarImage"
+                          alt="avatar"
+                          width="150"
+                          height="150"
+                        />
+                        <div className="mt-2">
+                          <button
+                            className="btn btn-warning btn-sm"
+                            onClick={handleUploadButtonClick}
+                          >
+                            Change Avatar
+                          </button>
+                          <input
+                            className="form-control"
+                            type="file"
+                            accept="image/*"
+                            id="uploadAvatar"
+                            onChange={(e) => {
+                              setAvatarFile(e.target.files[0]);
+                              setAvatar(URL.createObjectURL(e.target.files[0]));
+                            }}
+                            hidden
+                          ></input>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-md-8 mb-3">
+                      <label htmlFor="bio-text" className="form-label">
+                        Bio
+                      </label>
+                      <textarea
+                        className="form-control text-white"
+                        id="bio-text"
+                        value={bio}
+                        rows="5"
+                        onChange={(e) => setBio(e.target.value)}
+                      ></textarea>
+                    </div>
+                  </div>
                   <form className="needs-validation" noValidate>
                     <div className="row">
                       <div className="col-md-6 mb-3">
-                        <label htmlFor="firstName">Full name</label>
+                        <label htmlFor="firstName " className="text-white">
+                          Full name
+                        </label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="form-control text-white "
                           id="firstName"
+                          value={fullname}
                           onChange={(e) => setFullname(e.target.value)}
                           required
                         />
-                        <div className="invalid-feedback">
+                        <div className="invalid-feedback text-white">
                           Valid first name is required.
                         </div>
                       </div>
-                      <div className="col-md-6 mb-3">
+                      <div className="col-md-6 mb-3 text-white">
                         <label htmlFor="lastName">Student ID</label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="form-control text-white"
                           id="studentID"
+                          value={studentId}
                           onChange={(e) => setStudentId(e.target.value)}
                           // placeholder
                           required
                         />
-                        <div className="invalid-feedback">
+                        <div className="invalid-feedback text-white">
                           Valid StudentID is required.
                         </div>
                       </div>
                     </div>
+
                     <div className="mb-3">
-                      <label htmlFor="email">Email</label>
+                      <label htmlFor="email" className="text-white">
+                        Email
+                      </label>
                       <div className="input-group">
                         <div className="input-group-prepend">
                           <span className="input-group-text">@</span>
                         </div>
                         <input
                           type="email"
-                          className="form-control"
+                          className="form-control text-white"
                           id="email"
+                          value={email}
                           placeholder="you@example.com"
                           onChange={(e) => setEmail(e.target.value)}
                           required
@@ -177,11 +263,14 @@ export default function Profile() {
                       </div>
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="address">Address</label>
+                      <label htmlFor="address" className="text-white">
+                        Address
+                      </label>
                       <input
                         type="text"
-                        className="form-control"
+                        className="form-control text-white"
                         id="address"
+                        value={address}
                         placeholder="1234 Main St"
                         required
                         onChange={(e) => setAddress(e.target.value)}
@@ -191,15 +280,19 @@ export default function Profile() {
                       </div>
                     </div>
 
-                    <hr className="mb-4" />
+                    {/* <hr className="mb-4" />
                     <h4 className="mb-3">More information</h4>
                     <div className="mb-3">
-                      <label htmlFor="formFile" className="form-label">
+                      <label
+                        htmlFor="formFile text-white"
+                        className="form-label"
+                      >
                         Load your avatar
                       </label>
                       <input
                         className="form-control"
                         type="file"
+                        accept="image/*"
                         id="formFile"
                         onChange={(e) => {
                           console.log(e.target.files[0]);
@@ -220,7 +313,7 @@ export default function Profile() {
                           onChange={(e) => setBio(e.target.value)}
                         ></textarea>
                       </div>
-                    </div>
+                    </div> */}
                     <hr className="mb-4" />
                     <button
                       className="btn btn-warning btn-lg  "
@@ -262,7 +355,7 @@ export default function Profile() {
                           className="form-control "
                           id="currentPassword"
                           placeholder="***********"
-                          onChange={(e) => setCurrentPassword(e.target.value)} 
+                          onChange={(e) => setCurrentPassword(e.target.value)}
                           required
                         />
                         <div className="invalid-feedback">
@@ -298,7 +391,9 @@ export default function Profile() {
                           type="password"
                           className="form-control"
                           id="confirmNewPassword"
-                          onChange={(e) => setConfirmNewPassword(e.target.value)}
+                          onChange={(e) =>
+                            setConfirmNewPassword(e.target.value)
+                          }
                           placeholder="***********"
                           required
                         />
@@ -325,9 +420,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      {/* Bootstrap core JavaScript
-          ================================================== */}
-      {/* Placed at the end of the document so the pages load faster */}
     </div>
   );
 }

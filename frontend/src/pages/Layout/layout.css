@@ -743,6 +743,7 @@ progress {
   padding-left: calc(var(--bs-gutter-x) * 0.5);
   margin-right: auto;
   margin-left: auto;
+  color: white;
 }
 
 @media (min-width: 576px) {
@@ -11941,3 +11942,8 @@ textarea.form-control-lg {
 }
 
 /*# sourceMappingURL=layout.css.map */
+
+.centered-and-cropped {
+  object-fit: cover;
+  object-position: center;
+}

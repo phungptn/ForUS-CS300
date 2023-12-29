@@ -1,11 +1,31 @@
 import React, { useEffect } from "react";
 import "./header.css";
+import { downloadImage } from "../../utils/loadImage";
+import { infoUser } from "../../api/user";
 import { instance } from "../../api/config";
 import logo from "../../assets/icons/logo.png";
 import { logout } from "../../api/user";
 import { useLocation } from "react-router-dom";
 
 export default function Header() {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await infoUser();
+        if (res.status === 200) {
+          console.log(res.data);
+          const data = res.data.user;
+          const avatar = await downloadImage('images/avatar/'+data.avatarUrl);
+          const avatarElement = document.getElementById("dropdownUserAvatar");
+          avatarElement.src = avatar;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
   const signOut = async function () {
     try {
       const res = await logout();
@@ -16,6 +36,7 @@ export default function Header() {
       console.log(error);
     }
   };
+
 
   const goToProfile = () => {
     window.location.href = "/profile";
@@ -84,15 +105,18 @@ export default function Header() {
               aria-expanded="false"
             >
               <img
-                src="https://github.com/mdo.png"
+                src="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
                 alt="mdo"
-                width={32}
-                height={32}
-                className="rounded-circle"
+                
+                width="40"
+                height="40"
+                id="dropdownUserAvatar"
+                
+                className="rounded-3 centered-and-cropped p-1"
               />
             </a>
 
-            <ul className="dropdown-menu text-small bg-white" style={{}}>
+            <ul className="dropdown-menu text-small bg-white" aria-labelledby="dropdownMenuButton" style={{}}>
               <li>
                 <a className="dropdown-item" href="#">
                   New project...

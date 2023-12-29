@@ -55,4 +55,14 @@ const updatePassword = async (data) => {
         console.error(error);
     }
 };
-export { logout, infoUser, updateProfile, forgotPassword, resetPassword, updatePassword };
+
+const login = async (data) => {
+  try {
+      const response = await instance.post("/users/login", data);
+      return response;
+  } catch (error) {
+      console.error(error);
+  }
+}
+
+export { logout, infoUser, updateProfile, forgotPassword, resetPassword, updatePassword, login };

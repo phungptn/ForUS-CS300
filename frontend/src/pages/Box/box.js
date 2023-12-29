@@ -70,7 +70,7 @@ export default function Box() {
         <>
             <div className="container">
                 <div className="row">
-                    <div className="col-8">
+                    <div className="col-md-8">
                         <div className="d-flex justify-content-between pb-2">
                             <h3 className="text-white">{box.name}</h3>
                             <CreateThreadButton box={box} />
@@ -85,7 +85,7 @@ export default function Box() {
                             </BoxContext.Provider>
                         ))}
                     </div>
-                    <div className="col-4 text-start">
+                    <div className="col-md-4 text-start">
                         <div className="card rounded-3 shadow-sm bg-primary">
                             <BoxContext.Provider value={{ box, setBox, moderatorStatus }}>
                                 <BoxDescription box={box}/>

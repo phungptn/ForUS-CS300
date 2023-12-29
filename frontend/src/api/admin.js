@@ -1,5 +1,4 @@
 import { instance } from "./config";
-
 const signup = async (data) => {
     try {
 
