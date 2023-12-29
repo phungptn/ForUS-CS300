@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "./header.css";
+// import "./header.css";
 import { downloadImage } from "../../utils/loadImage";
 import { infoUser } from "../../api/user";
 import { instance } from "../../api/config";

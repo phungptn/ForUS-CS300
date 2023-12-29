@@ -3320,11 +3320,6 @@ fieldset:disabled .btn {
   margin-left: 0;
 }
 
-.dropdown:hover > .dropdown-menu{
-    display: block;
-    inset: 0px 0px auto auto;
-    transform: translate3d(0px, 40px, 0px);
-}
 
 
 .dropdown-menu {

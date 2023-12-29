@@ -5,6 +5,8 @@ import '../../components/Header/header.css';
 import { Outlet } from "react-router-dom";
 import './layout.css';
 import Footer from "../../components/Footer/footer";
+// dropdowns will not work without this import
+import { Dropdown } from "bootstrap";
 
 
 export default function Home() {
