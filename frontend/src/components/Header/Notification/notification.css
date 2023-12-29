@@ -1,0 +1,11 @@
+/* .notificationItem:hover {
+  background-color: #000000;
+} */
+
+.notificationItem:hover {
+  background-color: darkgray !important;
+}
+
+.notification{
+  display: flex;
+}

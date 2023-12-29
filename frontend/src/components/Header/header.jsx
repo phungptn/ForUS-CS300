@@ -6,6 +6,7 @@ import { instance } from "../../api/config";
 import logo from "../../assets/icons/logo.png";
 import { logout } from "../../api/user";
 import { useLocation } from "react-router-dom";
+import Notification from "./Notification/notification";
 
 export default function Header() {
   useEffect(() => {
@@ -84,18 +85,10 @@ export default function Header() {
             ))}
           </ul>
 
-          <div
-            className="d-flex align-items-center justify-content-center p-3 rounded-3 shadow-sm bg-dark text-white"
-            style={{ width: "50px", height: "40px", marginRight: "10px" }}
-          >
-            <i className="bi bi-bell-fill me-2"></i>
-            <a
-              href="#"
-              className="link-body-emphasis text-decoration-none dropdown-toggle"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            ></a>
-          </div>
+          
+
+
+          <Notification />
 
           <div className="dropdown text-end  ">
             <a
@@ -116,9 +109,9 @@ export default function Header() {
               />
             </a>
 
-            <ul className="dropdown-menu text-small bg-white" aria-labelledby="dropdownMenuButton" style={{}}>
+            <ul className="dropdown-menu text-small bg-white active" aria-labelledby="dropdownMenuButton" style={{}}>
               <li>
-                <a className="dropdown-item" href="#">
+                <a className="dropdown-item " href="#">
                   New project...
                 </a>
               </li>

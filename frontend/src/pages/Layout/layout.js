@@ -11,10 +11,13 @@ export default function Home() {
 
     return (
       <React.Fragment>
+
+
     
           <Header/>
           <Outlet />
           <Footer/>
+          
       </React.Fragment>        
 
     );

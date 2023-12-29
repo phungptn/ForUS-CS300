@@ -65,4 +65,14 @@ const login = async (data) => {
   }
 }
 
-export { logout, infoUser, updateProfile, forgotPassword, resetPassword, updatePassword, login };
+const getNotification = async () => {
+  try {
+    const response = instance.get("/users/notification");
+    return response;
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
+
+export { logout, infoUser, updateProfile, forgotPassword, resetPassword, updatePassword, login, getNotification };

@@ -9,7 +9,9 @@ const {
   updateProfile,
   isAdmin,
   privilegeConfirmation,
-  updatePassword
+  updatePassword,
+  getAllUser,
+  getNotification
 } = require("../controllers/user");
 
 const router = express.Router();
@@ -23,6 +25,8 @@ router.put("/reset-password", resetPassword);
 router.put("/update-profile", updateProfile);
 router.get("/is-admin", isAdmin, privilegeConfirmation);
 router.put("/update-password", updatePassword);
+router.get("/allUser", getAllUser);
+router.get("/notification", getNotification);
 
 
 module.exports = router;

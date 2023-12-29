@@ -44,6 +44,8 @@ export default function Profile() {
     fetchData();
   }, []);
 
+  
+
   const uploadImage = async () => {
     try {
       if (avatarFile == null) return;
@@ -106,6 +108,8 @@ export default function Profile() {
 
   return (
     <div className="container">
+      
+
       <link href="form-validation.css" rel="stylesheet" />
       <div className="py-5 container bg-info rounded-3 shadow-sm">
         <div className="bd-example-snippet bd-code-snippet">
@@ -145,10 +149,9 @@ export default function Profile() {
                 <div className="order-md-1 text-start">
                   <h1 className="mb-3 text-white">Profile</h1>
                   <p className="lead text-white">
-                    This is your profile information. Please update your profile
+                    Please update your profile
                     information to make sure that it is up to date.
                   </p>
-                  <hr className="mb-4" />
                   <div className="row">
                     <div className="col-md-3 mb-3">
                       <div className="text-center">
@@ -205,6 +208,8 @@ export default function Profile() {
                       ></textarea>
                     </div>
                   </div>
+                  <hr className="mb-4" />
+
                   <form className="needs-validation" noValidate>
                     <div className="row">
                       <div className="col-md-6 mb-3">

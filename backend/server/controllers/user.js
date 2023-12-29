@@ -2,6 +2,7 @@ const userUtil = require("../utils/users");
 const bcrypt = require("bcrypt");
 const userModel = require("../models/user");
 const sendEmail = require("../utils/sendEmail");
+const Notification = require('../models/notification');
 
 const loginUser = async (req, res, next) => {
   try {
@@ -253,6 +254,33 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
+const getAllUser = async (req, res, next) => {
+  try {
+    const user = await userUtil.findUserById(req);
+    if (user == null) res.status(403).json({ error: "Invalid session." });
+    else {
+      const users = await userModel.find({});
+      res.status(200).json({ message: "Get all users successfully.", users: users });
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
+const getNotification = async (req, res, next) => {
+  try {
+    const user = await userUtil.findUserById(req);
+    if (user == null) res.status(403).json({ error: "Invalid session." });
+    else {
+      console.log
+      const notificationIds = user.notifications.map((notification) => notification.notification);
+      const notifications = await Notification.find({ _id: { $in: notificationIds } });
+      res.status(200).json({ message: "Get all notifications successfully.", notifications: notifications });
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+}
 module.exports = {
   loginUser,
   logoutUser,
@@ -263,5 +291,7 @@ module.exports = {
   updateProfile,
   isAdmin,
   privilegeConfirmation,
-  updatePassword
+  updatePassword,
+  getAllUser,
+  getNotification
 };
