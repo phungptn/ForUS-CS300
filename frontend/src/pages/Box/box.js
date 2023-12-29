@@ -6,6 +6,7 @@ import ThreadCard from "./ThreadCard/threadcard";
 import { BoxContext } from "./context";
 import { checkModerator } from "../../utils/checkModerator";
 import { BoxControl } from "./BoxManagement/boxmanagement";
+import { SearchBar } from "../Search/SearchBar/searchbar";
 import { route } from "./route";
 
 export default function Box() {
@@ -39,7 +40,7 @@ export default function Box() {
     const [autoRedirect, setAutoRedirect] = useState(false);
     async function getBox() {
         try {
-            const response = await instance.get(`/box/${box_id}/${page}?order=${order}&direction=${direction}`);
+            const response = await instance.get(route(box_id, page, order, direction));
             if (response.status === 200) {
                 setBox(response.data.box);
                 if (page > 1 && response.data.box.pageCount === 0) {
@@ -74,6 +75,9 @@ export default function Box() {
                         <div className="d-flex justify-content-between pb-2">
                             <h3 className="text-white">{box.name}</h3>
                             <CreateThreadButton box={box} />
+                        </div>
+                        <div className="py-2">
+                            <SearchBar />
                         </div>
                         <div className="d-flex py-2 justify-content-between">
                             <Pagination box={box} page={page} order={order} direction={direction}/>

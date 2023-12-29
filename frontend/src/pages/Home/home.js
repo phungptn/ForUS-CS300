@@ -6,6 +6,7 @@ import LatestThread from "./LatestThread/latestThread";
 import { checkAdmin } from "../../utils/checkAdmin";
 import "./home.css";
 import { CreateNewGroup } from "./AdminControl/admincontrol";
+import { SearchBar } from "../Search/SearchBar/searchbar";
 
 export default function Home() {
     const [groups, setGroups] = useState([]);
@@ -26,6 +27,9 @@ export default function Home() {
             <div className="container">
                 <div className="row" >
                     <div className="col-md-8">
+                        <div className="container mb-4">
+                            <SearchBar />
+                        </div>
                         {groups && groups.map((group) => (
                             <GroupsContext.Provider value={{ groups, setGroups, adminStatus }}>
                                 <Group group={group} adminStatus={adminStatus} />
