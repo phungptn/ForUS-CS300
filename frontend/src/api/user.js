@@ -6,6 +6,7 @@ const infoUser = async () => {
     return response;
   } catch (error) {
     console.error(error);
+    return error.response;
   }
 
   return null;
@@ -17,6 +18,7 @@ const logout = async () => {
     return response;
   } catch (error) {
     console.error(error);
+    return error.response;
   }
 };
 
@@ -26,6 +28,7 @@ const updateProfile = async (data) => {
     return response;
   } catch (error) {
     console.error(error);
+    return error.response;
   }
 };
 
@@ -35,6 +38,7 @@ const forgotPassword = async (data) => {
     return response;
   } catch (error) {
     console.error(error);
+    return error.response;
   }
 };
 
@@ -44,6 +48,7 @@ const resetPassword = async (data) => {
     return response;
   } catch (error) {
     console.error(error);
+    return error.response;
   }
 };
 
@@ -52,7 +57,8 @@ const updatePassword = async (data) => {
         const response = await instance.put("/users/update-password", data);
         return response;
     } catch (error) {
-        console.error(error);
+      console.error(error);
+      return error.response;
     }
 };
 
@@ -61,7 +67,8 @@ const login = async (data) => {
       const response = await instance.post("/users/login", data);
       return response;
   } catch (error) {
-      console.error(error);
+    console.error(error);
+    return error.response;
   }
 }
 
@@ -72,6 +79,7 @@ const getNotification = async () => {
   }
   catch (error) {
     console.error(error);
+    return error.response;
   }
 }
 
