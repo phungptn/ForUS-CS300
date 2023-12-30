@@ -9,3 +9,16 @@
 .notification{
   display: flex;
 }
+
+.w-32 {
+  width: 24px;
+}
+
+.h-32 {
+  height: 24px;
+}
+
+.f-6 {
+  font-size: 13px;
+  padding-top: 2px;
+}

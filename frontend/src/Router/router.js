@@ -53,7 +53,9 @@ function Router() {
 
 
             </Route>
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<Layout />}>
+                <Route path="*" element={<NotFound />} />
+            </Route>
             <Route path="/admin" element={< Admin auth={state.authenticated} />} />
 
         </Routes>
