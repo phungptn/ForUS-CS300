@@ -254,19 +254,6 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
-const getAllUser = async (req, res, next) => {
-  try {
-    const user = await userUtil.findUserById(req);
-    if (user == null) res.status(403).json({ error: "Invalid session." });
-    else {
-      const users = await userModel.find({});
-      res.status(200).json({ message: "Get all users successfully.", users: users });
-    }
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-};
-
 const getNotification = async (req, res, next) => {
   try {
     const user = await userUtil.findUserById(req);
@@ -276,6 +263,33 @@ const getNotification = async (req, res, next) => {
       const notificationIds = user.notifications.map((notification) => notification.notification);
       const notifications = await Notification.find({ _id: { $in: notificationIds } });
       res.status(200).json({ message: "Get all notifications successfully.", notifications: notifications });
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+}
+
+const getAllUser = async (req, res, next) => {
+  try {
+    const user = await userUtil.findUserById(req);
+    if (user == null || user.role != "admin") res.status(403).json({ error: "Not permitted." });
+    else {
+      let result = await userModel.find({});
+      
+      const getableFields = [
+        "username",
+        "fullname",
+        "avatarUrl",
+        "role"
+      ];
+
+      result = result.sort(sortFunc).map(e => {
+        let x = {};
+        for (let i of getableFields) x[i] = e[i];
+        return x;
+      });
+
+      res.status(200).send({ message: "Fetched successfully", users: result});
     }
   } catch (e) {
     res.status(500).json({ error: e.message });
