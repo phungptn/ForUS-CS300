@@ -3,23 +3,24 @@ const userUtil = require('../utils/users');
 const Comment = require('../models/comment');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
-const PageLimit = 10;
+const User = require('../models/user');
 
 module.exports = {
     createComment: async (req, res) => {
         let { body, replyTo } = req.body;
+        console.log('Submitting comment:', body);
         let thread_id = req.params.thread_id;
-        let token = req.body.token;
-        if (body == null || thread_id == null || token == null) {
+        let box_id = req.params.box_id;
+        if (body == null || thread_id == null ) {
             res.status(400).json({ error: "Invalid request." });
         } else {
             const session = await mongoose.startSession();
             try {
-                const user = await userUtil.findUserById(req.cookies.token);
+                const user = await userUtil.findUserById(req);
                 if (user == null) {
                     res.status(403).json({ error: "Invalid session." });
                 } else {
-                    const isBanned = await Box.exists({ _id: thread.box, banned: user._id });
+                    const isBanned = await Box.exists({ _id: box_id, banned: user._id });
                     if (isBanned) {
                         res.status(403).json({ error: "You are banned." });
                     } else {
@@ -27,7 +28,8 @@ module.exports = {
                             body: body,
                             author: user._id,
                             thread: thread_id,
-                            replyTo: replyTo
+                            replyTo: replyTo,
+                            box: box_id
                         });
                         session.withTransaction(async () => {
                             await comment.save();

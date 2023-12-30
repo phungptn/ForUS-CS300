@@ -7,7 +7,7 @@ import { ThreadContext } from "./context";
 import { checkModerator } from "../../utils/checkModerator";
 import Threadcard from "./ThreadCard/threadcard";
 import './thread.css';
-import CommentSection from "./CommentSection";
+import CommentSection from "./CommentSection/CommentSection";
 
 export default function Thread() {
     const location = useLocation();
@@ -102,7 +102,7 @@ export default function Thread() {
 
 
                         {/* Post comment */}
-                        <CommentSection thread={thread} page={page} />
+                        <CommentSection thread={thread} page={page} replyTo={null}/>
                         
                     </div>
                     <div className="col-4 text-start">
