@@ -10,15 +10,15 @@
   display: flex;
 }
 
-.w-32 {
+.w-24 {
   width: 24px;
 }
 
-.h-32 {
+.h-24 {
   height: 24px;
 }
 
-.f-6 {
+.f-13 {
   font-size: 13px;
   padding-top: 2px;
 }
