@@ -37,13 +37,17 @@ module.exports = {
     if (box_id == null) {
       res.status(400).json({ error: "Invalid request." });
     } else {
-      let box = await Box.findById(box_id);
-      if (box == null) throw { message: "No boxes found." };
-      await Box.updateOne({ _id: box_id }, { autoApprove: !box.autoApprove });
-      res.status(200).json({
-        message: "Box Auto Approve options changed.",
-        autoApprove: !box.autoApprove,
-      });
+      try {
+        let box = await Box.findById(box_id);
+        if (box == null) throw { message: "No boxes found." };
+        await Box.updateOne({ _id: box_id }, { autoApprove: !box.autoApprove });
+        res.status(200).json({
+          message: "Box Auto Approve options changed.",
+          autoApprove: !box.autoApprove,
+        });
+      } catch (err) {
+        res.status(403).json({ error: err.message });
+      }
     }
   },
   readBox: async (req, res) => {
