@@ -7,6 +7,7 @@ import { ThreadContext } from "./context";
 import { checkModerator } from "../../utils/checkModerator";
 import Threadcard from "./ThreadCard/threadcard";
 import './thread.css';
+import CommentSection from "./CommentSection";
 
 export default function Thread() {
     const location = useLocation();
@@ -63,6 +64,7 @@ export default function Thread() {
             <div className="container">
                 <div className="row">
                     <div className="col-8">
+                        {/* Thread title */}
                         <div className="d-flex justify-content-between pb-2">
                             <h3 className="text-white">{thread.title}</h3>
                         </div>
@@ -92,6 +94,16 @@ export default function Thread() {
                                 <CommentCard comment={comment}/>
                             </ThreadContext.Provider>
                         ))}
+
+                        {/* Pagination */}
+                        <div className="d-flex justify-content-end py-2">
+                            <Pagination thread={thread} page={page} />
+                        </div>
+
+
+                        {/* Post comment */}
+                        <CommentSection thread={thread} page={page} />
+                        
                     </div>
                     <div className="col-4 text-start">
                         {/* <div className="card rounded-3 shadow-sm bg-primary">
