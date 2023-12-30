@@ -32,24 +32,20 @@ module.exports = {
       }
     }
   },
-  //   updateBoxAutoApprove: async function (req, res) {
-  //     let box_id = req.params.box_id;
-  //     if (box_id == null) {
-  //       res.status(400).json({ error: "Invalid request." });
-  //     } else {
-  //       try {
-  //         let box = await Box.findById(box_id);
-  //         if (box == null) throw { message: "No boxes found." };
-  //         await Box.updateOne({ _id: box_id }, { autoApprove: !box.autoApprove });
-  //         res.status(200).json({
-  //           message: "Box Auto Approve options changed.",
-  //           autoApprove: !box.autoApprove,
-  //         });
-  //       } catch (err) {
-  //         res.status(403).json({ error: err.message });
-  //       }
-  //     }
-  //   },
+  updateBoxAutoApprove: async function (req, res) {
+    let box_id = req.params.box_id;
+    if (box_id == null) {
+      res.status(400).json({ error: "Invalid request." });
+    } else {
+      let box = await Box.findById(box_id);
+      if (box == null) throw { message: "No boxes found." };
+      await Box.updateOne({ _id: box_id }, { autoApprove: !box.autoApprove });
+      res.status(200).json({
+        message: "Box Auto Approve options changed.",
+        autoApprove: !box.autoApprove,
+      });
+    }
+  },
   readBox: async (req, res) => {
     let box_id = req.params.box_id;
     let page = req.params.page;
