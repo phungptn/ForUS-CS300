@@ -8,6 +8,7 @@ const {
   addModerator,
   removeModerator,
   getModeratorStatus,
+  updateBoxAutoApprove,
 } = require("../controllers/box");
 const { createThread } = require("../controllers/thread");
 const { isAdmin } = require("../controllers/user");
@@ -21,5 +22,6 @@ router.put("/:box_id/description", isModerator, updateBoxDescription);
 router.put("/:box_id/moderators", isAdmin, addModerator);
 router.delete("/:box_id/moderators", isAdmin, removeModerator);
 router.delete("/:box_id", isAdmin, deleteBox);
+router.put("/:box_id/autoapprove", isModerator, updateBoxAutoApprove);
 
 module.exports = router;
