@@ -84,3 +84,27 @@ export function DeleteThreadButton({thread}) {
         </button>
     );
 }
+
+export function UpdateAutoApproveButton({thread, autoApprove}) {
+    const { box, setBox, moderatorStatus } = useContext(BoxContext);
+    async function autoApproveBox() {
+        try {
+            const response = await instance.put(`/box/${box._id}/autoapprove`, {});
+            console.log(response);
+            if (response.status === 200) {
+                setBox({ ...box, autoApprove: response.data.autoApprove });
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+    if (moderatorStatus === 'user') {
+        return (null);
+    }
+    return (
+        <button type="button" className="btn btn-info text-white col rounded-0 border-end" onClick={autoApproveBox}>
+            Tự động duyệt: {autoApprove ? "Bật" : "Tắt"}
+        </button>
+    );
+}
