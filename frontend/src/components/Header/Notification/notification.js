@@ -1,7 +1,6 @@
 import { getNotification } from "../../../api/user";
 import { useEffect, useState } from "react";
 import NotificationItem from "./notificationItem";
-import Dropdown from "react-bootstrap/Dropdown";
 import "./notification.css";
 
 import "./notification.css";
