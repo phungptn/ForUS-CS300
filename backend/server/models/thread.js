@@ -21,6 +21,8 @@ const ThreadSchema = new Schema({
     box: { type: Schema.Types.ObjectId, ref: 'Box'},
 }, {timestamps: true});
 
+ThreadSchema.index({ title: 'text', body: 'text' });
+
 ThreadSchema.post('findOneAndDelete', async (doc, next) => {
     if (doc != null) {
         try {

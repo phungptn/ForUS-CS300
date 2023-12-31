@@ -20,6 +20,8 @@ const BoxSchema = new Schema({
     },
 }, {timestamps: true});
 
+BoxSchema.index({ name: 'text', description: 'text' });
+
 BoxSchema.post('findOneAndDelete', async (doc, next) => {
     if (doc != null) {
         try {

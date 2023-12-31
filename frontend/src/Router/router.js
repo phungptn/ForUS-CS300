@@ -43,7 +43,7 @@ function Router() {
                 <Route path='box/:box_id/:page' element={<Box />}/>
                 <Route path='thread/:thread_id' element={<Thread />}/>
                 <Route path='thread/:thread_id/:page' element={<Thread />}/>
-                <Route path='search' element={<Search />}/>
+                <Route path='search/:page' element={<Search />}/>
             </Route>
             <Route exact path='/signup' element={<AuthRequiredRoute auth={state.authenticated} element={<SignUp />}/>} />
             <Route path="/login" element={< LoginLayout auth={state.authenticated} />} >

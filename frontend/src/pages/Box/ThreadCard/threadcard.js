@@ -2,7 +2,8 @@ import './threadcard.css';
 import { HorizontalVoteBar, CommentsCounter, ThreadInformation } from '../UserControl/usercontrol';
 import { DeleteThreadButton } from '../ModeratorControl/moderatorcontrol';
 
-export default function ( {thread} ) {
+export default function ( { thread, search } ) {
+    console.log(thread);
     return (
         <div className="card rounded-4 card-style my-4">
             <div className="card-body p-4">
@@ -13,7 +14,7 @@ export default function ( {thread} ) {
                             <a href={`/thread/${thread._id}`} className="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">
                                 <h4 className="text-start text-white m-0">{thread.title}</h4>
                             </a>
-                            <DeleteThreadButton thread={thread}/>
+                            {!search && <DeleteThreadButton thread={thread} />}
                         </div>
                         <div className="d-flex justify-content-between">
                             <ThreadInformation thread={thread} />

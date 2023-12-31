@@ -1,0 +1,7 @@
+.dropdown-item:hover {
+    background-color: rgba(var(--bs-secondary-rgb), 0.25);
+}
+
+.dropdown-item:active {
+    background-color: rgba(var(--bs-secondary-rgb), 0.5);
+}

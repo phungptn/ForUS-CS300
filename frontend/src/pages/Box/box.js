@@ -85,7 +85,7 @@ export default function Box() {
                         </div>
                         {box.threads && box.threads.map((thread) => (
                             <BoxContext.Provider value={{ box, setBox, moderatorStatus, setAutoRedirect }}>
-                                <ThreadCard thread={thread}/>
+                                <ThreadCard thread={thread} search={false}/>
                             </BoxContext.Provider>
                         ))}
                     </div>

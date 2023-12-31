@@ -6,6 +6,7 @@ const groupRouter = require("./group");
 const boxRouter = require("./box");
 const threadRouter = require("./thread");
 const notificationRouter = require("./notification");
+const searchRouter = require("./search");
 
 const isPath = function (url, sample) {
 	return url.startsWith(sample + "/") || url == sample;
@@ -38,6 +39,7 @@ module.exports = function (app) {
 	app.use("/box", boxRouter);
 	app.use("/thread", threadRouter);
 	app.use("/notification", notificationRouter);
+	app.use("/search", searchRouter);
 	// setup ultimate ending for all routes
 	app.all("*", (req, res) => {
 		res.status(404).json({ error: "Not found" });

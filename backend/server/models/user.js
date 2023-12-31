@@ -35,5 +35,6 @@ const UserSchema = new Schema({
     passwordResetExpiry: { type: Number, default: null},
 }, {timestamps: true});
 
+UserSchema.index({ username: 'text', fullname: 'text' });
 
 module.exports = mongoose.model('User', UserSchema);
