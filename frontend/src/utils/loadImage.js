@@ -12,6 +12,7 @@ async function downloadImage(url) {
         return imageUrl;
     } catch (error) {
         console.error(error);
+        return null;
     }
     
     }
