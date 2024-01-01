@@ -7,6 +7,7 @@ import logo from "../../assets/icons/logo.png";
 import { logout } from "../../api/user";
 import { useLocation } from "react-router-dom";
 import Notification from "./Notification/notification";
+import { SearchBar } from "../../pages/Search/SearchBar/searchbar";
 
 export default function Header() {
   useEffect(() => {
@@ -72,8 +73,8 @@ export default function Header() {
           >
             <img src={logo} alt="logo" height={32} />
           </a>
-          <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            {routes.map((route, index) => (
+          <div className="nav col-12 col-lg-auto  me-lg-auto mb-2 justify-content-center ">
+            {/* {routes.map((route, index) => (
               <li key={index}>
                 <a
                   href="#"
@@ -82,8 +83,10 @@ export default function Header() {
                   {route}
                 </a>
               </li>
-            ))}
-          </ul>
+            ))} */}
+
+            <SearchBar />
+          </div>
 
           
 

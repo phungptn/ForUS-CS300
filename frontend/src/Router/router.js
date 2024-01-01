@@ -46,6 +46,7 @@ function Router() {
                 <Route path='thread/:thread_id/:page' element={<Thread />}/>
                 <Route path='search/:page' element={<Search />}/>
                 <Route path='user/:user_id' element={<UserProfile />}/>
+                <Route path="*" element={<NotFound />} />
             </Route>
             <Route exact path='/signup' element={<AuthRequiredRoute auth={state.authenticated} element={<SignUp />}/>} />
             <Route path="/login" element={< LoginLayout auth={state.authenticated} />} >
@@ -55,9 +56,8 @@ function Router() {
 
 
             </Route>
-            <Route path="*" element={<Layout />}>
-                <Route path="*" element={<NotFound />} />
-            </Route>
+            <Route path="*" element={<NotFound />} />
+  
             <Route path="/admin" element={< Admin auth={state.authenticated} />} />
 
         </Routes>
