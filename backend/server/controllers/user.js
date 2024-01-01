@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const userModel = require("../models/user");
 const sendEmail = require("../utils/sendEmail");
 const Notification = require('../models/notification');
+const user = require("../models/user");
+const mongoose = require('mongoose');
 
 const loginUser = async (req, res, next) => {
   try {
@@ -98,18 +100,59 @@ const infoUser = async (req, res, next) => {
   try {
     let user = await userUtil.findUserById(req);
     console.log('infoUser');
-    console.log(user);
+    // const usertemp = await userModel.aggregate(
+    //   [{
+    //     $match: { _id: user._id },
+    //     $project: {
+    //       username: 1,
+    //       fullname: 1,
+    //       email: 1,
+    //       address: 1,
+    //       avatarUrl: 1,
+    //       description: 1,
+    //       role: 1,
+    //       dateOfBirth: 1
+    //     }
+    //   }])
+    
+    user = await userModel.findOne({ _id: user._id }).select('-passwordHash -passwordResetExpiry -passwordResetToken -sessionStart -lastAccessed -notifications');
+
+
     if (user == null) res.status(403).json({ error: "Invalid session." });
     else {
       res.status(200).json({
         message: "User info.",
-        user: user,
+        user: user
       });
     }
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 };
+
+// Show user profile by id
+const userProfile = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    console.log("Userid", id);
+
+    const user = await userModel.findOne({ _id: new mongoose.Types.ObjectId(id) }).select('-passwordHash -passwordResetExpiry -passwordResetToken -sessionStart -lastAccessed -notifications');
+      
+
+    if (user == null) res.status(403).json({ error: "Invalid session." });
+
+    else {
+      res.status(200).json({
+        message: "User info.",
+        user: user
+      });
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
+    
 
 // Forgot password and reset password
 const forgotPassword = async (req, res, next) => {
@@ -245,7 +288,7 @@ const updateProfile = async (req, res, next) => {
       await user.save();
 
 
-      console.log(user);
+      // console.log(user);
       console.log('updateProfile');
       res.status(200).json({ message: "Update profile successfully." });
     }
@@ -295,6 +338,8 @@ const getAllUser = async (req, res, next) => {
     res.status(500).json({ error: e.message });
   }
 }
+
+
 module.exports = {
   loginUser,
   logoutUser,
@@ -307,5 +352,6 @@ module.exports = {
   privilegeConfirmation,
   updatePassword,
   getAllUser,
-  getNotification
+  getNotification,
+  userProfile
 };

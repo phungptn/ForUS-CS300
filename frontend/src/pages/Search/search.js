@@ -9,6 +9,7 @@ import './search.scss';
 import { SearchPagination } from "./SearchPagination/searchpagination";
 import { SearchHeader } from "./SearchHeader/searchheader";
 import { SearchFilter } from "./SearchFilter/searchfilter";
+import { UserCardSearch } from "./UserCardSearch/UserCardSearch";
 
 function SearchTypeNavBar({ q, type }) {
     return (
@@ -77,6 +78,9 @@ export default function Search() {
             ))}
             {result.boxes && result.boxes.map((box) => (
                 <BoxCardSearch box={box} />
+            ))}
+            {result.users && result.users.map((user) => (
+                <UserCardSearch user={user} />
             ))}
         </div>
     );

@@ -11,7 +11,8 @@ const {
   privilegeConfirmation,
   updatePassword,
   getAllUser,
-  getNotification
+  getNotification,
+  userProfile
 } = require("../controllers/user");
 
 const router = express.Router();
@@ -27,6 +28,7 @@ router.get("/is-admin", isAdmin, privilegeConfirmation);
 router.put("/update-password", updatePassword);
 router.get("/allUser", getAllUser);
 router.get("/notification", getNotification);
+router.get("/:id", userProfile);
 
 
 module.exports = router;

@@ -46,14 +46,13 @@ export default function Notification() {
         </button>
 
         {loading ? (
-          <div className="list-group notification__loading dropdown">
-            {/* <CircularProgress /> */}
-            <p>Loading...</p>
+          <div className="list-group notification__loading dropdown" >
+
           </div>
         ) : (
           <ul className="dropdown-menu dropdown-menu-end notification__content bg-white">
             {notifications.map((notification) => (
-              <li>
+              <li key={notification._id}>
                 <NotificationItem
                   key={notification._id}
                   notification={notification}

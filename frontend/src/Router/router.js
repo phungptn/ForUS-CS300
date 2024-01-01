@@ -14,6 +14,7 @@ const Profile = lazy(() => import('../pages/Profile/profile'));
 const Admin = lazy(() => import('../pages/Admin/admin'));
 const ForgotPassword = lazy(() => import('../pages/Login/ForgotPassword/forgotPassword'));
 const ResetPassword = lazy(() => import('../pages/Login/ForgotPassword/resetPassword'));
+const UserProfile = lazy(() => import('../pages/UserProfile/userProfile'));
 const AuthRequiredRoute = ({ auth, element }) => {
 	return auth ? element : <Navigate to="/login" />
 }
@@ -44,6 +45,7 @@ function Router() {
                 <Route path='thread/:thread_id' element={<Thread />}/>
                 <Route path='thread/:thread_id/:page' element={<Thread />}/>
                 <Route path='search/:page' element={<Search />}/>
+                <Route path='user/:user_id' element={<UserProfile />}/>
             </Route>
             <Route exact path='/signup' element={<AuthRequiredRoute auth={state.authenticated} element={<SignUp />}/>} />
             <Route path="/login" element={< LoginLayout auth={state.authenticated} />} >
