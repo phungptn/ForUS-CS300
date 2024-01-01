@@ -1,4 +1,4 @@
-import BoxCard from "../BoxCard/boxcard";
+import { BoxCard } from "../BoxCard/boxcard";
 import { GroupControl } from "../AdminControl/admincontrol";
 
 export default function Group({ group }) {
