@@ -73,7 +73,7 @@ export default function Header() {
           >
             <img src={logo} alt="logo" height={32} />
           </a>
-          <div className="nav col-12 col-lg-auto  me-lg-auto mb-2 justify-content-center ">
+          <div className="nav col-12 col-lg-auto  me-lg-auto  justify-content-center ">
             {/* {routes.map((route, index) => (
               <li key={index}>
                 <a
