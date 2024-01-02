@@ -4,7 +4,6 @@ const User = require('../models/user');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
 const COMMENTS_PER_PAGE = 2;
-const SEARCH_RESULTS_PER_PAGE = 5;
 
 module.exports = {
     createThread: async (req, res) => {
@@ -93,7 +92,7 @@ module.exports = {
                             let: { "id": "$comments.author" },
                             pipeline: [
                                 { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
-                                { $project: { _id: 1, fullname: 1 } }
+                                { $project: { _id: 1, fullname: 1, avatarUrl: 1 } }
                             ],
                             as: "comments.author",
                         },
@@ -316,6 +315,219 @@ module.exports = {
             }
             finally {
                 session.endSession();
+            }
+        }
+    },
+    isDeleter:
+    /**
+    * Internal middleware to check if the user is the author of the thread or a moderator of the box.
+    * 
+    * @param {string} thread_id the id of the thread.
+    * @throws {400} - Invalid request.
+    * @throws {403} - Invalid session.
+    * @throws {403} - Unauthorized.
+    * @throws {404} - Thread not found.
+    * @throws {500} - Internal server error.
+    */
+    async (req, res, next) => {    
+        let thread_id = req.params.thread_id;
+        if (thread_id == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            try {
+                const user = await userUtil.findUserById(req);
+                if (user == null) {
+                    res.status(403).json({ error: "Invalid session." });
+                }
+                else if (user.role === 'admin') {
+                    next();
+                }
+                else {
+                    const thread = await Thread.findOne({ _id: thread_id }).populate('box', 'moderators banned');
+                    if (thread == null) {
+                        res.status(404).json({ error: "Thread not found." });
+                    }
+                    else {
+                        if (thread.box.moderators.includes(user._id) || (thread.author.equals(user._id) && !thread.box.banned.includes(user._id))) {
+                            next();
+                        }
+                        else {
+                            res.status(403).json({ error: "Unauthorized." });
+                        }
+                    }
+                }
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+        }
+    },
+    getDeleterStatus:
+    /**
+    * Endpoint to check if the user is the author of the thread or a moderator of the box.
+    * @param {string} thread_id the id of the thread.
+    * @throws {400} - Invalid request.
+    * @throws {403} - Invalid session.
+    * @throws {404} - Thread not found.
+    * @throws {500} - Internal server error.
+    */
+    async (req, res) => {
+        let thread_id = req.params.thread_id;
+        if (thread_id == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            try {
+                const user = await userUtil.findUserById(req);
+                if (user == null) {
+                    res.status(403).json({ error: "Invalid session." });
+                }
+                else if (user.role === 'admin') {
+                    res.status(200).json({ deleterStatus: 'admin' });
+                }
+                else {
+                    const thread = await Thread.findOne({ _id: thread_id }).populate('box', 'moderators');
+                    if (thread == null) {
+                        res.status(404).json({ error: "Thread not found." });
+                    }
+                    else {
+                        if (thread.box.moderators.includes(user._id)) {
+                            res.status(200).json({ deleterStatus: 'moderator' });
+                        }
+                        else if (thread.author.equals(user._id) && !thread.box.banned.includes(user._id)) {
+                            res.status(200).json({ deleterStatus: 'author' });
+                        }
+                        else {
+                            res.status(200).json({ deleterStatus: 'user' });
+                        }
+                    }
+                }
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+        }
+    },
+    isUpdater:
+    /**
+     * Internal middleware to check if the user is the author of the thread.
+     * @param {string} thread_id the id of the thread.
+     * @throws {400} - Invalid request.
+     * @throws {403} - Invalid session.
+     * @throws {403} - Unauthorized.
+     * @throws {404} - Thread not found.
+     * @throws {500} - Internal server error.
+     */
+    async (req, res, next) => {
+        let thread_id = req.params.thread_id;
+        if (thread_id == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            try {
+                const user = await userUtil.findUserById(req);
+                if (user == null) {
+                    res.status(403).json({ error: "Invalid session." });
+                }
+                else {
+                    const thread = await Thread.findOne({ _id: thread_id }.populate('box', 'banned'));
+                    if (thread == null) {
+                        res.status(404).json({ error: "Thread not found." });
+                    }
+                    else {
+                        if (thread.author.equals(user._id) && !thread.box.banned.includes(user._id)) {
+                            next();
+                        }
+                        else {
+                            res.status(403).json({ error: "Unauthorized." });
+                        }
+                    }
+                }
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+        }
+    },
+    getUpdaterStatus:
+    /**
+     * Endpoint to check if the user is the author of the thread.
+     * @param {string} thread_id the id of the thread.
+     * @throws {400} - Invalid request.
+     * @throws {403} - Invalid session.
+     * @throws {404} - Thread not found.
+     * @throws {500} - Internal server error.
+    */
+    async (req, res) => {
+        let thread_id = req.params.thread_id;
+        if (thread_id == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            try {
+                const user = await userUtil.findUserById(req);
+                if (user == null) {
+                    res.status(403).json({ error: "Invalid session." });
+                }
+                else {
+                    const thread = await Thread.findOne({ _id: thread_id });
+                    if (thread == null) {
+                        res.status(404).json({ error: "Thread not found." });
+                    }
+                    else {
+                        if (thread.author.equals(user._id)) {
+                            res.status(200).json({ updaterStatus: 'author' });
+                        }
+                        else {
+                            res.status(200).json({ updaterStatus: 'user' });
+                        }
+                    }
+                }
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+        }
+    },
+    isBanned:
+    /**
+     * Internal middleware to check if the user is banned from the box of the thread.
+     * @param {string} thread_id the id of the thread.
+     * @throws {400} - Invalid request.
+     * @throws {403} - Invalid session.
+     * @throws {403} - Unauthorized.
+     * @throws {404} - Thread not found.
+     * @throws {500} - Internal server error.
+     */
+    async (req, res, next) => {
+        let thread_id = req.params.thread_id;
+        if (thread_id == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            try {
+                const user = await userUtil.findUserById(req);
+                if (user == null) {
+                    res.status(403).json({ error: "Invalid session." });
+                }
+                else {
+                    const thread = await Thread.findOne({ _id: thread_id }).populate('box', 'banned');
+                    if (thread == null) {
+                        res.status(404).json({ error: "Thread not found." });
+                    }
+                    else {
+                        if (thread.box.banned.includes(user._id)) {
+                            res.status(403).json({ error: "Unauthorized." });
+                        }
+                        else {
+                            next();
+                        }
+                    }
+                }
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
             }
         }
     }

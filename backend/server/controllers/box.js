@@ -113,7 +113,7 @@ module.exports = {
               let: { id: "$threads.author" },
               pipeline: [
                 { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
-                { $project: { _id: 1, fullname: 1 } },
+                { $project: { _id: 1, fullname: 1, avatarUrl: 1 } },
               ],
               as: "threads.author",
             },
@@ -365,4 +365,41 @@ module.exports = {
       }
     }
   },
+  isBanned:
+  /**
+   * Internal middleware to check if the user is banned from the box
+   *
+   * @param {string} box_id box id
+   * @throw {400} Invalid request
+   * @throw {403} Invalid session
+   * @throw {403} You are banned from this box
+   * @throw {500} Internal server error
+   */
+  async (req, res, next) => {
+    let box_id = req.params.box_id;
+    if (box_id == null) {
+      res.status(400).json({ error: "Invalid request." });
+    } else {
+      try {
+        const user = await findUserById(req);
+        if (user == null) {
+          res.status(403).json({ error: "Invalid session." });
+        }
+        else {
+          const box = await Box.findOne({
+            _id: box_id,
+            banned: user._id,
+          });
+          if (box == null) {
+            next();
+          } 
+          else {
+            res.status(403).json({ banned: true, error: "You are banned from this box." });
+          }
+        }
+      } catch (err) {
+        res.status(500).json({ error: err });
+      }
+    }
+  }
 };

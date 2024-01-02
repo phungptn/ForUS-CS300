@@ -9,11 +9,6 @@ export function UserCardSearch  ({ user }) {
             const url = await downloadImage('images/avatar/' + user.avatarUrl);
             console.log(url);
             setProfilePicture(url);
-
-
-
-
-
         }
         getProfilePicture();
     }, []);

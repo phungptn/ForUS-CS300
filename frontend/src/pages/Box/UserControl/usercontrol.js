@@ -1,9 +1,10 @@
 import { instance } from "../../../api/config";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BoxContext } from "../context";
 import './usercontrol.scss';
 import { route } from "../route";
 import { getTimePassed } from "../../../utils/getTimePassed";
+import { downloadImage } from "../../../utils/loadImage";
 // dropdowns will not work without this import
 import { Dropdown } from "bootstrap";
 
@@ -86,9 +87,20 @@ export function CommentsCounter({ thread }) {
 }
 
 export function ThreadInformation({ thread }) {
+    const [profilePicture, setProfilePicture] = useState(null);
+    useEffect(() => {
+        async function getProfilePicture() {
+            const url = await downloadImage('images/avatar/' + thread.author.avatarUrl);
+            console.log(url);
+            setProfilePicture(url);
+        }
+        getProfilePicture();
+    }, []);
     return (
         <div className="d-flex gap-2 p-0">
-            <img className="rounded-circle bg-dark my-auto" width={32} height={32}/>
+            <img className="rounded-circle bg-dark my-auto" width={32} height={32} src={
+                profilePicture ? profilePicture : 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'
+            } alt="avatar"/>
             <div className="d-flex flex-column justify-content-start">
                 <span className="text-white text-start">{thread.author.fullname}</span>
                 <small className="text-gray text-start">{getTimePassed(thread.createdAt)}</small>

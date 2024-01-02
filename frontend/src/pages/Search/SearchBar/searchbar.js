@@ -20,7 +20,7 @@ function SearchBarTypeDropdown({ type, setType }) {
 export function SearchBar() {
     const [type, setType] = useState('Thread');
     return (
-        <form className="d-flex ms-3" style={{minWidth: '49vw'}} onSubmit={async (e) => {
+        <form className="d-flex ms-3" style={{minWidth: '47.5vw'}} onSubmit={async (e) => {
             e.preventDefault();
             const searchInput = document.getElementById("searchInput");
             const searchButton = document.getElementById("searchButton");

@@ -15,10 +15,7 @@ async function downloadImage(url) {
         return null;
     }
     
-    }
-
-    
-
+}
 
 export {
     downloadImage
