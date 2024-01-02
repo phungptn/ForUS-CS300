@@ -27,9 +27,6 @@ export default function Home() {
             <div className="container">
                 <div className="row" >
                     <div className="col-md-8">
-                        {/* <div className="container mb-4">
-                            <SearchBar />
-                        </div> */}
                         {groups && groups.map((group) => (
                             <GroupsContext.Provider value={{ groups, setGroups, adminStatus }}>
                                 <Group group={group} adminStatus={adminStatus} />

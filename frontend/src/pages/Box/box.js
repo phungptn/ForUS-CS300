@@ -76,10 +76,7 @@ export default function Box() {
                             <h3 className="text-white">{box.name}</h3>
                             <CreateThreadButton box={box} />
                         </div>
-                        <div className="py-2">
-                            <SearchBar />
-                        </div>
-                        <div className="d-flex py-2 justify-content-between">
+                        <div className="d-flex justify-content-between">
                             <Pagination box={box} page={page} order={order} direction={direction}/>
                             <ThreadFilter box={box} page={page} order={order} direction={direction}/>
                         </div>

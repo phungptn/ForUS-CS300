@@ -4,8 +4,8 @@ export function SearchHeader({result, q}) {
     }
     return (
         <div className="d-flex align-items-start flex-column">
-            <h1>Kết quả tìm kiếm cho "{q}"</h1>
-            <h5>{result.metadata.total} kết quả</h5>
+            <h3>Kết quả tìm kiếm cho "{q}"</h3>
+            <h6>{result.metadata.total} kết quả</h6>
         </div>
     );
 }
