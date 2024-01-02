@@ -12,7 +12,8 @@ const {
   updatePassword,
   getAllUser,
   getNotification,
-  userProfile
+  userProfile,
+  updateAllNotificationIsRead
 } = require("../controllers/user");
 
 const router = express.Router();
@@ -29,6 +30,7 @@ router.put("/update-password", updatePassword);
 router.get("/allUser", getAllUser);
 router.get("/notification", getNotification);
 router.get("/:id", userProfile);
+router.put("/notification", updateAllNotificationIsRead);
 
 
 module.exports = router;

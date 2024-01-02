@@ -83,4 +83,15 @@ const getNotification = async () => {
   }
 }
 
-export { logout, infoUser, updateProfile, forgotPassword, resetPassword, updatePassword, login, getNotification };
+const updateAllNotificationIsRead = async () => {
+  try {
+    const response = instance.put("/users/notification");
+    return response;
+  }
+  catch (error) {
+    console.error(error);
+    return error.response;
+  }
+}
+
+export { logout, infoUser, updateProfile, forgotPassword, resetPassword, updatePassword, login, getNotification, updateAllNotificationIsRead };

@@ -115,7 +115,7 @@ const infoUser = async (req, res, next) => {
     //     }
     //   }])
     
-    user = await userModel.findOne({ _id: user._id }).select('-passwordHash -passwordResetExpiry -passwordResetToken -sessionStart -lastAccessed -notifications');
+    user = await userModel.findOne({ _id: user._id }).select('-passwordHash -passwordResetExpiry -passwordResetToken -sessionStart -lastAccessed');
 
 
     if (user == null) res.status(403).json({ error: "Invalid session." });
@@ -302,9 +302,27 @@ const getNotification = async (req, res, next) => {
     const user = await userUtil.findUserById(req);
     if (user == null) res.status(403).json({ error: "Invalid session." });
     else {
-      console.log
-      const notificationIds = user.notifications.map((notification) => notification.notification);
+      const notificationIds = user.notifications.map((notification) => notification.notification );
+      // console.log(notificationIds);
       const notifications = await Notification.find({ _id: { $in: notificationIds } });
+      // notifications.map((notification) => {
+      //   let x = user.notifications.find((e) => e.notification.toString() == notification._id.toString());
+      //   // console.log(x);
+      //   // add isRead field to notification
+      //   notification.isRead = x.isRead;
+      //   console.log(notification.isRead);
+
+      // });
+
+      // const userIsRead = userModel.findOne({ _id: user._id }).select('notifications.isRead');
+      // console.log(userIsRead);
+
+      // sort notifications by createdAt
+      notifications.sort((a, b) => b.createdAt - a.createdAt);
+
+
+
+      
       res.status(200).json({ message: "Get all notifications successfully.", notifications: notifications });
     }
   } catch (e) {
@@ -326,13 +344,32 @@ const getAllUser = async (req, res, next) => {
         "role"
       ];
 
-      result = result.sort(sortFunc).map(e => {
-        let x = {};
-        for (let i of getableFields) x[i] = e[i];
-        return x;
-      });
+      // result = result.sort().map(e => {
+      //   let x = {};
+      //   for (let i of getableFields) x[i] = e[i];
+      //   return x;
+      // });
 
       res.status(200).send({ message: "Fetched successfully", users: result});
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+}
+
+const updateAllNotificationIsRead = async (req, res, next) => {
+  try {
+    const user = await userUtil.findUserById(req);
+    if (user == null) res.status(403).json({ error: "Invalid session." });
+    else {
+      user.notifications.map((notification) => {
+        notification.isRead = true;
+      });
+      await user.save();
+
+      
+
+      res.status(200).json({ message: "Update all notifications successfully." });
     }
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -353,5 +390,6 @@ module.exports = {
   updatePassword,
   getAllUser,
   getNotification,
-  userProfile
+  userProfile,
+  updateAllNotificationIsRead
 };

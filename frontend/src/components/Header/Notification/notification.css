@@ -22,3 +22,14 @@
   font-size: 13px;
   padding-top: 2px;
 }
+
+.read {
+  background-color: darkgray !important;
+}
+
+
+
+p {
+  
+  white-space: normal;
+}

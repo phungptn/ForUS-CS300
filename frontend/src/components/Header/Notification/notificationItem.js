@@ -24,7 +24,23 @@ export default function NotificationItem({ notification }) {
             setDiff(Math.floor(diffInMinutes / 60 / 24 / 30 / 12));
             setUnit("year");
         }
+
+        console.log(notification.isRead);
+        const notificationItem = document.getElementById(notification._id);
+        console.log(notificationItem);
+
+
+        if (notification.isRead === true) {
+            
+
+                notificationItem.classList.add("read");
+        
+           
+           
+        }
     }, []);
+
+
 
     const [diff, setDiff] = useState(0);
     const [unit, setUnit] = useState("");
@@ -32,22 +48,14 @@ export default function NotificationItem({ notification }) {
 
     
     return (
-        // <div className="notificationItem list-group-item">
-        //     <div className="notificationItem__header">
-        //         <h2>{notification.title}</h2>
-        //         <p>{notification.createdAt}</p>
-        //     </div>
-        //     <div className="notificationItem__body">
-        //         <p>{notification.body}</p>
-        //     </div>
-        // </div>
 
-        <a href="#" class="dropdown-item  list-group-item-action d-flex gap-3 py-3 notificationItem bg-white " aria-current="true">
+
+        <a href="#" class="dropdown-item list-group-item-action d-flex  gap-3 py-3 notificationItem  " id={notification._id} aria-current="true">
         <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0"></img>
         <div class="d-flex gap-2 w-100 justify-content-between">
           <div>
             <h6 class="mb-0">{notification.title}</h6>
-            <p class="mb-0 opacity-75">{notification.body}.</p>
+            <p class="mb-0 opacity-75  ">{notification.body}.</p>
           </div>
           <small class="opacity-50 text-nowrap">{diff} {unit} ago</small>
         </div>

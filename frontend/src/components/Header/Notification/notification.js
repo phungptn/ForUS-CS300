@@ -1,6 +1,8 @@
 import { getNotification } from "../../../api/user";
+import { infoUser } from "../../../api/user";
 import { useEffect, useState } from "react";
 import NotificationItem from "./notificationItem";
+import { updateAllNotificationIsRead } from "../../../api/user";
 import "./notification.css";
 
 import "./notification.css";
@@ -12,7 +14,20 @@ export default function Notification() {
   useEffect(() => {
     const fetchNotifications = async () => {
       const response = await getNotification();
-      console.log(response.data.notifications);
+      const userResponse = await infoUser();
+      response.data.notifications.forEach((notification) => {
+        let temp = userResponse.data.user.notifications.find(
+          (n) => n.notification === notification._id
+        )
+
+        notification.isRead = temp.isRead;
+
+  
+        
+      });
+
+
+
       setNotifications(response.data.notifications);
 
       setLoading(false);
@@ -20,6 +35,21 @@ export default function Notification() {
 
     fetchNotifications();
   }, []);
+
+  const markAllAsRead = async () => {
+    const response = await updateAllNotificationIsRead();
+    console.log(response);
+    if (response.data.success) {
+      const updatedNotifications = notifications.map((notification) => {
+        notification.isRead = true;
+        return notification;
+      });
+
+      console.log(updatedNotifications);
+      setNotifications(updatedNotifications);
+    }
+  };
+
 
   return (
     <>
@@ -44,13 +74,13 @@ export default function Notification() {
 
 
         </button>
+        
 
-        {loading ? (
-          <div className="list-group notification__loading dropdown" >
+        { (
+          <ul className="dropdown-menu  dropdown-menu-end notification__content bg-white width-250">
+   <li><h1 className="dropdown-header">Notification</h1></li>
 
-          </div>
-        ) : (
-          <ul className="dropdown-menu dropdown-menu-end notification__content bg-white">
+
             {notifications.map((notification) => (
               <li key={notification._id}>
                 <NotificationItem
@@ -59,6 +89,21 @@ export default function Notification() {
                 />
               </li>
             ))}
+
+            {notifications.length === 0 ? (
+              <li>
+                <p className="text-center text-muted">No notifications</p>
+              </li>
+            ):
+            <li>
+            <a href="#" className="dropdown-item   py-1 text-center notificationItem" onClick={markAllAsRead}>
+              Mark all as read
+            </a>
+          </li>
+            }
+
+
+
           </ul>
         )}
       </div>
