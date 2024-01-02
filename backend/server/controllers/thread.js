@@ -122,7 +122,15 @@ module.exports = {
                             author: { $first: '$author' },
                             createdAt: { $first: '$createdAt' },
                             updatedAt: { $first: '$updatedAt' },
-                            comments: { $push: '$comments'}
+                            comments: { 
+                                $push: {
+                                    $cond: {
+                                        if: { $ne: ['$comments', {}] },
+                                        then: '$comments',
+                                        else: '$$REMOVE'
+                                    }
+                                }
+                            }
                         }
                     },              
                     {

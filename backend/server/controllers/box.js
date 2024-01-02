@@ -132,7 +132,7 @@ module.exports = {
               threads: {
                 $push: {
                   $cond: {
-                    if: { $isArray: "$threads.comments" },
+                    if: { $ne: ["$threads", {}] },
                     then: {
                       _id: "$threads._id",
                       title: "$threads.title",
