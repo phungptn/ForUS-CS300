@@ -98,7 +98,7 @@ export function ThreadInformation({ thread }) {
     }, []);
     return (
         <div className="d-flex gap-2 p-0">
-            <img className="rounded-circle bg-dark my-auto" width={32} height={32} src={
+            <img className="rounded-circle centered-and-cropped bg-dark my-auto" width={32} height={32} src={
                 profilePicture ? profilePicture : 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'
             } alt="avatar"/>
             <div className="d-flex flex-column justify-content-start">
