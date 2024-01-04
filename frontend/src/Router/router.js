@@ -50,6 +50,7 @@ function Router() {
       >
         <Route exact path="/" element={<Home />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="management/user" element={<Management />} />
         <Route path="management" element={<Management />} />
         <Route path="box/:box_id" element={<Box />} />
         <Route path="box/:box_id/:page" element={<Box />} />

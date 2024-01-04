@@ -4,11 +4,11 @@ import { storage } from "../../../Firebase/config";
 import { downloadImage } from "../../../utils/loadImage";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
-import "../../Profile/profile.css";
+import "./management.css";
 import { updateProfile, updatePassword, infoUser } from "../../../api/user";
 
 export default function Profile() {
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState("user");
   const [bio, setBio] = useState("");
   const [address, setAddress] = useState("");
   const [fullname, setFullname] = useState("");
@@ -115,224 +115,130 @@ export default function Profile() {
               <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
                 <button
                   className={`nav-link ${
-                    activeTab === "profile" ? "active" : ""
+                    activeTab === "user" ? "active" : ""
                   } text-white`}
                   id="nav-home-tab"
-                  onClick={() => handleTabClick("profile")}
+                  onClick={() => handleTabClick("user")}
                 >
-                  Profile
+                  Users
                 </button>
 
                 <button
                   className={`nav-link ${
-                    activeTab === "password" ? "active" : ""
+                    activeTab === "thread" ? "active" : ""
                   } + text-white`}
                   id="nav-password-tab"
-                  onClick={() => handleTabClick("password")}
+                  onClick={() => handleTabClick("thread")}
                 >
-                  Manage Password
+                  Threads
+                </button>
+
+                <button
+                  className={`nav-link ${
+                    activeTab === "report" ? "active" : ""
+                  } text-white`}
+                  id="nav-home-tab"
+                  onClick={() => handleTabClick("report")}
+                >
+                  Reports
                 </button>
               </div>
             </nav>
             <div className="tab-content" id="nav-tabContent">
               <div
                 className={`tab-pane fade ${
-                  activeTab === "profile" ? "show active" : ""
+                  activeTab === "user" ? "show active" : ""
                 }`}
-                id="nav-profile"
+                id="nav-user"
                 role="tabpanel"
-                aria-labelledby="nav-profile-tab"
+                aria-labelledby="nav-user-tab"
               >
-                <div className="order-md-1 text-start">
-                  <h1 className="mb-3 text-white">Profile</h1>
-                  <p className="lead text-white">
-                    Please update your profile information to make sure that it
-                    is up to date.
-                  </p>
-                  <div className="row">
-                    <div className="col-md-3 mb-3">
-                      <div className="text-center">
-                        <div>
-                          <label htmlFor="avatar" className="form-label">
-                            Your avatar
-                          </label>
-                        </div>
+                <div className="d-flex flex-column align-items-start">
+                  {/* First Element: Search Bar and New User Button */}
+                  <div className="d-flex align-items-center">
+                    {/* <SearchBar />{" "} */}
+                    {/* Replace with your actual SearchBar component */}
+                    <button className="btn btn-primary ms-3">New User</button>
+                  </div>
 
-                        <img
-                          src={
-                            avatar
-                              ? avatar
-                              : "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
-                          }
-                          className="rounded-5 text-center centered-and-cropped"
-                          id="avatarImage"
-                          alt="avatar"
-                          width="150"
-                          height="150"
-                        />
-                        <div className="mt-2">
-                          <button
-                            className="btn btn-warning btn-sm"
-                            onClick={handleUploadButtonClick}
-                          >
-                            Change Avatar
-                          </button>
-                          <input
-                            className="form-control"
-                            type="file"
-                            accept="image/*"
-                            id="uploadAvatar"
-                            onChange={(e) => {
-                              setAvatarFile(e.target.files[0]);
-                              setAvatar(URL.createObjectURL(e.target.files[0]));
-                            }}
-                            hidden
-                          ></input>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="col-md-8 mb-3">
-                      <label htmlFor="bio-text" className="form-label">
-                        Bio
-                      </label>
-                      <textarea
-                        className="form-control text-white"
-                        id="bio-text"
-                        value={bio}
-                        rows="5"
-                        onChange={(e) => setBio(e.target.value)}
-                      ></textarea>
+                  {/* Second Element: Tools */}
+                  <div className="d-flex mt-3">
+                    <select className="form-select me-3">
+                      <option>Sort by...</option>
+                      {/* Add sorting options here */}
+                    </select>
+                    <div className="btn-group">
+                      <button className="btn btn-secondary">Tool 1</button>
+                      <button className="btn btn-secondary">Tool 2</button>
+                      <button className="btn btn-secondary">Tool 3</button>
                     </div>
                   </div>
-                  <hr className="mb-4" />
 
-                  <form className="needs-validation" noValidate>
-                    <div className="row">
-                      <div className="col-md-6 mb-3">
-                        <label htmlFor="firstName " className="text-white">
-                          Full name
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control text-white "
-                          id="firstName"
-                          value={fullname}
-                          onChange={(e) => setFullname(e.target.value)}
-                          required
-                        />
-                        <div className="invalid-feedback text-white">
-                          Valid first name is required.
-                        </div>
-                      </div>
-                      <div className="col-md-6 mb-3 text-white">
-                        <label htmlFor="lastName">Student ID</label>
-                        <input
-                          type="text"
-                          className="form-control text-white"
-                          id="studentID"
-                          value={studentId}
-                          onChange={(e) => setStudentId(e.target.value)}
-                          // placeholder
-                          required
-                        />
-                        <div className="invalid-feedback text-white">
-                          Valid StudentID is required.
-                        </div>
-                      </div>
-                    </div>
+                  {/* Third Element: Table */}
+                  <table className="table mt-3">
+                    <thead>
+                      <tr>
+                        <th>Avatar</th>
+                        <th>Student ID</th>
+                        <th>Fullname</th>
+                        <th>Faculty</th>
+                        <th>Gender</th>
+                        <th>Status</th>
+                        <th>Year</th>
+                        <th>Checkbox</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Render 20 rows with user data */}
+                      {Array.from({ length: 20 }, (_, index) => (
+                        <tr key={index}>
+                          <td>Avatar</td>
+                          <td>Student ID</td>
+                          <td>Fullname</td>
+                          <td>Faculty</td>
+                          <td>Gender</td>
+                          <td>Status</td>
+                          <td>Year</td>
+                          <td>Checkbox</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
 
-                    <div className="mb-3">
-                      <label htmlFor="email" className="text-white">
-                        Email
-                      </label>
-                      <div className="input-group">
-                        <div className="input-group-prepend">
-                          <span className="input-group-text">@</span>
-                        </div>
-                        <input
-                          type="email"
-                          className="form-control text-white"
-                          id="email"
-                          value={email}
-                          placeholder="you@example.com"
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                        />
-                        {/* <div className="invalid-feedback">
-                    Please enter a valid email address for shipping updates.
-                  </div> */}
-                      </div>
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="address" className="text-white">
-                        Address
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control text-white"
-                        id="address"
-                        value={address}
-                        placeholder="1234 Main St"
-                        required
-                        onChange={(e) => setAddress(e.target.value)}
-                      />
-                      <div className="invalid-feedback">
-                        Please enter your address.
-                      </div>
-                    </div>
-
-                    {/* <hr className="mb-4" />
-                    <h4 className="mb-3">More information</h4>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="formFile text-white"
-                        className="form-label"
-                      >
-                        Load your avatar
-                      </label>
-                      <input
-                        className="form-control"
-                        type="file"
-                        accept="image/*"
-                        id="formFile"
-                        onChange={(e) => {
-                          console.log(e.target.files[0]);
-                          setAvatarUrl(e.target.files[0]);
-                        }}
-                      ></input>
-                    </div>
-
-                    <div className="row">
-                      <div className="mb-3">
-                        <label htmlFor="bio-text" className="form-label">
-                          Bio
-                        </label>
-                        <textarea
-                          className="form-control"
-                          id="bio-text"
-                          rows="3"
-                          onChange={(e) => setBio(e.target.value)}
-                        ></textarea>
-                      </div>
-                    </div> */}
-                    <hr className="mb-4" />
-                    <button
-                      className="btn btn-warning btn-lg  "
-                      type="submit"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        updateProfileFunction();
-                      }}
-                    >
-                      Update
-                    </button>
-                  </form>
+                  {/* Fourth Element: Pagination Bar */}
+                  <div className="d-flex justify-content-center mt-3">
+                    {/* Render your pagination component here */}
+                    {/* Example: */}
+                    <nav aria-label="Page navigation example">
+                      <ul className="pagination">
+                        <li className="page-item">
+                          <a
+                            className="page-link"
+                            href="#"
+                            aria-label="Previous"
+                          >
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                        <li className="page-item">
+                          <a className="page-link" href="#">
+                            1
+                          </a>
+                        </li>
+                        {/* Add more page items as needed */}
+                        <li className="page-item">
+                          <a className="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
                 </div>
               </div>
               <div
                 className={`tab-pane fade ${
-                  activeTab === "password" ? "show active" : ""
+                  activeTab === "thread" ? "show active" : ""
                 }`}
                 id="nav-password"
                 role="tabpanel"
