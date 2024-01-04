@@ -110,7 +110,7 @@ module.exports = {
                             let: { "id": "$author" },
                             pipeline: [
                                 { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
-                                { $project: { fullname: 1 } }
+                                { $project: { fullname: 1, avatarUrl: 1 } }
                             ],
                             as: "author",
                         },
@@ -212,7 +212,7 @@ module.exports = {
                                     {
                                         $sortArray: {
                                             input: "$comments",
-                                            sortBy: { updatedAt: -1}
+                                            sortBy: { createdAt: -1}
                                         }
                                     },
                                     (page - 1) * COMMENTS_PER_PAGE,
