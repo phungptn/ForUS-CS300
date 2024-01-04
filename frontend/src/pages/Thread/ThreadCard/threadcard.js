@@ -1,4 +1,5 @@
 import './threadcard.css';
+import { ThreadHorizontalVoteBar } from '../UserControl/usercontrol';
 
 export default function ( {thread} ) {
     return (       
@@ -24,16 +25,8 @@ export default function ( {thread} ) {
                         <div className='card-title m-0'>
                             <h4 className="text-start">{thread.body}</h4>
                         </div>
-                        <div className="d-flex justify-content-between align-items-end mt-3">
-                            <div className="text-muted">
-                                {/* Format the score or other relevant information */}
-                                {`Score: ${thread.score}`} 
-                            </div>
-                            <div className="d-flex gap-2">
-                                {/* Include your upvote and downvote components here */}
-                                {/* <UpVoteComponent /> */}
-                                {/* <DownVoteComponent /> */}
-                            </div>
+                        <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
+                            <ThreadHorizontalVoteBar thread={thread} />
                         </div>
                     </div>
                 </div>

@@ -86,7 +86,9 @@ export default function Thread() {
                         </div>
 
                         {/* Thread body */}
-                        <Threadcard thread={thread} />
+                        <ThreadContext.Provider value={{ thread, setThread, setAutoRedirect }}>
+                            <Threadcard thread={thread} />
+                        </ThreadContext.Provider>
 
                         {/* Comments */}
                         {thread.comments && thread.comments.map((comment) => (
