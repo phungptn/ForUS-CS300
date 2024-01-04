@@ -70,13 +70,13 @@ export default function Thread() {
                         </div>
                         
                         {/* Author and date */}
-                        <div className="d-flex py-2" style={{ fontWeight: 'bold' }}>
-                            <i className="bi bi-person white-shade-text"></i>
-                            <span className="ms-2 white-shade-text">{thread.author && thread.author.fullname}</span>
+                        <div className="d-flex py-2 white-text" style={{ fontWeight: 'bold' }}>
+                            <i className="bi bi-person"></i>
+                            <span className="ms-2">{thread.author && thread.author.fullname}</span>
                             <i class="bi bi-dot ms-1"></i>
                             <div className="d-flex align-items-center">
-                                <i className="bi bi-clock white-shade-text"></i>
-                                <span className="ms-1 white-shade-text">{thread.createdAt && formatDateToDDMMYYYY(thread.createdAt)}</span>
+                                <i className="bi bi-clock"></i>
+                                <span className="ms-1">{thread.createdAt && formatDateToDDMMYYYY(thread.createdAt)}</span>
                             </div>
                         </div>
 
@@ -86,9 +86,11 @@ export default function Thread() {
                         </div>
 
                         {/* Thread body */}
-                        <ThreadContext.Provider value={{ thread, setThread, setAutoRedirect }}>
-                            <Threadcard thread={thread} />
-                        </ThreadContext.Provider>
+                        {thread.author && thread.author._id && (
+                            <ThreadContext.Provider value={{ thread, setThread, setAutoRedirect }}>
+                                <Threadcard thread={thread} />
+                            </ThreadContext.Provider>
+                        )}
 
                         {/* Comments */}
                         {thread.comments && thread.comments.map((comment) => (

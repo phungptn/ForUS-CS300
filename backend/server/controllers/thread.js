@@ -110,7 +110,7 @@ module.exports = {
                             let: { "id": "$author" },
                             pipeline: [
                                 { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
-                                { $project: { fullname: 1 } }
+                                { $project: { fullname: 1, avatarUrl: 1 } }
                             ],
                             as: "author",
                         },
