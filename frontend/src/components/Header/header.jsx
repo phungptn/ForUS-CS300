@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 // import "./header.css";
 import { downloadImage } from "../../utils/loadImage";
 import { infoUser } from "../../api/user";
@@ -8,6 +8,9 @@ import { logout } from "../../api/user";
 import { useLocation } from "react-router-dom";
 import Notification from "./Notification/notification";
 import { SearchBar } from "../../pages/Search/SearchBar/searchbar";
+import { checkAdmin } from "../../utils/checkAdmin";
+import { GroupsContext } from "../../pages/Home/context";
+import { Management } from "../../pages/Home/AdminControl/admincontrol";
 
 export default function Header() {
   useEffect(() => {
@@ -17,7 +20,7 @@ export default function Header() {
         if (res.status === 200) {
           console.log(res.data);
           const data = res.data.user;
-          const avatar = await downloadImage('images/avatar/'+data.avatarUrl);
+          const avatar = await downloadImage("images/avatar/" + data.avatarUrl);
           const avatarElement = document.getElementById("dropdownUserAvatar");
           avatarElement.src = avatar;
         }
@@ -39,13 +42,17 @@ export default function Header() {
     }
   };
 
-
   const goToProfile = () => {
     window.location.href = "/profile";
   };
 
+  const goToManagement = () => {
+    window.location.href = "/management/user";
+  };
+
   const location = useLocation();
   const [routes, setRoutes] = React.useState(["Trang chủ"]);
+  const [adminStatus, setAdminStatus] = useState(false);
 
   useEffect(() => {
     const currentRoutes = location.pathname.split("/");
@@ -62,6 +69,10 @@ export default function Header() {
       setRoutes(["Trang chủ"]);
     }
   }, [location]);
+
+  useEffect(() => {
+    checkAdmin(setAdminStatus);
+  }, []);
 
   return (
     <header className="p-3 mb-3 border-bottom bg-primary sticky-top ">
@@ -88,9 +99,6 @@ export default function Header() {
             <SearchBar />
           </div>
 
-          
-
-
           <Notification />
 
           <div className="dropdown text-end  ">
@@ -103,26 +111,34 @@ export default function Header() {
               <img
                 src="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
                 alt="mdo"
-                
                 width="40"
                 height="40"
                 id="dropdownUserAvatar"
-                
                 className="rounded-3 centered-and-cropped p-1"
               />
             </a>
 
-            <ul className="dropdown-menu text-small bg-white active" aria-labelledby="dropdownMenuButton" style={{}}>
-              <li>
-                <a className="dropdown-item " href="#">
-                  New project...
-                </a>
-              </li>
-              <li>
-                <a className="dropdown-item" href="#">
-                  Settings
-                </a>
-              </li>
+            <ul
+              className="dropdown-menu text-small bg-white active"
+              aria-labelledby="dropdownMenuButton"
+              style={{}}
+            >
+              {adminStatus !== null && (
+                <>
+                  <li>
+                    <a
+                      className="dropdown-item"
+                      href="#"
+                      onClick={goToManagement}
+                    >
+                      Management
+                    </a>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                </>
+              )}
               <li>
                 <a className="dropdown-item" href="#" onClick={goToProfile}>
                   Profile
