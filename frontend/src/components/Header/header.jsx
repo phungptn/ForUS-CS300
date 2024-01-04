@@ -9,8 +9,6 @@ import { useLocation } from "react-router-dom";
 import Notification from "./Notification/notification";
 import { SearchBar } from "../../pages/Search/SearchBar/searchbar";
 import { checkAdmin } from "../../utils/checkAdmin";
-import { GroupsContext } from "../../pages/Home/context";
-import { Management } from "../../pages/Home/AdminControl/admincontrol";
 
 export default function Header() {
   useEffect(() => {
@@ -123,7 +121,7 @@ export default function Header() {
               aria-labelledby="dropdownMenuButton"
               style={{}}
             >
-              {adminStatus !== null && (
+              {adminStatus !== false && (
                 <>
                   <li>
                     <a
