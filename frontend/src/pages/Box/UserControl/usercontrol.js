@@ -102,7 +102,7 @@ export function ThreadInformation({ thread }) {
                 profilePicture ? profilePicture : 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'
             } alt="avatar"/>
             <div className="d-flex flex-column justify-content-start">
-                <span className="text-white text-start">{thread.author.fullname}</span>
+                <a className="text-start user-link" href={`/user/${thread.author._id}`}>{thread.author.fullname}</a>
                 <small className="text-gray text-start">{getTimePassed(thread.createdAt)}</small>
             </div>
         </div>

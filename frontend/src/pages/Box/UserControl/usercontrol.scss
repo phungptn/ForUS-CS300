@@ -11,3 +11,13 @@
     --bs-btn-active-color: var(--bs-red);
     --bs-btn-border-color: var(--bs-red);
 }
+
+.user-link {
+    color: var(--bs-white);
+    text-decoration: none;
+}
+
+.user-link:hover {
+    color: var(--bs-white);
+    text-decoration: underline;
+}
