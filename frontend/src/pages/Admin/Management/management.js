@@ -162,15 +162,17 @@ export default function Profile() {
                   </div>
 
                   {/* Second Element: Tools */}
-                  <div className="d-flex mt-3">
-                    <select className="form-select me-3">
-                      <option>Sort by...</option>
-                      {/* Add sorting options here */}
-                    </select>
-                    <div className="btn-group">
-                      <button className="btn btn-secondary">Tool 1</button>
-                      <button className="btn btn-secondary">Tool 2</button>
-                      <button className="btn btn-secondary">Tool 3</button>
+                  <div className="container-fluid mt-3">
+                    <div className="d-flex">
+                      <select className="form-select me-3 w-auto">
+                        <option>Sort by...</option>
+                        {/* Add sorting options here */}
+                      </select>
+                      <div className="btn-group ms-auto">
+                        <button className="btn btn-secondary">Tool 1</button>
+                        <button className="btn btn-secondary">Tool 2</button>
+                        <button className="btn btn-secondary">Tool 3</button>
+                      </div>
                     </div>
                   </div>
 
