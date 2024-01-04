@@ -8,6 +8,7 @@ import { checkModerator } from "../../utils/checkModerator";
 import { BoxControl } from "./BoxManagement/boxmanagement";
 import { SearchBar } from "../Search/SearchBar/searchbar";
 import { route } from "./route";
+import Editor from "../Editor/editor";
 
 export default function Box() {
     const location = useLocation();
@@ -72,11 +73,14 @@ export default function Box() {
             <div className="container">
                 <div className="row">
                     <div className="col-md-8">
-                        <div className="d-flex justify-content-between pb-2">
+                        <div className="d-flex justify-content-between mb-4">
                             <h3 className="text-white">{box.name}</h3>
-                            <CreateThreadButton box={box} />
+                            <CreateThreadButton box={box} target="#threadCreateMenu"/>
                         </div>
-                        <div className="d-flex justify-content-between">
+                        <div className="collapse" id="threadCreateMenu">
+                            <Editor />
+                        </div>
+                        <div className="d-flex justify-content-between mt-4">
                             <Pagination box={box} page={page} order={order} direction={direction}/>
                             <ThreadFilter box={box} page={page} order={order} direction={direction}/>
                         </div>

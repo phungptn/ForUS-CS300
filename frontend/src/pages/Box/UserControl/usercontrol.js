@@ -51,7 +51,7 @@ export function BoxDescription() {
     );
 }
 
-export function CreateThreadButton({ box }) {
+export function CreateThreadButton({ box, target }) {
     if (box.pageCount == null) {
         return (null);
     }
@@ -59,7 +59,8 @@ export function CreateThreadButton({ box }) {
         <button 
             type="button" 
             className="btn btn-warning"
-            onClick={() => TempCreateThread(box._id)}>Tạo thread mới</button>
+            data-bs-toggle="collapse" 
+            data-bs-target={target}>Tạo thread mới</button>
     );    
 }
 
