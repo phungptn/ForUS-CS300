@@ -9,8 +9,6 @@ export default function ( {thread} ) {
     useEffect(() => {
         async function getProfilePicture() {
             const url = await downloadImage('images/avatar/' + thread.author.avatarUrl);
-            console.log(thread.author.avatarUrl);
-            console.log(url);
             setProfilePicture(url);
         }
         getProfilePicture();

@@ -163,18 +163,6 @@ export function Pagination ({ thread, page }) {
     );
 }
 
-export function CommentInformation({ comment }) {
-    return (
-        <div className="d-flex gap-2 p-0">
-            <img className="rounded-circle bg-dark my-auto" width={32} height={32}/>
-            <div className="d-flex flex-column justify-content-start">
-                <span className="text-white text-start">{comment.author.fullname}</span>
-                <small className="text-gray text-start">{getTimePassed(comment.createdAt)}</small>
-            </div>
-        </div>
-    );
-}
-
 async function voteComment(thread, setThread, comment_id, vote) {
     const response = await instance.put(`/comment/${comment_id}/${vote}`);
     if (response.status === 200) {
