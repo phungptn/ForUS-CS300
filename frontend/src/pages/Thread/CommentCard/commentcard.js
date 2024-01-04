@@ -1,6 +1,5 @@
 import './commentcard.css';
-import { HorizontalVoteBar, CommentInformation } from '../UserControl/usercontrol';
-// import { DeleteThreadButton } from '../ModeratorControl/moderatorcontrol';
+import { CommentHorizontalVoteBar, CommentInformation } from '../UserControl/usercontrol';
 
 export default function ( {comment} ) {
     return (
@@ -11,12 +10,11 @@ export default function ( {comment} ) {
                     <div className="col-9 ps-4 pe-0 d-flex flex-column justify-content-between">
                         <div className='card-title m-0 row justify-content-between'>
                             <h4 className="col text-start text-white m-0">{comment.body}</h4>
-                            {/* <DeleteThreadButton thread={thread}/> */}
                         </div>
                         <div className="d-flex justify-content-between">
                             <CommentInformation comment={comment} />
                             <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
-                                <HorizontalVoteBar comment={comment} />
+                                <CommentHorizontalVoteBar comment={comment} />
                             </div>
                         </div>
                         

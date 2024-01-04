@@ -124,9 +124,10 @@ module.exports = {
         } else {
             const session = await mongoose.startSession();
             try {
-                session.withTransaction(async () => {
-                    const user = await userUtil.findUserById(req.body.token);
-                    const isUpvoted = await Comment.exists({ _id: comment_id, upvoted: user._id });
+                const user = await userUtil.findUserById(req);
+                const isUpvoted = await Comment.exists({ _id: comment_id, upvoted: user._id });
+                let voteStatus = isUpvoted ? 0 : 1;
+                session.withTransaction(async () => { 
                     if (isUpvoted) {
                         await Comment.updateOne({ _id: comment_id }, { $pull: { upvoted: user._id } });
                     } else {
@@ -134,6 +135,7 @@ module.exports = {
                         await Comment.updateOne({ _id: comment_id }, { $push: { upvoted: user._id } });
                     }
                 });
+                res.status(200).json({ message: "Comment upvoted.",  voteStatus: voteStatus });
             } catch (err) {
                 res.status(500).json({ error: err });
             } finally {
@@ -148,9 +150,10 @@ module.exports = {
         } else {
             const session = await mongoose.startSession();
             try {
+                const user = await userUtil.findUserById(req);
+                const isDownvoted = await Comment.exists({ _id: comment_id, downvoted: user._id });
+                let voteStatus = isDownvoted ? 0 : -1;
                 session.withTransaction(async () => {
-                    const user = await userUtil.findUserById(req.body.token);
-                    const isDownvoted = await Comment.exists({ _id: comment_id, downvoted: user._id });
                     if (isDownvoted) {
                         await Comment.updateOne({ _id: comment_id }, { $pull: { downvoted: user._id } });
                     } else {
@@ -158,6 +161,7 @@ module.exports = {
                         await Comment.updateOne({ _id: comment_id }, { $push: { downvoted: user._id } });
                     }
                 });
+                res.status(200).json({ message: "Comment downvoted.",  voteStatus: voteStatus });
             } catch (err) {
                 res.status(500).json({ error: err });
             } finally {

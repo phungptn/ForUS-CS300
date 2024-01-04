@@ -5,6 +5,7 @@ const userRouter = require("./user");
 const groupRouter = require("./group");
 const boxRouter = require("./box");
 const threadRouter = require("./thread");
+const commentRouter = require("./comment");
 const notificationRouter = require("./notification");
 const searchRouter = require("./search");
 
@@ -38,6 +39,7 @@ module.exports = function (app) {
 	app.use("/group", groupRouter);
 	app.use("/box", boxRouter);
 	app.use("/thread", threadRouter);
+	app.use("/comment", commentRouter);
 	app.use("/notification", notificationRouter);
 	app.use("/search", searchRouter);
 	// setup ultimate ending for all routes

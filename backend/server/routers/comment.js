@@ -1,6 +1,5 @@
 const express = require('express');
 const { updateComment, deleteComment, upvoteComment, downvoteComment } = require('../controllers/comment');
-
 const router = express.Router();
 
 router.put('/:comment_id', updateComment);

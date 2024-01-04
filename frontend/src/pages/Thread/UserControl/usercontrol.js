@@ -194,7 +194,7 @@ async function voteComment(thread, setThread, comment_id, vote) {
     }
 }
 
-export function HorizontalVoteBar({ comment }) {
+export function CommentHorizontalVoteBar({ comment }) {
     const { thread, setThread } = useContext(ThreadContext);
     return (
         <div className="row me-0 rounded-4 border">

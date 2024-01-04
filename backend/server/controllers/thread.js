@@ -3,7 +3,6 @@ const userUtil = require('../utils/users');
 const User = require('../models/user');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
-const { findUserById } = require("../utils/users");
 const COMMENTS_PER_PAGE = 2;
 
 module.exports = {
@@ -71,7 +70,7 @@ module.exports = {
                 page = parseInt(page);
             }
             try {
-                const user = await findUserById(req);
+                const user = await userUtil.findUserById(req);
                 const thread = await Thread.aggregate([
                     { $match: { _id: new mongoose.Types.ObjectId(thread_id)}},
                     {
@@ -131,7 +130,32 @@ module.exports = {
                                 $push: {
                                     $cond: {
                                         if: { $ne: ['$comments', {}] },
-                                        then: '$comments',
+                                        then: {
+                                            $mergeObjects: [
+                                                '$comments',
+                                                {
+                                                    score: {
+                                                        $subtract: [
+                                                            { $size: '$comments.upvoted' },
+                                                            { $size: '$comments.downvoted' }
+                                                        ]
+                                                    },
+                                                    voteStatus: {
+                                                        $cond: {
+                                                            if: { $in: [user._id, '$comments.upvoted'] },
+                                                            then: 1,
+                                                            else: {
+                                                                $cond: {
+                                                                    if: { $in: [user._id, '$comments.downvoted'] },
+                                                                    then: -1,
+                                                                    else: 0
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                }
+                                            ]
+                                        },
                                         else: '$$REMOVE'
                                     }
                                 }
