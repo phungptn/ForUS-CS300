@@ -3,6 +3,7 @@ const userUtil = require('../utils/users');
 const User = require('../models/user');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
+const { findUserById } = require("../utils/users");
 const COMMENTS_PER_PAGE = 2;
 
 module.exports = {
@@ -70,6 +71,7 @@ module.exports = {
                 page = parseInt(page);
             }
             try {
+                const user = await findUserById(req);
                 const thread = await Thread.aggregate([
                     { $match: { _id: new mongoose.Types.ObjectId(thread_id)}},
                     {
@@ -122,6 +124,9 @@ module.exports = {
                             author: { $first: '$author' },
                             createdAt: { $first: '$createdAt' },
                             updatedAt: { $first: '$updatedAt' },
+                            upvoted: { $first: '$upvoted' },
+                            downvoted: { $first: '$downvoted' },
+                            voteStatus: { $first: '$voteStatus' },
                             comments: { 
                                 $push: {
                                     $cond: {
@@ -137,6 +142,25 @@ module.exports = {
                         $addFields: {
                             createdAt: "$createdAt",
                             updatedAt: "$updatedAt",
+                            score: {
+                                $subtract: [
+                                    { $size: '$upvoted' },
+                                    { $size: '$downvoted'}
+                                ]
+                            },
+                            voteStatus: {
+                                $cond: {
+                                    if: { $in: [user._id, '$upvoted'] },
+                                    then: 1,
+                                    else: {
+                                        $cond: {
+                                            if: { $in: [user._id, '$downvoted'] },
+                                            then: -1,
+                                            else: 0
+                                        }
+                                    }
+                                }
+                            },
                             pageCount: {
                                 $ceil: {
                                     $divide: [
@@ -155,6 +179,8 @@ module.exports = {
                             body: 1,
                             createdAt: 1,
                             updatedAt: 1,
+                            score: 1,
+                            voteStatus: 1,
                             pageCount: 1,
                             Author: 1,  
                             comments: {

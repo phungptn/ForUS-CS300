@@ -3,8 +3,6 @@ import { useContext, useEffect } from "react";
 import { ThreadContext } from "../context";
 import './usercontrol.scss';
 import { getTimePassed } from "../../../utils/getTimePassed";
-// dropdowns will not work without this import
-import { Dropdown } from "bootstrap";
 
 export function formatDateToDDMMYYYY(date) {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -211,17 +209,30 @@ export function HorizontalVoteBar({ comment }) {
     );
 }
 
+async function voteThread(thread, setThread, thread_id, vote) {
+    const response = await instance.put(`/thread/${thread_id}/${vote}`);
+    if (response.status === 200) {
+        setThread(
+            {
+                ...thread,
+                score: thread.score + response.data.voteStatus - thread.voteStatus,
+                voteStatus: response.data.voteStatus,     
+            }
+        );
+    }
+}
+
 export function ThreadHorizontalVoteBar({ thread }) {
-    // const { box, setBox } = useContext(BoxContext);
-    // return (
-    //     <div className="row me-0 rounded-4 border">
-    //         <i 
-    //             className={"col border-0 btn btn-upvote bi " + (thread.voteStatus === 1 ? "bi-arrow-up-circle-fill active" : "bi-arrow-up-circle")}
-    //             onClick={() => voteThread(box, setBox, thread._id, 'upvote')}/>
-    //         <div className="col border-start border-end w-75" style={{paddingBlock: '6px 6px'}}>{thread.score}</div>
-    //         <i 
-    //             className={"col border-0 btn btn-downvote bi " + (thread.voteStatus === -1 ? "bi-arrow-down-circle-fill active" : "bi-arrow-down-circle")}
-    //             onClick={() => voteThread(box, setBox, thread._id, 'downvote')}/>
-    //     </div>
-    // );
+    const {setThread} = useContext(ThreadContext);
+    return (
+        <div className="row me-0 rounded-4 border">
+            <i 
+                className={"col border-0 btn btn-upvote bi " + (thread.voteStatus === 1 ? "bi-arrow-up-circle-fill active" : "bi-arrow-up-circle")}
+                onClick={() => voteThread(thread, setThread, thread._id, 'upvote')}/>
+            <div className="col border-start border-end w-75" style={{paddingBlock: '6px 6px'}}>{thread.score}</div>
+            <i 
+                className={"col border-0 btn btn-downvote bi " + (thread.voteStatus === -1 ? "bi-arrow-down-circle-fill active" : "bi-arrow-down-circle")}
+                onClick={() => voteThread(thread, setThread, thread._id, 'downvote')}/>
+        </div>
+    );
 }
