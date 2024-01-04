@@ -212,7 +212,7 @@ module.exports = {
                                     {
                                         $sortArray: {
                                             input: "$comments",
-                                            sortBy: { updatedAt: -1}
+                                            sortBy: { createdAt: -1}
                                         }
                                     },
                                     (page - 1) * COMMENTS_PER_PAGE,
