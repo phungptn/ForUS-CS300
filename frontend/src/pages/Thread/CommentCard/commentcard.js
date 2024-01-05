@@ -56,8 +56,8 @@ export default function ({ comment, onReplyClick }) {
                                 className="btn text-white"
                                 style={{ fontWeight: 'bold' }}
                                 onClick={() => {
-                                    onReplyClick(comment._id)
-                                    console.log('Replying to comment:', comment._id)
+                                    onReplyClick(comment)
+                                    console.log('Replying to comment:', comment)
                                 }}
                             >
                                 <span className="ms-2"><i className="bi bi-reply"></i></span>

@@ -167,6 +167,7 @@ module.exports = {
                                     $cond: {
                                         if: { $ne: ['$comments', {}] },
                                         then: {
+                                            _id: '$comments._id',
                                             author: '$comments.author',
                                             body: '$comments.body',
                                             createdAt: '$comments.createdAt',
