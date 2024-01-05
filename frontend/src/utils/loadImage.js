@@ -1,6 +1,6 @@
 import { storage } from "../Firebase/config";
 
-import { getDownloadURL, ref, getStorage } from "firebase/storage";
+import { getDownloadURL, ref, getStorage, uploadBytes } from "firebase/storage";
 
 async function downloadImage(url) {
     try {
