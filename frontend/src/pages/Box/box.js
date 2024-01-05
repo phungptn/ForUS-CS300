@@ -9,6 +9,8 @@ import { BoxControl } from "./BoxManagement/boxmanagement";
 import { SearchBar } from "../Search/SearchBar/searchbar";
 import { route } from "./route";
 import Editor from "../Editor/editor";
+import EditorContext from "../Editor/context";
+
 
 export default function Box() {
     const location = useLocation();
@@ -78,7 +80,9 @@ export default function Box() {
                             <CreateThreadButton box={box} target="#threadCreateMenu"/>
                         </div>
                         <div className="collapse" id="threadCreateMenu">
-                            <Editor />
+                            <EditorContext.Provider value={{ type: "createThread", state: box, setState: setBox }}>
+                                <Editor />
+                            </EditorContext.Provider>
                         </div>
                         <div className="d-flex justify-content-between mt-4">
                             <Pagination box={box} page={page} order={order} direction={direction}/>

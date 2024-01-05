@@ -4,7 +4,7 @@ const { createComment } = require('../controllers/comment');
 const router = express.Router();
 
 router.get('/:thread_id', readThread);
-router.post('/:thread_id/comment', isBanned, createComment);
+router.post('/:thread_id/comment', createComment);
 router.get('/:thread_id/:page', readThread);
 router.put('/:thread_id', isUpdater, updateThread);
 router.put('/:thread_id/upvote', upvoteThread);

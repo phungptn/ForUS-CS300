@@ -3,6 +3,7 @@ import { CommentHorizontalVoteBar } from '../UserControl/usercontrol';
 import { useEffect, useState } from "react";
 import { downloadImage } from "../../../utils/loadImage";
 import { getTimePassed } from '../../../utils/getTimePassed';
+import TextRenderer from '../../Text/renderer';
 
 export default function ({ comment, onReplyClick }) {
     const [profilePicture, setProfilePicture] = useState(null);
@@ -34,8 +35,8 @@ export default function ({ comment, onReplyClick }) {
                             </div>
                         </div>
                         <div className="border-top w-100 m-1"></div>
-                        <h4 className="text-start m-1">{comment.body}</h4>
-                        <div className="py-2 px-0 m-0 d-flex flex-row justify-content-end gap-2">
+                        <TextRenderer input={comment.body}/>
+                        <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
                             <CommentHorizontalVoteBar comment={comment} />
                             <button
                                 type="button"

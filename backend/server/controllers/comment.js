@@ -4,13 +4,14 @@ const Comment = require('../models/comment');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
 const User = require('../models/user');
+const sanitizeHtml = require('sanitize-html');
 
 module.exports = {
     createComment: async (req, res) => {
-        let { body, replyTo } = req.body;
+        let { body, replyTo, box_id } = req.body;
+        body = sanitizeHtml(body);
         console.log('Submitting comment:', body);
         let thread_id = req.params.thread_id;
-        let box_id = req.params.box_id;
         if (body == null || thread_id == null ) {
             res.status(400).json({ error: "Invalid request." });
         } else {
@@ -20,30 +21,25 @@ module.exports = {
                 if (user == null) {
                     res.status(403).json({ error: "Invalid session." });
                 } else {
-                    const isBanned = await Box.exists({ _id: box_id, banned: user._id });
-                    if (isBanned) {
-                        res.status(403).json({ error: "You are banned." });
-                    } else {
-                        const comment = new Comment({
-                            body: body,
-                            author: user._id,
-                            thread: thread_id,
-                            replyTo: replyTo,
-                            box: box_id
-                        });
-                        session.withTransaction(async () => {
-                            await comment.save();
-                            await Thread.updateOne(
-                                { _id: thread_id },
-                                { $push: { comments: comment._id } }
-                            );
-                            await User.updateOne(
-                                { _id: user._id },
-                                { $push: { comments: comment._id } }
-                            );
-                        });
-                        res.status(201).json({ message: "Comment created." });
-                    }
+                    const comment = new Comment({
+                        body: body,
+                        author: user._id,
+                        thread: thread_id,
+                        replyTo: replyTo,
+                        box: box_id
+                    });
+                    session.withTransaction(async () => {
+                        await comment.save();
+                        await Thread.updateOne(
+                            { _id: thread_id },
+                            { $push: { comments: comment._id } }
+                        );
+                        await User.updateOne(
+                            { _id: user._id },
+                            { $push: { comments: comment._id } }
+                        );
+                    });
+                    res.status(201).json({ message: "Comment created." });
                 }
             } catch (err) {
                 res.status(500).json({ error: err });

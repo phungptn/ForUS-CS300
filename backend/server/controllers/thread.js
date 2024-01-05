@@ -3,14 +3,16 @@ const userUtil = require('../utils/users');
 const User = require('../models/user');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
+const sanitizeHtml = require('sanitize-html');
 const COMMENTS_PER_PAGE = 2;
 
 module.exports = {
     createThread: async (req, res) => {
         let { title, body } = req.body;
+        body = sanitizeHtml(body);
         console.log(title, body);
         let box_id = req.params.box_id;
-        if (title == null || body == null || box_id == null) {
+        if (box_id == null || !Boolean(title) || !Boolean(body)) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
@@ -44,7 +46,7 @@ module.exports = {
                                 { $push: { threads: thread._id } }
                             );
                         });
-                        res.status(201).json({ message: "Thread created." });
+                        res.status(201).json({ message: "Thread created.", thread_id: thread._id });
                     }
                 }
             }
@@ -222,6 +224,7 @@ module.exports = {
                         }
                     }
                 ]).exec();
+                thread[0].body = thread[0].body.replaceAll('&lt;', '<');
                 if (thread[0].pageCount === 0) {
                     thread[0].pageCount = 1;
                     res.status(200).json({ thread: thread[0] });
@@ -230,6 +233,9 @@ module.exports = {
                     res.status(404).json({ error: "Page not found." });
                 }
                 else {
+                    for (let i = 0; i < thread[0].comments.length; i++) {
+                        thread[0].comments[i].body = thread[0].comments[i].body.replaceAll('&lt;', '<');
+                    }
                     res.status(200).json({ thread: thread[0] });
                 }
             }
