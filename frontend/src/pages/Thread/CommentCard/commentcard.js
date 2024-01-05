@@ -3,6 +3,7 @@ import { CommentHorizontalVoteBar } from '../UserControl/usercontrol';
 import { useEffect, useState } from "react";
 import { downloadImage } from "../../../utils/loadImage";
 import { getTimePassed } from '../../../utils/getTimePassed';
+import TextRenderer from '../../Text/renderer';
 
 export default function ({ comment, onReplyClick }) {
     const [profilePicture, setProfilePicture] = useState(null);
@@ -34,16 +35,29 @@ export default function ({ comment, onReplyClick }) {
                             </div>
                         </div>
                         <div className="border-top w-100 m-1"></div>
-                        <h4 className="text-start m-1">{comment.body}</h4>
-                        <div className="py-2 px-0 m-0 d-flex flex-row justify-content-end gap-2">
+
+                        {/* Display replyTo information */}
+                        {comment.replyTo ? (
+                            <div className="mt-2" style={{ border: '1px solid #46A5FA', padding: '10px', borderRadius: '8px', backgroundColor: '#07457D', textAlign: 'left' }}>
+                                <div style={{ color: '#FF944D', fontWeight: 'bold' }}>
+                                    {comment.replyTo && comment.replyTo.author && comment.replyTo.author.fullname}
+                                    {' '} said:
+                                </div>
+                                <TextRenderer input={comment.replyTo && comment.replyTo.body} />
+                            </div>
+                        ) : null}
+
+                        {/* Display comment body */}
+                        <TextRenderer input={comment.body}/>
+                        <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
                             <CommentHorizontalVoteBar comment={comment} />
                             <button
                                 type="button"
                                 className="btn text-white"
                                 style={{ fontWeight: 'bold' }}
                                 onClick={() => {
-                                    onReplyClick(comment._id)
-                                    console.log('Replying to comment:', comment._id)
+                                    onReplyClick(comment)
+                                    console.log('Replying to comment:', comment)
                                 }}
                             >
                                 <span className="ms-2"><i className="bi bi-reply"></i></span>

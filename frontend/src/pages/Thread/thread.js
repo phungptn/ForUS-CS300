@@ -59,10 +59,10 @@ export default function Thread() {
         getThread();
     }, [location.key]);
 
-    const [replyToCommentId, setReplyToCommentId] = useState(null);
+    const [replyToComment, setReplyToComment] = useState(null);
 
-    const handleReplyClick = (commentId) => {
-        setReplyToCommentId(commentId);
+    const handleReplyClick = (comment) => {
+        setReplyToComment(comment);
     };
 
     return (
@@ -112,7 +112,7 @@ export default function Thread() {
 
 
                         {/* Post comment */}
-                        <CommentSection thread={thread} page={page} replyTo={replyToCommentId} setReplyToCommentId={setReplyToCommentId}/>
+                        <CommentSection thread={thread} replyTo={replyToComment} setReplyToComment={setReplyToComment}/>
                         
                     </div>
                     <div className="col-4 text-start">

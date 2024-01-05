@@ -3,14 +3,16 @@ const userUtil = require('../utils/users');
 const User = require('../models/user');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
-const COMMENTS_PER_PAGE = 2;
+const sanitizeHtml = require('sanitize-html');
+const COMMENTS_PER_PAGE = 10;
 
 module.exports = {
     createThread: async (req, res) => {
         let { title, body } = req.body;
+        body = sanitizeHtml(body);
         console.log(title, body);
         let box_id = req.params.box_id;
-        if (title == null || body == null || box_id == null) {
+        if (box_id == null || !Boolean(title) || !Boolean(body)) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
@@ -44,7 +46,7 @@ module.exports = {
                                 { $push: { threads: thread._id } }
                             );
                         });
-                        res.status(201).json({ message: "Thread created." });
+                        res.status(201).json({ message: "Thread created.", thread_id: thread._id });
                     }
                 }
             }
@@ -106,6 +108,40 @@ module.exports = {
                     },
                     {
                         $lookup: {
+                            from: 'comments',
+                            let: { "replyTo": "$comments.replyTo" },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ["$_id", "$$replyTo"] } } },
+                                { $project: { body: 1, author: 1 } }
+                            ],
+                            as: 'comments.replyTo'
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: "$comments.replyTo",
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            let: { "id": "$comments.replyTo.author" },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
+                                { $project: { fullname: 1 } }
+                            ],
+                            as: "comments.replyTo.author",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$comments.replyTo.author",
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $lookup: {
                             from: "users",
                             let: { "id": "$author" },
                             pipeline: [
@@ -131,30 +167,37 @@ module.exports = {
                                     $cond: {
                                         if: { $ne: ['$comments', {}] },
                                         then: {
-                                            $mergeObjects: [
-                                                '$comments',
-                                                {
-                                                    score: {
-                                                        $subtract: [
-                                                            { $size: '$comments.upvoted' },
-                                                            { $size: '$comments.downvoted' }
-                                                        ]
-                                                    },
-                                                    voteStatus: {
-                                                        $cond: {
-                                                            if: { $in: [user._id, '$comments.upvoted'] },
-                                                            then: 1,
-                                                            else: {
-                                                                $cond: {
-                                                                    if: { $in: [user._id, '$comments.downvoted'] },
-                                                                    then: -1,
-                                                                    else: 0
-                                                                }
-                                                            }
-                                                        }
-                                                    },
+                                            _id: '$comments._id',
+                                            author: '$comments.author',
+                                            body: '$comments.body',
+                                            createdAt: '$comments.createdAt',
+                                            updatedAt: '$comments.updatedAt',
+                                            replyTo: {
+                                                $cond: {
+                                                    if: { $ne: ['$comments.replyTo', {}] },
+                                                    then: '$comments.replyTo',
+                                                    else: '$$REMOVE'
                                                 }
-                                            ]
+                                            },
+                                            score: {
+                                                $subtract: [
+                                                    { $size: '$comments.upvoted' },
+                                                    { $size: '$comments.downvoted' }
+                                                ]
+                                            },
+                                            voteStatus: {
+                                                $cond: {
+                                                    if: { $in: [user._id, '$comments.upvoted'] },
+                                                    then: 1,
+                                                    else: {
+                                                        $cond: {
+                                                            if: { $in: [user._id, '$comments.downvoted'] },
+                                                            then: -1,
+                                                            else: 0
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         },
                                         else: '$$REMOVE'
                                     }
@@ -212,7 +255,7 @@ module.exports = {
                                     {
                                         $sortArray: {
                                             input: "$comments",
-                                            sortBy: { createdAt: -1}
+                                            sortBy: { createdAt: 1}
                                         }
                                     },
                                     (page - 1) * COMMENTS_PER_PAGE,
@@ -222,6 +265,7 @@ module.exports = {
                         }
                     }
                 ]).exec();
+                thread[0].body = thread[0].body.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
                 if (thread[0].pageCount === 0) {
                     thread[0].pageCount = 1;
                     res.status(200).json({ thread: thread[0] });
@@ -230,6 +274,12 @@ module.exports = {
                     res.status(404).json({ error: "Page not found." });
                 }
                 else {
+                    for (let i = 0; i < thread[0].comments.length; i++) {
+                        thread[0].comments[i].body = thread[0].comments[i].body.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
+                        if (thread[0].comments[i].replyTo) {
+                            thread[0].comments[i].replyTo.body = thread[0].comments[i].replyTo.body.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
+                        }
+                    }
                     res.status(200).json({ thread: thread[0] });
                 }
             }
