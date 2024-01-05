@@ -99,8 +99,9 @@ module.exports = {
                             res.status(403).json({ error: "Unauthorized." });
                         } else {
                             session.withTransaction(async () => {
-                                // Do not use comment.delete() because it does not trigger the post hook.
                                 await Comment.findOneAndDelete({ _id: comment_id });
+                                await Thread.updateOne({ _id: comment.thread }, { $pull: { comments: comment_id } });
+                                await User.updateOne({ _id: comment.author }, { $pull: { comments: comment_id } });
                             });
                             res.status(200).json({ message: "Comment deleted." });
                         }

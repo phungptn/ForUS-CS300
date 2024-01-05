@@ -82,7 +82,7 @@ export function HorizontalVoteBar({ thread }) {
 export function CommentsCounter({ thread }) {
     return (
         <div className="row rounded-4 border align-middle">
-            <span className="my-auto">{thread.commentCount + " comments"}</span>
+            <span className="my-auto">{thread.commentCount + " bình luận"}</span>
         </div>
     );
 }

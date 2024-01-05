@@ -112,7 +112,23 @@ module.exports = {
                             let: { "replyTo": "$comments.replyTo" },
                             pipeline: [
                                 { $match: { $expr: { $eq: ["$_id", "$$replyTo"] } } },
-                                { $project: { body: 1, author: 1 } }
+                                {
+                                    $lookup: {
+                                        from: "users",
+                                        let: { "id": "$author" },
+                                        pipeline: [
+                                            { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
+                                            { $project: { _id: 1, fullname: 1 } }
+                                        ],
+                                        as: "author"
+                                    }
+                                },
+                                {
+                                    $unwind: {
+                                        path: "$author",
+                                        preserveNullAndEmptyArrays: true
+                                    }
+                                }
                             ],
                             as: 'comments.replyTo'
                         }
@@ -120,23 +136,6 @@ module.exports = {
                     {
                         $unwind: {
                             path: "$comments.replyTo",
-                            preserveNullAndEmptyArrays: true
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: "users",
-                            let: { "id": "$comments.replyTo.author" },
-                            pipeline: [
-                                { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
-                                { $project: { fullname: 1 } }
-                            ],
-                            as: "comments.replyTo.author",
-                        },
-                    },
-                    {
-                        $unwind: {
-                            path: "$comments.replyTo.author",
                             preserveNullAndEmptyArrays: true
                         }
                     },
