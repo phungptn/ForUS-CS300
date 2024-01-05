@@ -4,7 +4,7 @@ const User = require('../models/user');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
 const sanitizeHtml = require('sanitize-html');
-const COMMENTS_PER_PAGE = 2;
+const COMMENTS_PER_PAGE = 10;
 
 module.exports = {
     createThread: async (req, res) => {
