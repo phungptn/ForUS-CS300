@@ -7,7 +7,7 @@ import { ThreadContext } from "./context";
 import { checkModerator } from "../../utils/checkModerator";
 import Threadcard from "./ThreadCard/threadcard";
 import './thread.css';
-import CommentSection from "./CommentSection/commentsection";
+import CommentSection from "./CommentSection/CommentSection";
 
 export default function Thread() {
     const location = useLocation();

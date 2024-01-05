@@ -1,5 +1,5 @@
 import React from 'react';
-import CommentForm from './commentform';
+import CommentForm from './CommentForm';
 
 export default function CommentSection({ thread, page, replyTo, setReplyToCommentId }) {
     return (
