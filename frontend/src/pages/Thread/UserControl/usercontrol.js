@@ -224,3 +224,71 @@ export function ThreadHorizontalVoteBar({ thread }) {
         </div>
     );
 }
+
+export function UpdateThreadButton({ thread }) {
+    const {setThread} = useContext(ThreadContext);
+    async function updateThread() {
+        console.log("Updating thread:" + thread._id);
+    }
+    return (
+        <button 
+            type="button" 
+            title="Chỉnh sửa thread" 
+            className="btn text-white rounded-2 p-0" 
+            style={{ justifyContent: 'center', alignItems: 'center', marginRight: '15px' }} 
+            onClick={() => updateThread()}>
+            <i className="bi bi-pencil-square"/>
+        </button>
+    );
+}
+
+export function DeleteThreadButton({ thread }) {
+    const {setThread} = useContext(ThreadContext);
+    async function deleteThread() {
+        console.log("Deleting thread:" + thread._id);
+    }
+    return (
+        <button 
+            type="button" 
+            title="Xóa thread" 
+            className="btn text-danger rounded-2 p-0" 
+            style={{ justifyContent: 'center', alignItems: 'center' }} 
+            onClick={() => deleteThread()}>
+            <i className="bi bi-trash"/>
+        </button>
+    );
+}
+
+export function UpdateCommentButton({ comment }) {
+    const { thread, setThread } = useContext(ThreadContext);
+    async function updateComment() {
+        console.log("Updating comment:" + comment._id);
+    }
+    return (
+        <button 
+            type="button" 
+            title="Chỉnh sửa comment" 
+            className="btn text-white rounded-2 p-0" 
+            style={{ justifyContent: 'center', alignItems: 'center', marginRight: '15px' }} 
+            onClick={() => updateComment()}>
+            <i className="bi bi-pencil-square"/>
+        </button>
+    );
+}
+
+export function DeleteCommentButton({ comment }) {
+    const { thread, setThread } = useContext(ThreadContext);
+    async function deleteComment() {
+        console.log("Deleting comment:" + comment._id);
+    }
+    return (
+        <button 
+            type="button" 
+            title="Xóa comment" 
+            className="btn text-danger rounded-2 p-0" 
+            style={{ justifyContent: 'center', alignItems: 'center' }} 
+            onClick={() => deleteComment()}>
+            <i className="bi bi-trash"/>
+        </button>
+    );
+}

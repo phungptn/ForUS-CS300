@@ -4,6 +4,7 @@ import { getTimePassed } from '../../../utils/getTimePassed';
 import { useEffect, useState } from "react";
 import { downloadImage } from "../../../utils/loadImage";
 import TextRenderer from '../../Text/renderer';
+import { UpdateThreadButton, DeleteThreadButton } from '../UserControl/usercontrol';
 
 export default function ( {thread} ) {
     const [profilePicture, setProfilePicture] = useState(null);
@@ -27,14 +28,25 @@ export default function ( {thread} ) {
                         </div>
                     </div>
                     <div className="col-10 d-flex flex-column justify-content-between">
-                        <div className="d-flex justify-content-between m-1">
+                        <div className=" row-12 d-flex justify-content-between m-1">
                             <div className="text-white opacit-70">
                                 <i className="bi bi-clock"></i>
                                 {' '}
                                 {getTimePassed(thread.createdAt)}
+                                
+                            </div>
+                            <div className="ms-auto">
+                                {thread.isUpdater == 1 ? (
+                                    <UpdateThreadButton thread={thread}/>
+                                ) : null}
+                                {thread.isDeleter == 1 ? (
+                                    <DeleteThreadButton thread={thread}/>
+                                ) : null}
                             </div>
                         </div>
+
                         <div className="border-top w-100 m-1"></div>
+
                         <TextRenderer input={thread.body}/>
                         <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
                             <ThreadHorizontalVoteBar thread={thread} />

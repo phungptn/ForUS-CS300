@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { downloadImage } from "../../../utils/loadImage";
 import { getTimePassed } from '../../../utils/getTimePassed';
 import TextRenderer from '../../Text/renderer';
+import { DeleteCommentButton, UpdateCommentButton } from '../UserControl/usercontrol';
 
 export default function ({ comment, onReplyClick }) {
     const [profilePicture, setProfilePicture] = useState(null);
@@ -27,13 +28,22 @@ export default function ({ comment, onReplyClick }) {
                         </div>
                     </div>
                     <div className="col-10 d-flex flex-column justify-content-between">
-                        <div className="d-flex justify-content-between m-1">
+                        <div className="row-12 d-flex justify-content-between m-1">
                             <div className="text-white opacit-70">
                                 <i className="bi bi-clock"></i>
                                 {' '}
                                 {getTimePassed(comment.createdAt)}
                             </div>
+                            <div className="ms-auto">
+                                {comment.isUpdater == 1 ? (
+                                    <UpdateCommentButton comment={comment}/>
+                                ) : null}
+                                {comment.isDeleter == 1 ? (
+                                    <DeleteCommentButton comment={comment}/>
+                                ) : null}
+                            </div>
                         </div>
+
                         <div className="border-top w-100 m-1"></div>
 
                         {/* Display replyTo information */}
