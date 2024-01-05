@@ -4,7 +4,8 @@ const Comment = require('./comment');
 
 const ThreadSchema = new Schema({
     title: { type: String, required: true, maxLength: 128, minLength: 1},
-    body: { type: String, required: true, maxLength: 4096, minLength: 1},
+    body: { type: String, required: true, maxLength: 40960, minLength: 1},
+    imageUrl: { type: String },
     upvoted: {
         type: [{ type: Schema.Types.ObjectId, ref: 'User'}],
         default: [],

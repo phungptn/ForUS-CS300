@@ -46,8 +46,7 @@ export default function ( {thread} ) {
                         </div>
 
                         <div className="border-top w-100 m-1"></div>
-
-                        <TextRenderer input={thread.body}/>
+                        <TextRenderer threadId={thread._id} input={thread.body}/>
                         <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
                             <ThreadHorizontalVoteBar thread={thread} />
                         </div>

@@ -17,6 +17,11 @@ async function createThread(box_id, title, body) {
     window.location.href = `/thread/${thread_id}`;
   }
   catch (error) {
+    if (error.response.status === 400) {
+      if (error.response.data.code === 1) {
+        alert('Chỉ được phép thêm tối đa 1 hình ảnh');
+      }
+    }
     console.log(error);
   }
 }
@@ -30,6 +35,11 @@ async function updateThread(thread, setThread) {
     setThread(response.data);
   }
   catch (error) {
+    if (error.response.status === 400) {
+      if (error.response.data.code === 1) {
+        alert('Chỉ được phép thêm tối đa 1 hình ảnh');
+      }
+    }
     console.log(error);
   }
 }
@@ -77,6 +87,8 @@ export default function Editor() {
     setBody(html);
   };
 
+  const INSERT_TOOLBAR = type === 'createThread' || type === 'updateThread' ? ['link', 'image'] : ['link'];
+
   const modules = {
     toolbar: [
       [{ size: ["small", false, "large", "huge"] }],
@@ -96,7 +108,7 @@ export default function Editor() {
         { list: "bullet" },
         { align: [] },
       ],
-      ["link", "image"],
+      INSERT_TOOLBAR,
       ["clean"],
     ],
   };
@@ -122,6 +134,9 @@ export default function Editor() {
           onClick={() => {
             if (type === "createThread") {
               createThread(state._id, title, body);
+            }
+            else if (type === "updateThread") {
+              updateThread(state, setState);
             }
             else if (type === "createComment") {
               createComment(state._id, state.box, body, replyTo);

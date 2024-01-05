@@ -3,17 +3,29 @@ const userUtil = require('../utils/users');
 const User = require('../models/user');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
+const { storage } = require('../utils/firebase');
+const { ref, uploadString } = require('firebase/storage');
+const { v4 } = require('uuid');
 const sanitizeHtml = require('sanitize-html');
+
 const COMMENTS_PER_PAGE = 10;
+
+const uploadImage = async (thread_id, image_data, image_id) => {
+    if (image_data == null) return;
+    const imageRef = ref(storage, `images/thread/${thread_id}/${image_id}`);
+    await uploadString(imageRef, image_data, 'data_url');
+};
 
 module.exports = {
     createThread: async (req, res) => {
         let { title, body } = req.body;
-        body = sanitizeHtml(body);
-        console.log(title, body);
+        body = sanitizeHtml(body, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
         let box_id = req.params.box_id;
         if (box_id == null || !Boolean(title) || !Boolean(body)) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: "Invalid request.", code: 0 });
+        }
+        else if (body.split('&lt;img').length > 2) {
+            res.status(400).json({ error: "Invalid request.", code: 1 });
         }
         else {
             const session = await mongoose.startSession();
@@ -29,12 +41,28 @@ module.exports = {
                     }
                     else {
                         console.log("Creating thread...");
-                        const thread = new Thread({
-                            title: title,
-                            body: body,
-                            author: user._id,
-                            box: box_id
-                        });
+                        const image_id = v4();
+                        let thread;
+                        if (body.includes('&lt;img')) {
+                            thread = new Thread({
+                                title: title,
+                                body: body,
+                                imageUrl: image_id,
+                                author: user._id,
+                                box: box_id
+                            });
+                            const image_data = thread.body.match(/(?<=src=")(data:image\/([a-zA-Z0-9-.+]+).*,.*)(?=")/g)[0];
+                            await uploadImage(thread._id.toString(), image_data, image_id);
+                            thread.body = thread.body.replace(/(?<=src=")(data:image\/([a-zA-Z0-9-.+]+).*,.*)(?=")/g, image_id);
+                        }
+                        else {
+                            thread = new Thread({
+                                title: title,
+                                body: body,
+                                author: user._id,
+                                box: box_id
+                            });
+                        }
                         session.withTransaction(async () => {
                             await thread.save();
                             await Box.updateOne(

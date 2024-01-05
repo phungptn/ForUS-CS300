@@ -52,15 +52,21 @@ export function BoxDescription() {
 }
 
 export function CreateThreadButton({ box, target }) {
+    const [up, setUp] = useState(false);
     if (box.pageCount == null) {
         return (null);
     }
     return (
         <button 
             type="button" 
-            className="btn btn-warning"
+            className="btn btn-info text-light"
+            style={{fontWeight: 'bold'}}
             data-bs-toggle="collapse" 
-            data-bs-target={target}>Tạo thread mới</button>
+            data-bs-target={target}
+            onClick={() => setUp(!up)}>
+            Tạo thread mới
+            <span className="ms-2"><i className={`bi bi-chevron-` + (up ? 'up' : 'down')}/></span>
+        </button>
     );    
 }
 

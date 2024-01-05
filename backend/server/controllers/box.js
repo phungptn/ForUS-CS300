@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Box = require("../models/box");
 const Group = require("../models/group");
 const { findUserById } = require("../utils/users");
+
 const THREADS_PER_PAGE = 10;
 
 module.exports = {
@@ -136,6 +137,7 @@ module.exports = {
                     then: {
                       _id: "$threads._id",
                       title: "$threads.title",
+                      imageUrl: "$threads.imageUrl",
                       author: "$threads.author",
                       score: {
                         $subtract: [
