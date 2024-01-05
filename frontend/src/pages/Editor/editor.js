@@ -106,7 +106,7 @@ export default function Editor() {
   }
   return (
     <>
-      {type === 'box' && <TitleInput title={title} setTitle={setTitle} oldTitle={oldTitle} />}
+      {type === 'createThread' && <TitleInput title={title} setTitle={setTitle} oldTitle={oldTitle} />}
       <ReactQuill
         theme="snow"
         value={body}
