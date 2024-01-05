@@ -17,6 +17,20 @@ async function downloadImage(url) {
     
 }
 
+async function uploadImage(file, url){
+    try {
+        const storage = storage;
+        const fileRef = url ;
+        const imageReference = ref(storage, fileRef);
+        const uploadTask = await uploadBytes(imageReference, file);
+        const imageUrl = await getDownloadURL(uploadTask.ref);
+        return imageUrl;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
 export {
-    downloadImage
+    downloadImage,
+    uploadImage
 }
