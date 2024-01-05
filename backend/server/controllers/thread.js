@@ -145,7 +145,7 @@ module.exports = {
                             let: { "id": "$author" },
                             pipeline: [
                                 { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
-                                { $project: { fullname: 1, avatarUrl: 1 } }
+                                { $project: { _id: 1, fullname: 1, avatarUrl: 1 } }
                             ],
                             as: "author",
                         },
@@ -201,7 +201,7 @@ module.exports = {
                                         else: '$$REMOVE'
                                     }
                                 }
-                            }
+                            },
                         }
                     },              
                     {
@@ -234,7 +234,7 @@ module.exports = {
                                         COMMENTS_PER_PAGE
                                     ]
                                 }
-                            }
+                            },
                         }
                     },
                     {
@@ -260,11 +260,25 @@ module.exports = {
                                     (page - 1) * COMMENTS_PER_PAGE,
                                     COMMENTS_PER_PAGE
                                 ],
-                            }
+                            },
                         }
                     }
                 ]).exec();
                 thread[0].body = thread[0].body.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
+                if (String(user._id) === String(thread[0].author._id)) {
+                    thread[0].isUpdater = 1;
+                    thread[0].isDeleter = 1;
+                }
+                else {
+                    if(user.role == 'admin') {
+                        thread[0].isUpdater = 0;
+                        thread[0].isDeleter = 1;
+                    }
+                    else {
+                        thread[0].isUpdater = 0;
+                        thread[0].isDeleter = 0;
+                    }
+                }
                 if (thread[0].pageCount === 0) {
                     thread[0].pageCount = 1;
                     res.status(200).json({ thread: thread[0] });
@@ -277,6 +291,20 @@ module.exports = {
                         thread[0].comments[i].body = thread[0].comments[i].body.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
                         if (thread[0].comments[i].replyTo) {
                             thread[0].comments[i].replyTo.body = thread[0].comments[i].replyTo.body.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
+                        }
+                        if (String(user._id) === String(thread[0].comments[i].author._id)) {
+                            thread[0].comments[i].isUpdater = 1;
+                            thread[0].comments[i].isDeleter = 1;
+                        }
+                        else {
+                            if(user.role == 'admin') {
+                                thread[0].comments[i].isUpdater = 0;
+                                thread[0].comments[i].isDeleter = 1;
+                            }
+                            else {
+                                thread[0].comments[i].isUpdater = 0;
+                                thread[0].comments[i].isDeleter = 0;
+                            }
                         }
                     }
                     res.status(200).json({ thread: thread[0] });
