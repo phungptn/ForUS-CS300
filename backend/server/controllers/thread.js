@@ -276,6 +276,9 @@ module.exports = {
                 else {
                     for (let i = 0; i < thread[0].comments.length; i++) {
                         thread[0].comments[i].body = thread[0].comments[i].body.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
+                        if (thread[0].comments[i].replyTo) {
+                            thread[0].comments[i].replyTo.body = thread[0].comments[i].replyTo.body.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
+                        }
                     }
                     res.status(200).json({ thread: thread[0] });
                 }
