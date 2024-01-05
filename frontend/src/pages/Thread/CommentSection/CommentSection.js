@@ -1,23 +1,32 @@
 import React from 'react';
 import CommentForm from './CommentForm';
 import TextRenderer from '../../Text/renderer';
+import { downloadImage } from '../../../utils/loadImage';
+import { useEffect, useState } from 'react';
 
 export default function CommentSection({ thread, replyTo, setReplyToComment }) {
     const handleClearReply = () => {
         setReplyToComment(null);
     };
+    const [profilePicture, setProfilePicture] = useState(null);
+    useEffect(() => {
+        async function getProfilePicture() {
+            const url = await downloadImage('images/avatar/' + thread.currentUser.avatarUrl);
+            setProfilePicture(url);
+        }
+        getProfilePicture();
+    }, []);
     return (
         <div className="card rounded-4 card-style my-4">
             <div className="card-body p-4">
                 <div className="row m-0 p-0">
                     {/* Display avatar and username */}
-                    <div className="col-2">
-                        <div className="avatar-container">
-                            {/* Assuming you have an 'avatar' field in the thread.author object */}
-                            {/* <img src={thread.author.avatar} alt="User Avatar" className="avatar" /> */}
-                        </div>
-                        <div className="username text-center mt-2">
-                            {thread.author && thread.author.fullname}
+                    <div className="col-2 d-flex flex-column align-items-center text-center">
+                        <img className="rounded-circle centered-and-cropped bg-dark" width={100} height={100} src={
+                            profilePicture ? profilePicture : 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'
+                        } alt="avatar"/>
+                        <div className="username mt-2">
+                            {thread.currentUser && thread.currentUser.fullname}
                         </div>
                     </div>
 

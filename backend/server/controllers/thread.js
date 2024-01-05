@@ -105,6 +105,17 @@ module.exports = {
                     { $match: { _id: new mongoose.Types.ObjectId(thread_id)}},
                     {
                         $lookup: {
+                            from: 'users',
+                            let: { "id": user._id },
+                            pipeline: [
+                                { $match: { $expr: { $eq: ["$_id", "$$id"] } } },
+                                { $project: { _id: 1, fullname: 1, avatarUrl: 1 } }
+                            ],
+                            as: "currentUser"
+                        }
+                    },
+                    {                    
+                        $lookup: {
                             from: 'comments',
                             localField: '_id',
                             foreignField: 'thread',
@@ -181,6 +192,7 @@ module.exports = {
                     {
                         $group: {
                             _id: '$_id',
+                            currentUser: { $first: '$currentUser' },
                             title: { $first: '$title' },
                             body: { $first: '$body' },
                             author: { $first: '$author' },
@@ -268,6 +280,7 @@ module.exports = {
                     {
                         $project: {
                             _id: 1,
+                            currentUser: { $arrayElemAt: ['$currentUser', 0] },
                             title: 1,
                             author: { $arrayElemAt: ['$author', 0] },
                             body: 1,
