@@ -167,30 +167,36 @@ module.exports = {
                                     $cond: {
                                         if: { $ne: ['$comments', {}] },
                                         then: {
-                                            $mergeObjects: [
-                                                '$comments',
-                                                {
-                                                    score: {
-                                                        $subtract: [
-                                                            { $size: '$comments.upvoted' },
-                                                            { $size: '$comments.downvoted' }
-                                                        ]
-                                                    },
-                                                    voteStatus: {
-                                                        $cond: {
-                                                            if: { $in: [user._id, '$comments.upvoted'] },
-                                                            then: 1,
-                                                            else: {
-                                                                $cond: {
-                                                                    if: { $in: [user._id, '$comments.downvoted'] },
-                                                                    then: -1,
-                                                                    else: 0
-                                                                }
-                                                            }
-                                                        }
-                                                    },
+                                            author: '$comments.author',
+                                            body: '$comments.body',
+                                            createdAt: '$comments.createdAt',
+                                            updatedAt: '$comments.updatedAt',
+                                            replyTo: {
+                                                $cond: {
+                                                    if: { $ne: ['$comments.replyTo', {}] },
+                                                    then: '$comments.replyTo',
+                                                    else: '$$REMOVE'
                                                 }
-                                            ]
+                                            },
+                                            score: {
+                                                $subtract: [
+                                                    { $size: '$comments.upvoted' },
+                                                    { $size: '$comments.downvoted' }
+                                                ]
+                                            },
+                                            voteStatus: {
+                                                $cond: {
+                                                    if: { $in: [user._id, '$comments.upvoted'] },
+                                                    then: 1,
+                                                    else: {
+                                                        $cond: {
+                                                            if: { $in: [user._id, '$comments.downvoted'] },
+                                                            then: -1,
+                                                            else: 0
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         },
                                         else: '$$REMOVE'
                                     }
