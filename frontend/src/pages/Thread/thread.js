@@ -112,7 +112,9 @@ export default function Thread() {
 
 
                         {/* Post comment */}
-                        <CommentSection thread={thread} replyTo={replyToComment} setReplyToComment={setReplyToComment}/>
+                        {thread.currentUser && thread.currentUser._id && (
+                            <CommentSection thread={thread} replyTo={replyToComment} setReplyToComment={setReplyToComment}/>
+                        )}
                         
                     </div>
                     <div className="col-4 text-start">
