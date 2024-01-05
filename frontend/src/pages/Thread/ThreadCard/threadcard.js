@@ -17,8 +17,8 @@ export default function ( {thread} ) {
         <div className="card rounded-4 card-style my-4">
             <div className="card-body m-0">
                 <div className="row m-0 p-0 flex-grow-1">
-                    <div className="col-2 d-flex flex-column align-items-center">
-                        <img className="rounded-circle centered-and-cropped bg-dark my-auto" width={100} height={100} src={
+                    <div className="col-2 d-flex flex-column align-items-center text-center">
+                        <img className="rounded-circle centered-and-cropped bg-dark" width={100} height={100} src={
                             profilePicture ? profilePicture : 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'
                         } alt="avatar"/>
                         <div className="username mt-2">

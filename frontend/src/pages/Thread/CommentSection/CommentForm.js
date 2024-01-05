@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from "react";
 import { instance } from "../../../api/config";
 
-const CommentForm = ({ thread, replyTo }) => {
+const CommentForm = ({ thread, replyTo, setReplyToCommentId }) => {
   const [newComment, setNewComment] = useState('');
 
   const handleCommentChange = (event) => {
@@ -13,11 +13,13 @@ const CommentForm = ({ thread, replyTo }) => {
       if(newComment) {
           console.log('Submitting comment:', newComment);
           console.log('Thread ID:', thread._id);
+          console.log('Replying to comment:', replyTo);
           const response = await instance.post(`/thread/${thread._id}/comment`, { body: newComment, replyTo: replyTo });
           if (response.status === 201) {
               window.location.reload();
           }
-          setNewComment(''); // Clear the input after submission
+          setReplyToCommentId(null);
+          setNewComment('');
       }
   };
     return (

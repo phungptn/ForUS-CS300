@@ -7,7 +7,7 @@ import { ThreadContext } from "./context";
 import { checkModerator } from "../../utils/checkModerator";
 import Threadcard from "./ThreadCard/threadcard";
 import './thread.css';
-import CommentSection from "./CommentSection/CommentSection";
+import CommentSection from "./CommentSection/commentsection";
 
 export default function Thread() {
     const location = useLocation();
@@ -59,6 +59,12 @@ export default function Thread() {
         getThread();
     }, [location.key]);
 
+    const [replyToCommentId, setReplyToCommentId] = useState(null);
+
+    const handleReplyClick = (commentId) => {
+        setReplyToCommentId(commentId);
+    };
+
     return (
         <>
             <div className="container">
@@ -95,7 +101,7 @@ export default function Thread() {
                         {/* Comments */}
                         {thread.comments && thread.comments.map((comment) => (
                             <ThreadContext.Provider value={{ thread, setThread, setAutoRedirect }}>
-                                <CommentCard comment={comment}/>
+                                <CommentCard key={comment._id} comment={comment} onReplyClick={handleReplyClick}/>
                             </ThreadContext.Provider>
                         ))}
 
@@ -106,7 +112,7 @@ export default function Thread() {
 
 
                         {/* Post comment */}
-                        <CommentSection thread={thread} page={page} replyTo={null}/>
+                        <CommentSection thread={thread} page={page} replyTo={replyToCommentId} setReplyToCommentId={setReplyToCommentId}/>
                         
                     </div>
                     <div className="col-4 text-start">

@@ -1,6 +1,7 @@
-import CommentForm from './CommentForm';
+import React from 'react';
+import CommentForm from './commentform';
 
-export default function CommentSection({ thread, page, replyTo }) {
+export default function CommentSection({ thread, page, replyTo, setReplyToCommentId }) {
     return (
         <div className="card rounded-4 card-style my-4">
             <div className="card-body p-4">
@@ -19,6 +20,7 @@ export default function CommentSection({ thread, page, replyTo }) {
                             <CommentForm
                                 thread = {thread}
                                 replyTo = {replyTo}
+                                setReplyToCommentId = {setReplyToCommentId}
                             />
                         </div>
                     </div>
