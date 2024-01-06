@@ -3,6 +3,7 @@ import { useContext, useEffect } from "react";
 import { ThreadContext } from "../context";
 import './usercontrol.scss';
 import { getTimePassed } from "../../../utils/getTimePassed";
+import { useNavigate } from "react-router-dom";
 
 export function formatDateToDDMMYYYY(date) {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -231,31 +232,81 @@ export function UpdateThreadButton({ thread }) {
         console.log("Updating thread:" + thread._id);
     }
     return (
-        <button 
-            type="button" 
-            title="Chỉnh sửa thread" 
-            className="btn text-white rounded-2 p-0" 
-            style={{ justifyContent: 'center', alignItems: 'center', marginRight: '15px' }} 
-            onClick={() => updateThread()}>
-            <i className="bi bi-pencil-square"/>
-        </button>
+        <div>
+            <button 
+                type="button" 
+                title="Chỉnh sửa thread" 
+                className="btn text-white rounded-2 p-0" 
+                style={{ justifyContent: 'center', alignItems: 'center', marginRight: '15px' }} 
+                data-bs-toggle="modal" data-bs-target="#updateThreadModal">
+                <i className="bi bi-pencil-square"/>
+            </button>
+
+            <div class="modal fade" id="updateThreadModal" tabindex="-1" aria-labelledby="updateThreadModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    <div class="modal-body">
+                        ...
+                    </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
 
 export function DeleteThreadButton({ thread }) {
-    const {setThread} = useContext(ThreadContext);
-    async function deleteThread() {
-        console.log("Deleting thread:" + thread._id);
+    const {setThread, box, setBox} = useContext(ThreadContext);
+    const navigate = useNavigate();
+    async function deleteThread(thread_id) {
+        console.log("Deleting thread:" + thread_id); 
+        try {
+            const response = await instance.delete(`/thread/${thread_id}`);
+            if (response.status === 200) {
+                navigate(-1, { replace: true });
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
     }
     return (
-        <button 
-            type="button" 
-            title="Xóa thread" 
-            className="btn text-danger rounded-2 p-0" 
-            style={{ justifyContent: 'center', alignItems: 'center' }} 
-            onClick={() => deleteThread()}>
-            <i className="bi bi-trash"/>
-        </button>
+        <div>
+            <button 
+                type="button" 
+                title="Xóa thread" 
+                className="btn text-danger rounded-2 p-0" 
+                style={{ justifyContent: 'center', alignItems: 'center' }} 
+                data-bs-toggle="modal" data-bs-target="#deleteThreadModal">
+                <i className="bi bi-trash"/>
+            </button>
+
+            <div class="modal fade" id="deleteThreadModal" tabindex="-1" aria-labelledby="deleteThreadModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content" style={{ background: '#1D76C6', border: '1px solid #46A5FA' }} >
+                        <div class="modal-header" style={{ borderBottom: '1px solid #46A5FA'}}>
+                            <h1 class="modal-title fs-5 text-white" id="exampleModalLabel">Xóa thread</h1>
+                            <button type="button" class="btn text-white color-white" data-bs-dismiss="modal">X</button>
+                        </div>
+                        <div class="modal-body text-white">
+                            Bạn có chắc chắn muốn xóa thread này không?
+                        </div>
+                        <div class="modal-footer" style={{ borderTop: '1px solid #46A5FA'}}>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="button" class="btn btn-danger" onClick={() => deleteThread(thread._id)}>Xóa thread</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
 
@@ -265,14 +316,18 @@ export function UpdateCommentButton({ comment }) {
         console.log("Updating comment:" + comment._id);
     }
     return (
-        <button 
-            type="button" 
-            title="Chỉnh sửa comment" 
-            className="btn text-white rounded-2 p-0" 
-            style={{ justifyContent: 'center', alignItems: 'center', marginRight: '15px' }} 
-            onClick={() => updateComment()}>
-            <i className="bi bi-pencil-square"/>
-        </button>
+        <div>
+            <button 
+                type="button" 
+                title="Chỉnh sửa comment" 
+                className="btn text-white rounded-2 p-0" 
+                style={{ justifyContent: 'center', alignItems: 'center', marginRight: '15px' }} 
+                onClick={() => updateComment()}>
+                <i className="bi bi-pencil-square"/>
+            </button>
+
+            
+        </div>
     );
 }
 

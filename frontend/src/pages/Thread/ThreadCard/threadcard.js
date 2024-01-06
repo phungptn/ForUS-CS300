@@ -35,7 +35,7 @@ export default function ( {thread} ) {
                                 {getTimePassed(thread.createdAt)}
                                 
                             </div>
-                            <div className="ms-auto">
+                            <div className="d-flex justify-content-between">
                                 {thread.isUpdater == 1 ? (
                                     <UpdateThreadButton thread={thread}/>
                                 ) : null}

@@ -34,7 +34,7 @@ export default function ({ comment, onReplyClick }) {
                                 {' '}
                                 {getTimePassed(comment.createdAt)}
                             </div>
-                            <div className="ms-auto">
+                            <div className="d-flex justify-content-between">
                                 {comment.isUpdater == 1 ? (
                                     <UpdateCommentButton comment={comment}/>
                                 ) : null}
