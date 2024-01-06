@@ -61,11 +61,12 @@ module.exports = {
     createThread: async (req, res) => {
         let { title, body } = req.body;
         body = sanitizeHtml(body, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
+        let imgCount = body.split('&lt;img').length - 1;
         let box_id = req.params.box_id;
         if (box_id == null || !Boolean(title) || !Boolean(body)) {
             res.status(400).json({ error: "Invalid request.", code: 0 });
         }
-        else if (body.split('&lt;img').length > 2) {
+        else if (imgCount > 1) {
             res.status(400).json({ error: "Invalid request.", code: 1 });
         }
         else {
@@ -83,7 +84,7 @@ module.exports = {
                     else {
                         console.log("Creating thread...");
                         let thread;
-                        if (body.includes('&lt;img')) {
+                        if (imgCount === 1) {
                             const image_data = body.match(/(?<=src=")([^"]+)(?=")/g)[0];
                             if (!Boolean(image_data)) {
                                 res.status(400).json({ error: "Invalid request.", code: 2 });
