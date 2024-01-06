@@ -69,15 +69,26 @@ export default function ({ comment, onReplyClick }) {
                                 </EditorContext.Provider>
                             </div>
                         ) : (
-                            <>
+                            <div style={{ padding: '0px 20px' }}>
                                 {/* Display replyTo information */}
-                                {comment.replyTo ? (
-                                    <div className="mt-2" style={{ border: '1px solid #46A5FA', padding: '10px', borderRadius: '8px', backgroundColor: '#07457D', textAlign: 'left', color: 'rgba(255, 255, 255, 0.7)' }}>
-                                        <div style={{ color: '#FF944D', fontWeight: 'bold' }}>
-                                            {comment.replyTo && comment.replyTo.author && comment.replyTo.author.fullname}
+                                {comment.reply ? (
+                                    <div className="justify-content-between" style={{ marginTop: '20px', border: '1px solid #46A5FA', borderRadius: '8px', backgroundColor: '#07457D', textAlign: 'left', color: 'rgba(255, 255, 255, 0.7)' }}>
+                                        <div style={{ color: '#FF944D', fontWeight: 'bold', borderBottom: '1px solid #46A5FA', padding: '8px 20px' }}>
+                                            {comment.reply && comment.reply.author && comment.reply.author.fullname}
                                             {' '} said:
                                         </div>
-                                        <TextRenderer input={comment.replyTo && comment.replyTo.body} />
+                                        <div style={{ padding: '20px 20px' }}>
+                                            <TextRenderer input={comment.reply && comment.reply.body} />
+                                        </div>
+                                    </div>
+                                ) : comment.replyTo ? (
+                                    <div className="justify-content-between" style={{ marginTop: '20px', border: '1px solid #46A5FA', borderRadius: '8px', backgroundColor: '#07457D', textAlign: 'left', color: 'rgba(255, 255, 255, 0.7)' }}>
+                                        <div style={{ color: '#FF944D', fontWeight: 'bold', borderBottom: '1px solid #46A5FA', padding: '8px 20px' }}>
+                                            {'[deleted]'} said:
+                                        </div>
+                                        <div style={{ padding: '20px 20px' }}>
+                                            [deleted]
+                                        </div>
                                     </div>
                                 ) : null}
 
