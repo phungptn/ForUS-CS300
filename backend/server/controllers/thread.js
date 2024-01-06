@@ -417,18 +417,17 @@ module.exports = {
     updateThread: async (req, res) => {
         let { body } = req.body;
         let thread_id = req.params.thread_id;
-        let token = req.body.token;
-        if (body == null || thread_id == null || token == null) {
+        if (body == null || thread_id == null) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
             try {
-                const user = await userUtil.findUserById(req.body.token);
+                const user = await userUtil.findUserById(req);
                 if (user == null) {
                     res.status(403).json({ error: "Invalid session." });
                 }
                 else {
-                    const thread = await Thread.findOne({ _id: thread_id });
+                    const thread = await Thread.findOneAndUpdate({ _id: thread_id }, { body: body });
                     if (thread == null) {
                         res.status(404).json({ error: "Thread not found." });
                     }
@@ -643,12 +642,12 @@ module.exports = {
                     res.status(403).json({ error: "Invalid session." });
                 }
                 else {
-                    const thread = await Thread.findOne({ _id: thread_id }.populate('box', 'bannedUsers'));
+                    const thread = await Thread.findOne({ _id: thread_id }).populate('box', 'bannedUsers');
                     if (thread == null) {
                         res.status(404).json({ error: "Thread not found." });
                     }
                     else {
-                        if (thread.author.equals(user._id) && !thread.box.bannedUsers.includes(user._id)) {
+                        if ((thread.author.equals(user._id) && !thread.box.bannedUsers.includes(user._id))) {
                             next();
                         }
                         else {

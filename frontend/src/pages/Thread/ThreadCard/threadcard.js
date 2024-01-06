@@ -5,6 +5,10 @@ import { useEffect, useState } from "react";
 import { downloadImage } from "../../../utils/loadImage";
 import TextRenderer from '../../Text/renderer';
 import { UpdateThreadButton, DeleteThreadButton } from '../UserControl/usercontrol';
+import Editor from '../../Editor/editor';
+import EditorContext from '../../Editor/context';
+import { useContext } from 'react';
+import { ThreadContext } from '../context';
 
 export default function ( {thread} ) {
     const [profilePicture, setProfilePicture] = useState(null);
@@ -15,6 +19,19 @@ export default function ( {thread} ) {
         }
         getProfilePicture();
     }, []);
+
+    const [isEditMode, setIsEditMode] = useState(false);
+
+    const handleUpdateClick = () => {
+        setIsEditMode(!isEditMode);
+    };
+
+    const handleCancelEdit = () => {
+        setIsEditMode(false);
+    };
+
+    const { setThread } = useContext(ThreadContext);
+
     return (       
         <div className="card rounded-4 card-style my-4">
             <div className="card-body m-0">
@@ -37,7 +54,7 @@ export default function ( {thread} ) {
                             </div>
                             <div className="d-flex justify-content-between">
                                 {thread.isUpdater == 1 ? (
-                                    <UpdateThreadButton thread={thread}/>
+                                    <UpdateThreadButton setOnClick={handleUpdateClick}/>
                                 ) : null}
                                 {thread.isDeleter == 1 ? (
                                     <DeleteThreadButton thread={thread}/>
@@ -46,10 +63,23 @@ export default function ( {thread} ) {
                         </div>
 
                         <div className="border-top w-100 m-1"></div>
-                        <TextRenderer threadId={thread._id} input={thread.body}/>
-                        <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
-                            <ThreadHorizontalVoteBar thread={thread} />
-                        </div>
+                        
+                        {isEditMode ? (
+                            // Render editor in edit mode
+                            <div className="d-flex" style={{ padding: '10px' }}>
+                                <EditorContext.Provider value={{ type: "updateThread", state: thread, setState: setThread, oldBody: thread.body, update: handleCancelEdit }}>
+                                    <Editor  />
+                                </EditorContext.Provider>
+                            </div>
+                        ) : (
+                            <>
+                                {/* Render thread body */}
+                                <TextRenderer threadId={thread._id} input={thread.body} />
+                                <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
+                                    < ThreadHorizontalVoteBar thread={thread} />
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

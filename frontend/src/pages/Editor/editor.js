@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "./editor.scss";
@@ -27,24 +27,28 @@ async function createThread(box_id, title, body) {
 }
 
 async function updateThread(thread, setThread, body) {
-  try {
-    const response = await instance.put(`/thread/${thread.thread_id}`, {
-      body: body
-    });
-    setThread(
-      {
-        ...thread,
+  if (thread.body != body) {
+    try {
+      const response = await instance.put(`/thread/${thread._id}`, {
         body: body
-      }
-    );
-  }
-  catch (error) {
-    if (error.response.status === 400) {
-      if (error.response.data.code === 1) {
-        alert('Chỉ được phép thêm tối đa 1 hình ảnh');
+      });
+      if (response.status === 200) {
+        setThread(
+          {
+            ...thread,
+            body: body
+          }
+        );
       }
     }
-    console.log(error);
+    catch (error) {
+      if (error.response.status === 400) {
+        if (error.response.data.code === 1) {
+          alert('Chỉ được phép thêm tối đa 1 hình ảnh');
+        }
+      }
+      console.log(error);
+    }
   }
 }
 
@@ -90,8 +94,6 @@ function TitleInput({ title, setTitle }) {
       onChange={(e) => {
         setTitle(e.target.value);
       }}
-      disabled={oldTitle ? true : false}
-      readOnly={oldTitle ? true : false}
     />
   );
 }
@@ -99,7 +101,7 @@ function TitleInput({ title, setTitle }) {
 export default function Editor() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const { type, state, setState, replyTo, oldBody } = useContext(EditorContext);
+  const { type, state, setState, replyTo, oldBody, update } = useContext(EditorContext);
 
   const handleChange = (html) => {
     setBody(html);
@@ -131,53 +133,57 @@ export default function Editor() {
     ],
   };
 
-  if (type === 'updateThread' || type === 'updateComment') {
-    setBody(oldBody);
-  }
+  useEffect(() => {
+    if (type === 'updateThread' || type === 'updateComment') {
+      setBody(oldBody);
+    }
+  }, [type, oldBody]);
 
   return (
     <>
       {type === 'createThread' && <TitleInput title={title} setTitle={setTitle} />}
-      <ReactQuill
-        theme="snow"
-        value={body}
-        onChange={handleChange}
-        modules={modules}
-        placeholder="Nội dung"
-        id="editor"
-      />
-      <div className="d-flex justify-content-end mt-4">
-        <button
-          className="btn btn-warning text-primary"
-          style={{ fontWeight: "bold" }}
-          onClick={() => {
-            if (type === "createThread") {
-              createThread(state._id, title, body);
+      <div>
+        <ReactQuill
+          theme="snow"
+          value={body}
+          onChange={handleChange}
+          modules={modules}
+          placeholder="Nội dung"
+          id="editor"
+        />
+        <div className="d-flex justify-content-end mt-4">
+          <button
+            className="btn btn-warning text-primary"
+            style={{ fontWeight: "bold" }}
+            onClick={() => {
+              if (type === "createThread") {
+                createThread(state._id, title, body);
+              }
+              else if (type === "updateThread") {
+                updateThread(state, setState, body); update();
+              }
+              else if (type === "createComment") {
+                createComment(state._id, state.box, body, replyTo);
+              }
+              else if (type === "updateComment") {
+                updateComment(state, setState, body);
+              }
+            }}
+          >
+            {
+              type === "createThread" ? "Đăng bài" :
+                type === "createComment" ? "Gửi bình luận" :
+                  type === "updateThread" ? "Lưu thay đổi" :
+                    "Lưu thay đổi"
             }
-            else if (type === "updateThread") {
-              updateThread(state, setState, body);
-            }
-            else if (type === "createComment") {
-              createComment(state._id, state.box, body, replyTo);
-            }
-            else if (type === "updateComment") {
-              updateComment(state, setState, body);
-            }
-          }}
-        >
-          {
-            type === "createThread" ? "Đăng bài" :
-              type === "createComment" ? "Gửi bình luận" :
-                type === "updateThread" ? "Lưu thay đổi" :
-                  "Lưu thay đổi"
-          }
-          <span className="ms-2">
-            {type === "createThread" ? <i className="bi bi-pencil-square"></i> :
-              type === "createComment" ? <i className="bi bi-reply"></i> :
-                type === "updateThread" ? <i className="bi bi-pencil-square"></i> :
-                  <i className="bi bi-pencil-square"></i>}
-          </span>
-        </button>
+            <span className="ms-2">
+              {type === "createThread" ? <i className="bi bi-pencil-square"></i> :
+                type === "createComment" ? <i className="bi bi-reply"></i> :
+                  type === "updateThread" ? <i className="bi bi-pencil-square"></i> :
+                    <i className="bi bi-pencil-square"></i>}
+            </span>
+          </button>
+        </div>
       </div>
     </>
   );

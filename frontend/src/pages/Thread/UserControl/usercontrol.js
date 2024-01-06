@@ -4,7 +4,9 @@ import { ThreadContext } from "../context";
 import './usercontrol.scss';
 import { getTimePassed } from "../../../utils/getTimePassed";
 import { useNavigate } from "react-router-dom";
-import { DeleteModal } from "../../Modal/modal";
+import { UpdateModal, DeleteModal } from "../../Modal/modal";
+import EditorContext from "../../Editor/context";
+import Editor from "../../Editor/editor";
 
 export function formatDateToDDMMYYYY(date) {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -227,11 +229,7 @@ export function ThreadHorizontalVoteBar({ thread }) {
     );
 }
 
-export function UpdateThreadButton({ thread }) {
-    const {setThread} = useContext(ThreadContext);
-    async function updateThread() {
-        console.log("Updating thread:" + thread._id);
-    }
+export function UpdateThreadButton({ setOnClick }) {
     return (
         <div>
             <button 
@@ -239,10 +237,9 @@ export function UpdateThreadButton({ thread }) {
                 title="Chỉnh sửa thread" 
                 className="btn text-white p-0" 
                 style={{ justifyContent: 'center', alignItems: 'center',  marginRight: '15px', outline: 'none', border: 'none' }} 
-                >
+                onClick={() => setOnClick()}>
                 <i className="bi bi-pencil-square"/>
             </button>
-
         </div>
     );
 }
@@ -293,11 +290,7 @@ export function DeleteThreadButton({ thread }) {
     );
 }   
 
-export function UpdateCommentButton({ comment }) {
-    const { thread, setThread } = useContext(ThreadContext);
-    async function updateComment() {
-        console.log("Updating comment:" + comment._id);
-    }
+export function UpdateCommentButton({ setOnClick }) {
     return (
         <div>
             <button 
@@ -305,11 +298,9 @@ export function UpdateCommentButton({ comment }) {
                 title="Chỉnh sửa comment" 
                 className="btn text-white rounded-2 p-0" 
                 style={{ justifyContent: 'center', alignItems: 'center', marginRight: '15px' }} 
-                onClick={() => updateComment()}>
+                onClick={() => setOnClick()}>
                 <i className="bi bi-pencil-square"/>
-            </button>
-
-            
+            </button>    
         </div>
     );
 }
