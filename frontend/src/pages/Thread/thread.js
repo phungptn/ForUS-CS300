@@ -71,7 +71,7 @@ export default function Thread() {
                 <div className="row">
                     <div className="col-8">
                         {/* Thread title */}
-                        <div className="d-flex justify-content-between pb-2">
+                        <div className="d-flex justify-content-between pb-2 pt-4">
                             <h3 className="text-white">{thread.title}</h3>
                         </div>
                         
@@ -87,7 +87,7 @@ export default function Thread() {
                         </div>
 
                         {/* Pagination */}
-                        <div className="d-flex py-2">
+                        <div className="d-flex pt-2 pb-4">
                             <Pagination thread={thread} page={page} />
                         </div>
 

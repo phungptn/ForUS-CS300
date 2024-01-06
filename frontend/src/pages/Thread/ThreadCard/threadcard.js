@@ -33,7 +33,7 @@ export default function ( {thread} ) {
     const { setThread } = useContext(ThreadContext);
 
     return (       
-        <div className="card-body py-4 m-0">
+        <div className="card-bod m-0" style={{ margin: '20px 0' }}>
             <div className="row m-0 p-0 flex-grow-1">
                 <div className="col-2 bg-card-secondary round-left d-flex flex-column align-items-center text-center"
                     style={{ paddingTop: '20px', paddingLeft: '20px' }}

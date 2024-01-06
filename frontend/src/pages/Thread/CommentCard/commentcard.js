@@ -32,7 +32,7 @@ export default function ({ comment, onReplyClick }) {
     const { thread, setThread } = useContext(ThreadContext);
 
     return (
-        <div className="card-body my-4">
+        <div className="card-body"style={{ margin: '20px 0' }}>
             <div className="row m-0 p-0">
                 <div className="col-2 bg-card-secondary round-left d-flex flex-column align-items-center text-center"
                     style={{ paddingTop: '20px', paddingLeft: '20px' }}
