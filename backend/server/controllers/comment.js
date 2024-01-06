@@ -5,6 +5,7 @@ const Thread = require('../models/thread');
 const Box = require('../models/box');
 const User = require('../models/user');
 const sanitizeHtml = require('sanitize-html');
+const DeletedComment = "Comment này đã bị xóa.";
 
 module.exports = {
     createComment: async (req, res) => {
@@ -86,7 +87,7 @@ module.exports = {
         } else {
             const session = await mongoose.startSession();
             try {
-                const user = await userUtil.findUserById(req.body.token);
+                const user = await userUtil.findUserById(req);
                 if (user == null) {
                     res.status(403).json({ error: "Invalid session." });
                 } else {
@@ -99,9 +100,7 @@ module.exports = {
                             res.status(403).json({ error: "Unauthorized." });
                         } else {
                             await session.withTransaction(async () => {
-                                await Comment.findOneAndDelete({ _id: comment_id });
-                                await Thread.updateOne({ _id: comment.thread }, { $pull: { comments: comment_id } });
-                                await User.updateOne({ _id: comment.author }, { $pull: { comments: comment_id } });
+                                await Comment.findOneAndUpdate({ _id: comment_id }, { body: DeletedComment });
                             });
                             res.status(200).json({ message: "Comment deleted." });
                         }

@@ -252,9 +252,7 @@ export function DeleteThreadButton({ thread }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const openModal = () => {
-        console.log("Opening modal" + isModalOpen);
         setIsModalOpen(true);
-        console.log("Opening modal" + isModalOpen);
     };
 
     const closeModal = () => {
@@ -262,7 +260,6 @@ export function DeleteThreadButton({ thread }) {
     };
 
     const deleteThread = async (thread_id) => {
-        console.log("Deleting thread:" + thread_id); 
         try {
             const response = await instance.delete(`/thread/${thread_id}`);
             if (response.status === 200) {
@@ -280,7 +277,7 @@ export function DeleteThreadButton({ thread }) {
                 title="Xóa thread" 
                 className="btn text-danger rounded-2 p-0" 
                 style={{ justifyContent: 'center', alignItems: 'center', outline: 'none', border: 'none' }} 
-                onClick={() => setIsModalOpen(!isModalOpen)}>
+                onClick={() => openModal()}>
                 <i className="bi bi-trash"/>
             </button>
 
@@ -318,21 +315,48 @@ export function UpdateCommentButton({ comment }) {
 }
 
 export function DeleteCommentButton({ comment }) {
-    async function deleteComment() {
-        console.log("Deleting comment:" + comment._id);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    async function DeleteComment(comment_id) {
+        console.log("Deleting comment:" + comment_id); 
+        try {
+            const response = await instance.delete(`/comment/${comment_id}`);
+            if (response.status === 200) {
+                window.location.reload();
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
     }
+
     return (
         <div>
             <button 
                 type="button" 
                 title="Xóa comment" 
                 className="btn text-danger rounded-2 p-0" 
-                style={{ justifyContent: 'center', alignItems: 'center' }} 
-                data-bs-toggle="modal" data-bs-target="#deleteCommentModal">
+                style={{ justifyContent: 'center', alignItems: 'center', outline: 'none', border: 'none' }} 
+                onClick={() => openModal()}>
                 <i className="bi bi-trash"/>
             </button>
 
-            
+            {/* Modal */}
+            <DeleteModal
+                isOpen={isModalOpen}
+                handleClose={() => closeModal()}
+                handleDelete={() => DeleteComment(comment._id)}
+                modalTitle="Xóa comment"
+                modalContent="Bạn có chắc chắn muốn xóa comment này không?"
+            />
         </div>
     );
 }
