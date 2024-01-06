@@ -1,6 +1,8 @@
 import { Await, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import React, { Suspense, lazy, useState, useEffect } from "react";
 import isLogin from "../utils/isLogin";
+
+
 const Login = lazy(() => import("../pages/Login/login"));
 const LoginLayout = lazy(() => import("../pages/Login/loginLayout"));
 const Layout = lazy(() => import("../pages/Layout/layout"));
@@ -35,8 +37,14 @@ function Router() {
   }, []);
   if (state.isLoading) {
     return (
-      <div class="d-flex justify-content-cente " role="status">
-        <span class="visually-hidden">Loading...</span>
+    
+      <div className="d-flex text-warning align-items-center justify-content-center py-4  vh-100"
+      style={{backgroundColor: '#162B40'}}
+      >
+        <div class="d-flex justify-content-center ">
+          <div class="spinner-border" role="status"></div>
+
+      </div>
       </div>
     );
   }

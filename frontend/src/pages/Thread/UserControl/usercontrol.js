@@ -1,9 +1,10 @@
 import { instance } from "../../../api/config";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ThreadContext } from "../context";
 import './usercontrol.scss';
 import { getTimePassed } from "../../../utils/getTimePassed";
 import { useNavigate } from "react-router-dom";
+import { DeleteModal } from "../../Modal/modal";
 
 export function formatDateToDDMMYYYY(date) {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -236,37 +237,31 @@ export function UpdateThreadButton({ thread }) {
             <button 
                 type="button" 
                 title="Chỉnh sửa thread" 
-                className="btn text-white rounded-2 p-0" 
-                style={{ justifyContent: 'center', alignItems: 'center', marginRight: '15px' }} 
-                data-bs-toggle="modal" data-bs-target="#updateThreadModal">
+                className="btn text-white p-0" 
+                style={{ justifyContent: 'center', alignItems: 'center',  marginRight: '15px', outline: 'none', border: 'none' }} 
+                >
                 <i className="bi bi-pencil-square"/>
             </button>
 
-            <div class="modal fade" id="updateThreadModal" tabindex="-1" aria-labelledby="updateThreadModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                    <div class="modal-body">
-                        ...
-                    </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 }
 
 export function DeleteThreadButton({ thread }) {
-    const {setThread, box, setBox} = useContext(ThreadContext);
     const navigate = useNavigate();
-    async function deleteThread(thread_id) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+        console.log("Opening modal" + isModalOpen);
+        setIsModalOpen(true);
+        console.log("Opening modal" + isModalOpen);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const deleteThread = async (thread_id) => {
         console.log("Deleting thread:" + thread_id); 
         try {
             const response = await instance.delete(`/thread/${thread_id}`);
@@ -279,36 +274,27 @@ export function DeleteThreadButton({ thread }) {
         }
     }
     return (
-        <div>
+        <>
             <button 
                 type="button" 
                 title="Xóa thread" 
                 className="btn text-danger rounded-2 p-0" 
-                style={{ justifyContent: 'center', alignItems: 'center' }} 
-                data-bs-toggle="modal" data-bs-target="#deleteThreadModal">
+                style={{ justifyContent: 'center', alignItems: 'center', outline: 'none', border: 'none' }} 
+                onClick={() => setIsModalOpen(!isModalOpen)}>
                 <i className="bi bi-trash"/>
             </button>
 
-            <div class="modal fade" id="deleteThreadModal" tabindex="-1" aria-labelledby="deleteThreadModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content" style={{ background: '#1D76C6', border: '1px solid #46A5FA' }} >
-                        <div class="modal-header" style={{ borderBottom: '1px solid #46A5FA'}}>
-                            <h1 class="modal-title fs-5 text-white" id="exampleModalLabel">Xóa thread</h1>
-                            <button type="button" class="btn text-white color-white" data-bs-dismiss="modal">X</button>
-                        </div>
-                        <div class="modal-body text-white">
-                            Bạn có chắc chắn muốn xóa thread này không?
-                        </div>
-                        <div class="modal-footer" style={{ borderTop: '1px solid #46A5FA'}}>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="button" class="btn btn-danger" onClick={() => deleteThread(thread._id)}>Xóa thread</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+            {/* Modal */}
+            <DeleteModal
+                isOpen={isModalOpen}
+                handleClose={() => closeModal()}
+                handleDelete={() => deleteThread(thread._id)}
+                modalTitle="Xóa thread"
+                modalContent="Bạn có chắc chắn muốn xóa thread này không?"
+            />
+        </>
     );
-}
+}   
 
 export function UpdateCommentButton({ comment }) {
     const { thread, setThread } = useContext(ThreadContext);
@@ -332,18 +318,21 @@ export function UpdateCommentButton({ comment }) {
 }
 
 export function DeleteCommentButton({ comment }) {
-    const { thread, setThread } = useContext(ThreadContext);
     async function deleteComment() {
         console.log("Deleting comment:" + comment._id);
     }
     return (
-        <button 
-            type="button" 
-            title="Xóa comment" 
-            className="btn text-danger rounded-2 p-0" 
-            style={{ justifyContent: 'center', alignItems: 'center' }} 
-            onClick={() => deleteComment()}>
-            <i className="bi bi-trash"/>
-        </button>
+        <div>
+            <button 
+                type="button" 
+                title="Xóa comment" 
+                className="btn text-danger rounded-2 p-0" 
+                style={{ justifyContent: 'center', alignItems: 'center' }} 
+                data-bs-toggle="modal" data-bs-target="#deleteCommentModal">
+                <i className="bi bi-trash"/>
+            </button>
+
+            
+        </div>
     );
 }
