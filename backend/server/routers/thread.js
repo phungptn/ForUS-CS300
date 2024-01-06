@@ -1,5 +1,5 @@
 const express = require('express');
-const { readThread, updateThread, deleteThread, upvoteThread, downvoteThread, isUpdater, isDeleter, isBanned } = require('../controllers/thread');
+const { readThread, updateThread, deleteThread, upvoteThread, downvoteThread, isUpdater, isDeleter } = require('../controllers/thread');
 const { createComment } = require('../controllers/comment');
 const router = express.Router();
 

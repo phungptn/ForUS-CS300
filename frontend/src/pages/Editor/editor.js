@@ -26,13 +26,17 @@ async function createThread(box_id, title, body) {
   }
 }
 
-async function updateThread(thread, setThread) {
+async function updateThread(thread, setThread, body) {
   try {
     const response = await instance.put(`/thread/${thread.thread_id}`, {
-      title: thread.title,
-      body: thread.body,
+      body: body
     });
-    setThread(response.data);
+    setThread(
+      {
+        ...thread,
+        body: body
+      }
+    );
   }
   catch (error) {
     if (error.response.status === 400) {
@@ -58,10 +62,24 @@ async function createComment(thread_id, box_id, body, replyTo) {
   }
 }
 
-function TitleInput({ title, setTitle, oldTitle }) {
-  if (oldTitle) {
-    setTitle(oldTitle);
+async function updateComment(comment, setComment, body) {
+  try {
+    const response = await instance.put(`/comment/${comment.comment_id}`, {
+      body: body
+    });
+    setComment(
+      {
+        ...comment,
+        body: body
+      }
+    );
   }
+  catch (error) {
+    console.log(error);
+  }
+}
+
+function TitleInput({ title, setTitle }) {
   return (
     <input
       id="titleInput"
@@ -81,7 +99,7 @@ function TitleInput({ title, setTitle, oldTitle }) {
 export default function Editor() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const { type, state, setState, replyTo } = useContext(EditorContext);
+  const { type, state, setState, replyTo, oldBody } = useContext(EditorContext);
 
   const handleChange = (html) => {
     setBody(html);
@@ -112,13 +130,14 @@ export default function Editor() {
       ["clean"],
     ],
   };
-  let oldTitle;
-  if (type === "thread") {
-    oldTitle = state.title;
+
+  if (type === 'updateThread' || type === 'updateComment') {
+    setBody(oldBody);
   }
+
   return (
     <>
-      {type === 'createThread' && <TitleInput title={title} setTitle={setTitle} oldTitle={oldTitle} />}
+      {type === 'createThread' && <TitleInput title={title} setTitle={setTitle} />}
       <ReactQuill
         theme="snow"
         value={body}
@@ -136,10 +155,13 @@ export default function Editor() {
               createThread(state._id, title, body);
             }
             else if (type === "updateThread") {
-              updateThread(state, setState);
+              updateThread(state, setState, body);
             }
             else if (type === "createComment") {
               createComment(state._id, state.box, body, replyTo);
+            }
+            else if (type === "updateComment") {
+              updateComment(state, setState, body);
             }
           }}
         >

@@ -415,10 +415,10 @@ module.exports = {
         }
     },
     updateThread: async (req, res) => {
-        let { title, body } = req.body;
+        let { body } = req.body;
         let thread_id = req.params.thread_id;
         let token = req.body.token;
-        if (title == null || body == null || thread_id == null || token == null) {
+        if (body == null || thread_id == null || token == null) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
@@ -433,7 +433,6 @@ module.exports = {
                         res.status(404).json({ error: "Thread not found." });
                     }
                     else {
-                        
                         res.status(200).json({ message: "Thread updated." });
                     }
                 }
