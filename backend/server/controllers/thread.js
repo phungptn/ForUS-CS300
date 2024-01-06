@@ -556,12 +556,13 @@ module.exports = {
                     next();
                 }
                 else {
-                    const thread = await Thread.findOne({ _id: thread_id }).populate('box', 'moderators banned');
+                    const thread = await Thread.findOne({ _id: thread_id }).populate('box', 'moderators bannedUsers');
+                    console.log(thread);
                     if (thread == null) {
                         res.status(404).json({ error: "Thread not found." });
                     }
                     else {
-                        if (thread.box.moderators.includes(user._id) || (thread.author.equals(user._id) && !thread.box.banned.includes(user._id))) {
+                        if (thread.box.moderators.includes(user._id) || (thread.author.equals(user._id) && !thread.box.bannedUsers.includes(user._id))) {
                             next();
                         }
                         else {
@@ -643,12 +644,12 @@ module.exports = {
                     res.status(403).json({ error: "Invalid session." });
                 }
                 else {
-                    const thread = await Thread.findOne({ _id: thread_id }.populate('box', 'banned'));
+                    const thread = await Thread.findOne({ _id: thread_id }.populate('box', 'bannedUsers'));
                     if (thread == null) {
                         res.status(404).json({ error: "Thread not found." });
                     }
                     else {
-                        if (thread.author.equals(user._id) && !thread.box.banned.includes(user._id)) {
+                        if (thread.author.equals(user._id) && !thread.box.bannedUsers.includes(user._id)) {
                             next();
                         }
                         else {
