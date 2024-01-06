@@ -72,13 +72,22 @@ export default function ({ comment, onReplyClick }) {
                         ) : (
                             <>
                                 {/* Display replyTo information */}
-                                {comment.replyTo ? (
+                                {comment.reply ? (
                                     <div className="mt-2" style={{ border: '1px solid #46A5FA', padding: '10px', borderRadius: '8px', backgroundColor: '#07457D', textAlign: 'left', color: 'rgba(255, 255, 255, 0.7)' }}>
                                         <div style={{ color: '#FF944D', fontWeight: 'bold' }}>
-                                            {comment.replyTo && comment.replyTo.author && comment.replyTo.author.fullname}
+                                            {comment.reply && comment.reply.author && comment.reply.author.fullname}
                                             {' '} said:
                                         </div>
-                                        <TextRenderer input={comment.replyTo && comment.replyTo.body} />
+                                        <TextRenderer input={comment.reply && comment.reply.body} />
+                                    </div>
+                                ) : comment.replyTo ? (
+                                    <div className="mt-2" style={{ border: '1px solid #46A5FA', padding: '10px', borderRadius: '8px', backgroundColor: '#07457D', textAlign: 'left' }}>
+                                        <div style={{ color: '#FF944D', fontWeight: 'bold' }}>
+                                            {'[deleted]'} said:
+                                        </div>
+                                        <p>
+                                            [deleted]
+                                        </p>
                                     </div>
                                 ) : null}
 
