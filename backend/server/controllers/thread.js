@@ -227,12 +227,12 @@ module.exports = {
                                     }
                                 }
                             ],
-                            as: 'comments.replyTo'
+                            as: 'comments.reply'
                         }
                     },
                     {
                         $unwind: {
-                            path: "$comments.replyTo",
+                            path: "$comments.reply",
                             preserveNullAndEmptyArrays: true
                         }
                     },
@@ -269,10 +269,11 @@ module.exports = {
                                             body: '$comments.body',
                                             createdAt: '$comments.createdAt',
                                             updatedAt: '$comments.updatedAt',
-                                            replyTo: {
+                                            replyTo: '$comments.replyTo',
+                                            reply: {
                                                 $cond: {
-                                                    if: { $ne: ['$comments.replyTo', {}] },
-                                                    then: '$comments.replyTo',
+                                                    if: { $ne: ['$comments.reply', {}] },
+                                                    then: '$comments.reply',
                                                     else: '$$REMOVE'
                                                 }
                                             },
@@ -388,8 +389,8 @@ module.exports = {
                 else {
                     for (let i = 0; i < thread[0].comments.length; i++) {
                         thread[0].comments[i].body = thread[0].comments[i].body.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
-                        if (thread[0].comments[i].replyTo) {
-                            thread[0].comments[i].replyTo.body = thread[0].comments[i].replyTo.body.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
+                        if (thread[0].comments[i].reply) {
+                            thread[0].comments[i].reply.body = thread[0].comments[i].reply.body.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
                         }
                         if (String(user._id) === String(thread[0].comments[i].author._id)) {
                             thread[0].comments[i].isUpdater = 1;

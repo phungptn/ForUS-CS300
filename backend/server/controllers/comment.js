@@ -101,7 +101,7 @@ module.exports = {
                                 await Comment.findOneAndDelete({ _id: comment_id });
                                 await Thread.updateOne({ _id: comment.thread }, { $pull: { comments: comment_id } });
                                 await User.updateOne({ _id: comment.author }, { $pull: { comments: comment_id } });
-                                await Comment.updateMany({ replyTo: comment_id }, { $set: { replyTo: null } });
+                                // await Comment.updateMany({ replyTo: comment_id }, { $set: { replyTo: null } });
                             });
                             res.status(200).json({ message: "Comment deleted." });
                         }

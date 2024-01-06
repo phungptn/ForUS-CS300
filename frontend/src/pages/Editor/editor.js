@@ -71,8 +71,8 @@ async function updateComment(thread, setThread, comment, body) {
     return comments.map((c) => {
       if (c._id === comment._id) {
         return { ...c, body: body, updatedAt: new Date() - 1000 };
-      } else if (c.replyTo && c.replyTo._id === comment._id) {
-        return { ...c, replyTo: { ...c.replyTo, body: body } };
+      } else if (c.reply && c.reply._id === comment._id) {
+        return { ...c, reply: { ...c.reply, body: body } };
       } else {
         return c;
       }
