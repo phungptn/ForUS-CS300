@@ -68,15 +68,27 @@ async function createComment(thread_id, box_id, body, replyTo) {
 }
 
 async function updateComment(thread, setThread, comment, body) {
+  const recursivelyUpdateReplies = (comments) => {
+    return comments.map((c) => {
+      if (c._id === comment._id) {
+        // Update the comment
+        return { ...c, body: body };
+      } else if (c.replyTo && c.replyTo._id === comment._id) {
+        // Update the reply
+        return { ...c, replyTo: { ...c.replyTo, body: body } };
+      } else {
+        return c;
+      }
+    });
+  };
+
   if (comment.body != body) {
     try {
       const response = await instance.put(`/comment/${comment._id}`, {
         body: body
       });
       if (response.status === 200) {
-        const updatedComments = thread.comments.map((c) =>
-          c._id === comment._id ? { ...c, body: body } : c
-        );
+        const updatedComments = recursivelyUpdateReplies(thread.comments);
 
         const updatedThread = { ...thread, comments: updatedComments };
 
