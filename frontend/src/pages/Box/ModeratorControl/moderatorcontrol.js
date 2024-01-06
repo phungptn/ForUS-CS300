@@ -79,7 +79,7 @@ export function DeleteThreadButton({thread}) {
         return (null);
     }
     return (
-        <button type="button" title="Xóa thread" className="btn btn-danger text-white rounded-2" style={{marginInlineStart: '12px', width: '48px', height: '48px'}} onClick={() => deleteThread(thread._id)}>
+        <button type="button" title="Xóa thread" className="btn btn-danger text-white rounded-2" style={{marginInlineStart: '12px', width: '48px', height: '48px', flexShrink: 0}} onClick={() => deleteThread(thread._id)}>
             <i className="bi bi-trash"/>
         </button>
     );

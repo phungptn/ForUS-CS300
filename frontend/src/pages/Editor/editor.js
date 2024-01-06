@@ -5,7 +5,7 @@ import "./editor.scss";
 import { instance } from "../../api/config";
 import EditorContext from "./context";
 
-const ALLOWED = ["box", "thread", "comment"];
+const TITLE_MAX_LENGTH = 128;
 
 async function createThread(box_id, title, body) {
   try {
@@ -100,16 +100,31 @@ async function updateComment(thread, setThread, comment, body) {
 
 function TitleInput({ title, setTitle }) {
   return (
-    <input
-      id="titleInput"
-      type="text"
-      className="form-control bg-dark text-light rounded-4 mb-4"
-      placeholder="Tiêu đề"
-      value={title}
-      onChange={(e) => {
-        setTitle(e.target.value);
-      }}
-    />
+    <div className="d-flex align-items-center bg-dark text-light rounded-4 mb-4 border">
+      <textarea
+        id="titleInput"
+        type="text"
+        className="form-control bg-dark text-light rounded-start-4 rounded-end-0 border-start-0 border-top-0 border-bottom-0"
+        placeholder="Tiêu đề"
+        style={{ resize: "none" }}
+        value={title}
+        maxLength={TITLE_MAX_LENGTH}
+        rows={1}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
+        onInput={(e) => {
+          e.target.style.height = "auto";
+          e.target.style.height = e.target.scrollHeight + "px";
+          setTitle(e.target.value);
+        }}
+      />
+      <small className="d-block text-end" style={{marginInline: '0.75rem', fontWeight: 'bold'}}>
+        {title.length}/{TITLE_MAX_LENGTH}
+      </small>
+    </div>
   );
 }
 
