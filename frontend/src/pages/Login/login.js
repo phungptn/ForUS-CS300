@@ -1,4 +1,5 @@
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import { useEffect, useReducer, useState } from "react";
 import { login } from "../../api/user";
 import { setCookie } from "../../utils/setCookie";
@@ -7,31 +8,32 @@ import Logo from "../../components/icons/logo";
 import logo from "../../assets/icons/logo.png";
 
 
-const initialStateDialog = {
-  stateDialogUsername: true,
-  stateDialogPassword: false,
-};
+// const initialStateDialog = {
+//   stateDialogUsername: true,
+//   stateDialogPassword: true,
+// };
 
-const dialogReducer = (state, action) => {
-  switch (action.type) {
-    case "SET_STATE_DIALOG":
-      return {
-        ...state,
-        [action.field]: action.value,
-      };
-    default:
-      return state;
-  }
-};
+
+
+// const dialogReducer = (state, action) => {
+//   switch (action.type) {
+//     case "SET_STATE_DIALOG":
+//       return {
+//         ...state,
+//         [action.field]: action.value,
+//       };
+//     default:
+//       return state;
+//   }
+// };
 
 export default function Login() {
   // const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
 
-  const [stateDialog, setStateDialog] = useReducer(
-    dialogReducer,
-    initialStateDialog
-  );
+  const [valid, setValid] = useState(true);
+
+
 
   const [formData, setFormData] = useState({
     username: "",
@@ -41,21 +43,7 @@ export default function Login() {
   const Login = async (event) => {
     try {
       event.preventDefault();
-      setLoading(true);
-      const rememberMe = document.getElementById("remember_me").checked;
-      setStateDialog({
-        type: "SET_STATE_DIALOG",
-        payload: {
-          stateDialogUsername:
-            formData.username.length >= 0 && formData.username.length <= 20
-              ? false
-              : true,
-          stateDialogPassword:
-            formData.password.length >= 0 && formData.password.length <= 20
-              ? false
-              : true,
-        },
-      });
+
 
       if (
         formData.username.length >= 0 &&
@@ -66,7 +54,7 @@ export default function Login() {
         const response = await login(formData);
         console.log(response);
         if (response.status === 200) {
-          console.log(rememberMe);
+          // console.log(rememberMe);
           // if (rememberMe) {
           //   setCookie("token", response.data.token, 30);
           // } else {
@@ -76,7 +64,13 @@ export default function Login() {
           // navigate("/");
           window.location.href = "/";
         }
+        else{
+          setValid(false);
+        }
       }
+
+
+      setLoading(false);
     } catch (error) {
       console.error(error);
     }
@@ -92,6 +86,15 @@ export default function Login() {
     <>
     
       <h3 className="text-center mb-4">Please Sign in</h3>
+      <div
+  className={`alert alert-danger my-2 d-flex align-items-center font-weight-bold ${!valid ? "d-block" : "d-none"
+    }`}
+>
+  <PriorityHighIcon className="me-2"></PriorityHighIcon>
+  <div className="">
+    Invalid Username or Password
+  </div>
+</div>
       <div className="form-floating">
         <input
           type="text"
@@ -102,6 +105,7 @@ export default function Login() {
         />
         <label htmlFor="floatingInput">Username</label>
       </div>
+
       <div className="form-floating">
         <input
           type="password"
@@ -113,7 +117,7 @@ export default function Login() {
         <label htmlFor="floatingPassword">Password</label>
       </div>
 
-      <div className="form-check text-start my-3">
+      {/* <div className="form-check text-start my-3">
         <input
           className="form-check-input"
           type="checkbox"
@@ -123,10 +127,10 @@ export default function Login() {
         <label className="form-check-label" htmlFor="remember_me">
           Remember me
         </label>
-      </div>
+      </div> */}
 
       <button
-        className="btn btn-primary w-100 py-2"
+        className="btn btn-primary w-100 mt-2 py-2 "
         type="submit"
         onClick={(event) => Login(event)}
       >

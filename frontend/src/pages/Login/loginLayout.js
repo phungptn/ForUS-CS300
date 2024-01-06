@@ -24,7 +24,7 @@ export default function Login({ auth }) {
 
   
 
-            <p className="mt-5 mb-3 text-body-secondary">&copy; 2023 ForUS</p>
+            <p className="mt-5 mb-3 text-body-secondary">&copy; 2023-2024 ForUS</p>
           </form>
         </main>
       </div>
