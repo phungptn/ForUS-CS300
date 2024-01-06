@@ -4,6 +4,7 @@ import "react-quill/dist/quill.snow.css";
 import "./editor.scss";
 import { instance } from "../../api/config";
 import EditorContext from "./context";
+import { ThreadContext } from "../Thread/context";
 
 const ALLOWED = ["box", "thread", "comment"];
 
@@ -66,20 +67,25 @@ async function createComment(thread_id, box_id, body, replyTo) {
   }
 }
 
-async function updateComment(comment, setComment, body) {
-  try {
-    const response = await instance.put(`/comment/${comment.comment_id}`, {
-      body: body
-    });
-    setComment(
-      {
-        ...comment,
+async function updateComment(thread, setThread, comment, body) {
+  if (comment.body != body) {
+    try {
+      const response = await instance.put(`/comment/${comment._id}`, {
         body: body
+      });
+      if (response.status === 200) {
+        const updatedComments = thread.comments.map((c) =>
+          c._id === comment._id ? { ...c, body: body } : c
+        );
+
+        const updatedThread = { ...thread, comments: updatedComments };
+
+        setThread(updatedThread);
       }
-    );
-  }
-  catch (error) {
-    console.log(error);
+    }
+    catch (error) {
+      console.log(error);
+    }
   }
 }
 
@@ -101,7 +107,7 @@ function TitleInput({ title, setTitle }) {
 export default function Editor() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const { type, state, setState, replyTo, oldBody, update } = useContext(EditorContext);
+  const { type, state, setState, replyTo, oldBody, update, comment } = useContext(EditorContext);
 
   const handleChange = (html) => {
     setBody(html);
@@ -166,7 +172,7 @@ export default function Editor() {
                 createComment(state._id, state.box, body, replyTo);
               }
               else if (type === "updateComment") {
-                updateComment(state, setState, body);
+                updateComment(state, setState, comment, body); update();
               }
             }}
           >

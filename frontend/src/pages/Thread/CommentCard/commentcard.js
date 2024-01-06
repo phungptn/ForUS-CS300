@@ -1,10 +1,13 @@
 import './commentcard.css';
 import { CommentHorizontalVoteBar } from '../UserControl/usercontrol';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext, createContext } from "react";
 import { downloadImage } from "../../../utils/loadImage";
 import { getTimePassed } from '../../../utils/getTimePassed';
 import TextRenderer from '../../Text/renderer';
 import { DeleteCommentButton, UpdateCommentButton } from '../UserControl/usercontrol';
+import Editor from '../../Editor/editor';
+import EditorContext from '../../Editor/context';
+import { ThreadContext } from '../context';
 
 export default function ({ comment, onReplyClick }) {
     const [profilePicture, setProfilePicture] = useState(null);
@@ -15,6 +18,19 @@ export default function ({ comment, onReplyClick }) {
         }
         getProfilePicture();
     }, []);
+
+    const [isEditMode, setIsEditMode] = useState(false);
+
+    const handleUpdateClick = () => {
+        setIsEditMode(!isEditMode);
+    };
+
+    const handleCancelEdit = () => {
+        setIsEditMode(false);
+    };
+
+    const { thread, setThread } = useContext(ThreadContext);
+
     return (
         <div className="card rounded-4 card-style my-4">
             <div className="card-body m-0">
@@ -36,7 +52,7 @@ export default function ({ comment, onReplyClick }) {
                             </div>
                             <div className="d-flex justify-content-between">
                                 {comment.isUpdater == 1 ? (
-                                    <UpdateCommentButton comment={comment}/>
+                                    <UpdateCommentButton setOnClick={handleUpdateClick}/>
                                 ) : null}
                                 {comment.isDeleter == 1 ? (
                                     <DeleteCommentButton comment={comment}/>
@@ -46,34 +62,47 @@ export default function ({ comment, onReplyClick }) {
 
                         <div className="border-top w-100 m-1"></div>
 
-                        {/* Display replyTo information */}
-                        {comment.replyTo ? (
-                            <div className="mt-2" style={{ border: '1px solid #46A5FA', padding: '10px', borderRadius: '8px', backgroundColor: '#07457D', textAlign: 'left' }}>
-                                <div style={{ color: '#FF944D', fontWeight: 'bold' }}>
-                                    {comment.replyTo && comment.replyTo.author && comment.replyTo.author.fullname}
-                                    {' '} said:
-                                </div>
-                                <TextRenderer input={comment.replyTo && comment.replyTo.body} />
+                        {isEditMode ? (
+                            // Render editor in edit mode
+                            <div className="d-flex" style={{ padding: '10px' }}>
+                                <EditorContext.Provider value={{ type: "updateComment", state: thread, setState: setThread, comment: comment, oldBody: comment.body, update: handleCancelEdit }}>
+                                    <Editor  />
+                                </EditorContext.Provider>
                             </div>
-                        ) : null}
+                        ) : (
+                            <>
+                                {/* Display replyTo information */}
+                                {comment.replyTo ? (
+                                    <div className="mt-2" style={{ border: '1px solid #46A5FA', padding: '10px', borderRadius: '8px', backgroundColor: '#07457D', textAlign: 'left' }}>
+                                        <div style={{ color: '#FF944D', fontWeight: 'bold' }}>
+                                            {comment.replyTo && comment.replyTo.author && comment.replyTo.author.fullname}
+                                            {' '} said:
+                                        </div>
+                                        <TextRenderer input={comment.replyTo && comment.replyTo.body} />
+                                    </div>
+                                ) : null}
 
-                        {/* Display comment body */}
-                        <TextRenderer input={comment.body}/>
-                        <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
-                            <CommentHorizontalVoteBar comment={comment} />
-                            <button
-                                type="button"
-                                className="btn text-white"
-                                style={{ fontWeight: 'bold' }}
-                                onClick={() => {
-                                    onReplyClick(comment)
-                                    console.log('Replying to comment:', comment)
-                                }}
-                            >
-                                <span className="ms-2"><i className="bi bi-reply"></i></span>
-                                {' '} Reply 
-                            </button>
-                        </div>
+                                {/* Display comment body */}
+                                <TextRenderer input={comment.body}/>
+                                <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
+                                    <CommentHorizontalVoteBar comment={comment} />
+                                    <button
+                                        type="button"
+                                        className="btn text-white"
+                                        style={{ fontWeight: 'bold' }}
+                                        onClick={() => {
+                                            onReplyClick(comment)
+                                            console.log('Replying to comment:', comment)
+                                        }}
+                                    >
+                                        <span className="ms-2"><i className="bi bi-reply"></i></span>
+                                        {' '} Reply 
+                                    </button>
+                                </div>
+                            </>
+                        )}
+
+                        
                     </div>
                 </div>
             </div>

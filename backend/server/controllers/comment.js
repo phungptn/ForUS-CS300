@@ -51,12 +51,11 @@ module.exports = {
     updateComment: async (req, res) => {
         let { body } = req.body;
         let comment_id = req.params.comment_id;
-        let token = req.body.token;
-        if (body == null || comment_id == null || token == null) {
+        if (body == null || comment_id == null) {
             res.status(400).json({ error: "Invalid request." });
         } else {
             try {
-                const user = await userUtil.findUserById(req.body.token);
+                const user = await userUtil.findUserById(req);
                 if (user == null) {
                     res.status(403).json({ error: "Invalid session." });
                 } else {
@@ -65,12 +64,12 @@ module.exports = {
                         res.status(404).json({ error: "Comment not found." });
                     } else {
                         const isBanned = await Box.exists({ _id: comment.thread.box, banned: user._id });
-                        if (comment.author != user._id || isBanned) {
-                            res.status(403).json({ error: "Unauthorized." });
-                        } else {
+                        if (comment.author.equals(user._id) && !isBanned) {
                             comment.body = body;
                             await comment.save();
                             res.status(200).json({ message: "Comment updated." });
+                        } else {
+                            res.status(405).json({ error: "Unauthorized." });
                         }
                     }
                 }
