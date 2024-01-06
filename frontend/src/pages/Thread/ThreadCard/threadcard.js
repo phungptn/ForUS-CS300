@@ -66,7 +66,7 @@ export default function ( {thread} ) {
                         
                         {isEditMode ? (
                             // Render editor in edit mode
-                            <div className="d-flex" style={{ padding: '10px' }}>
+                            <div className="justify-content-between" style={{ padding: '10px' }}>
                                 <EditorContext.Provider value={{ type: "updateThread", state: thread, setState: setThread, oldBody: thread.body, update: handleCancelEdit }}>
                                     <Editor  />
                                 </EditorContext.Provider>

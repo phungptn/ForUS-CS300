@@ -64,7 +64,7 @@ export default function ({ comment, onReplyClick }) {
 
                         {isEditMode ? (
                             // Render editor in edit mode
-                            <div className="d-flex" style={{ padding: '10px' }}>
+                            <div className="justify-content-between" style={{ padding: '10px' }}>
                                 <EditorContext.Provider value={{ type: "updateComment", state: thread, setState: setThread, comment: comment, oldBody: comment.body, update: handleCancelEdit }}>
                                     <Editor  />
                                 </EditorContext.Provider>
