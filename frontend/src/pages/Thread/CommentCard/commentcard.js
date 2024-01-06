@@ -45,7 +45,7 @@ export default function ({ comment, onReplyClick }) {
                     </div>
                     <div className="col-10 d-flex flex-column justify-content-between">
                         <div className="row-12 d-flex justify-content-between m-1">
-                            <div className="text-white opacit-70">
+                            <div style={{ color: 'rgba(255, 255, 255, 0.7)'}}>
                                 <i className="bi bi-clock"></i>
                                 {' '}
                                 {getTimePassed(comment.createdAt)}
@@ -73,7 +73,7 @@ export default function ({ comment, onReplyClick }) {
                             <>
                                 {/* Display replyTo information */}
                                 {comment.replyTo ? (
-                                    <div className="mt-2" style={{ border: '1px solid #46A5FA', padding: '10px', borderRadius: '8px', backgroundColor: '#07457D', textAlign: 'left' }}>
+                                    <div className="mt-2" style={{ border: '1px solid #46A5FA', padding: '10px', borderRadius: '8px', backgroundColor: '#07457D', textAlign: 'left', color: 'rgba(255, 255, 255, 0.7)' }}>
                                         <div style={{ color: '#FF944D', fontWeight: 'bold' }}>
                                             {comment.replyTo && comment.replyTo.author && comment.replyTo.author.fullname}
                                             {' '} said:

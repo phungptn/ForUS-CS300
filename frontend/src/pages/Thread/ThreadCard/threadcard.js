@@ -46,7 +46,7 @@ export default function ( {thread} ) {
                     </div>
                     <div className="col-10 d-flex flex-column justify-content-between">
                         <div className=" row-12 d-flex justify-content-between m-1">
-                            <div className="text-white opacit-70">
+                            <div style={{ color: 'rgba(255, 255, 255, 0.7)'}}>
                                 <i className="bi bi-clock"></i>
                                 {' '}
                                 {getTimePassed(thread.createdAt)}

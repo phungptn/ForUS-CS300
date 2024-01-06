@@ -76,7 +76,7 @@ export default function Thread() {
                         </div>
                         
                         {/* Author and date */}
-                        <div className="d-flex py-2 white-text" style={{ fontWeight: 'bold' }}>
+                        <div className="d-flex py-2 text-transwhite" style={{ fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.7)' }}>
                             <i className="bi bi-person"></i>
                             <span className="ms-2">{thread.author && thread.author.fullname}</span>
                             <i class="bi bi-dot ms-1"></i>
