@@ -28,7 +28,7 @@ module.exports = {
                         replyTo: replyTo,
                         box: box_id
                     });
-                    session.withTransaction(async () => {
+                    await session.withTransaction(async () => {
                         await comment.save();
                         await Thread.updateOne(
                             { _id: thread_id },
@@ -98,7 +98,7 @@ module.exports = {
                         if ((user.role == 'user' && comment.author != user._id) || isBanned) {
                             res.status(403).json({ error: "Unauthorized." });
                         } else {
-                            session.withTransaction(async () => {
+                            await session.withTransaction(async () => {
                                 await Comment.findOneAndDelete({ _id: comment_id });
                                 await Thread.updateOne({ _id: comment.thread }, { $pull: { comments: comment_id } });
                                 await User.updateOne({ _id: comment.author }, { $pull: { comments: comment_id } });
@@ -124,7 +124,7 @@ module.exports = {
                 const user = await userUtil.findUserById(req);
                 const isUpvoted = await Comment.exists({ _id: comment_id, upvoted: user._id });
                 let voteStatus = isUpvoted ? 0 : 1;
-                session.withTransaction(async () => { 
+                await session.withTransaction(async () => { 
                     if (isUpvoted) {
                         await Comment.updateOne({ _id: comment_id }, { $pull: { upvoted: user._id } });
                     } else {
@@ -150,7 +150,7 @@ module.exports = {
                 const user = await userUtil.findUserById(req);
                 const isDownvoted = await Comment.exists({ _id: comment_id, downvoted: user._id });
                 let voteStatus = isDownvoted ? 0 : -1;
-                session.withTransaction(async () => {
+                await session.withTransaction(async () => {
                     if (isDownvoted) {
                         await Comment.updateOne({ _id: comment_id }, { $pull: { downvoted: user._id } });
                     } else {

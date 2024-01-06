@@ -8,13 +8,19 @@ export default function ( { thread, search } ) {
     const [thumbnail, setThumbnail] = useState(null);
     useEffect(() => {
         async function getThumbnail() {
-            if (!thread.imageUrl) return;
-            try {
-                const url = await downloadImage('images/thread/' + thread._id + '/' + thread.imageUrl);
-                setThumbnail(url);
-            }
-            catch (err) {
-                console.log(err);
+            if (thread.imageUrl) {
+                if (thread.imageUrl.startsWith('http')) {
+                    setThumbnail(thread.imageUrl);
+                }
+                else {
+                    try {
+                        const url = await downloadImage(`/images/thread/${thread._id}/${thread.imageUrl}-thumbnail`);
+                        setThumbnail(url);
+                    }
+                    catch (err) {
+                        console.log(err);
+                    }
+                }
             }
         }
         getThumbnail();
@@ -24,7 +30,9 @@ export default function ( { thread, search } ) {
         <div className="card rounded-4 card-style my-4">
             <div className="card-body p-4">
                 <div className="row m-0 p-0">
-                    <img className="col-3 rounded-4 bg-dark centered-and-cropped p-0 w-25" style={{aspectRatio: '1 / 1'}} src={thumbnail}/>
+                    <div className='col-3 rounded-4 bg-dark w-25 p-0 overflow-hidden' style={{aspectRatio: '1 / 1'}}>
+                        {thread.imageUrl && <img className="centered-and-cropped w-100 h-100" src={thumbnail} />}
+                    </div>
                     <div className="col-9 ps-4 pe-0 d-flex flex-column justify-content-between">
                         <div className='card-title m-0 d-flex justify-content-between'>
                             <a href={`/thread/${thread._id}`} className="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover">

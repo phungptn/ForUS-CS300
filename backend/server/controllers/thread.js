@@ -3,18 +3,59 @@ const userUtil = require('../utils/users');
 const User = require('../models/user');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
+const sharp = require('sharp');
 const { storage } = require('../utils/firebase');
-const { ref, uploadString } = require('firebase/storage');
+const { ref, uploadString, deleteObject } = require('firebase/storage');
 const { v4 } = require('uuid');
+const { decode } = require('html-entities');
 const sanitizeHtml = require('sanitize-html');
 
 const COMMENTS_PER_PAGE = 10;
+const THUMBNAIL_SIZE = 50;
+
+const resizeImage = async (image_data) => {
+    let temp = image_data.split(';');
+    let type = temp[0].split(':')[1];
+    let data = temp[1].split(',')[1];
+    let buffer = Buffer.from(data, 'base64');
+    let thumbnail_data = await sharp(buffer).resize(null, THUMBNAIL_SIZE).toBuffer();
+    return `data:${type};base64,${thumbnail_data.toString('base64')}`;
+}
 
 const uploadImage = async (thread_id, image_data, image_id) => {
     if (image_data == null) return;
+    console.log("Resizing image...");
+    const thumbnail_data = await resizeImage(image_data);
+    console.log("Uploading image...");
     const imageRef = ref(storage, `images/thread/${thread_id}/${image_id}`);
     await uploadString(imageRef, image_data, 'data_url');
+    console.log("Uploading thumbnail...");
+    const thumbnailRef = ref(storage, `images/thread/${thread_id}/${image_id}-thumbnail`);
+    await uploadString(thumbnailRef, thumbnail_data, 'data_url');
+    console.log("Image uploaded.");
 };
+
+// hack to get around the fact that withTransaction does not return the result of the callback
+const withTransactionForResult = async (session, callback) => {
+    let result;
+    await session.withTransaction(async () => {
+        result = await callback();
+        return result;
+    });
+    return result;
+}
+
+const deleteImage = async (thread_id, image_id) => {
+    try {
+        const imageRef = ref(storage, `images/thread/${thread_id}/${image_id}`);
+        await deleteObject(imageRef);
+        const thumbnailRef = ref(storage, `images/thread/${thread_id}/${image_id}-thumbnail`);
+        await deleteObject(thumbnailRef);
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
 
 module.exports = {
     createThread: async (req, res) => {
@@ -41,19 +82,34 @@ module.exports = {
                     }
                     else {
                         console.log("Creating thread...");
-                        const image_id = v4();
                         let thread;
                         if (body.includes('&lt;img')) {
-                            thread = new Thread({
-                                title: title,
-                                body: body,
-                                imageUrl: image_id,
-                                author: user._id,
-                                box: box_id
-                            });
-                            const image_data = thread.body.match(/(?<=src=")(data:image\/([a-zA-Z0-9-.+]+).*,.*)(?=")/g)[0];
-                            await uploadImage(thread._id.toString(), image_data, image_id);
-                            thread.body = thread.body.replace(/(?<=src=")(data:image\/([a-zA-Z0-9-.+]+).*,.*)(?=")/g, image_id);
+                            const image_data = body.match(/(?<=src=")([^"]+)(?=")/g)[0];
+                            if (!Boolean(image_data)) {
+                                res.status(400).json({ error: "Invalid request.", code: 2 });
+                                return;
+                            }
+                            else if (image_data.startsWith('http')) {
+                                thread = new Thread({
+                                    title: title,
+                                    body: body,
+                                    imageUrl: decode(image_data),
+                                    author: user._id,
+                                    box: box_id
+                                });
+                            }
+                            else if (image_data.includes('data:image')) {
+                                const image_id = v4();
+                                thread = new Thread({
+                                    title: title,
+                                    body: body,
+                                    imageUrl: image_id,
+                                    author: user._id,
+                                    box: box_id
+                                });
+                                await uploadImage(thread._id.toString(), image_data, image_id);
+                                thread.body = thread.body.replace(/(?<=src=")([^"]+)(?=")/g, image_id);
+                            }
                         }
                         else {
                             thread = new Thread({
@@ -63,7 +119,8 @@ module.exports = {
                                 box: box_id
                             });
                         }
-                        session.withTransaction(async () => {
+                        console.log("Saving thread...");
+                        await session.withTransaction(async () => {
                             await thread.save();
                             await Box.updateOne(
                                 { _id: box_id },
@@ -375,16 +432,8 @@ module.exports = {
                         res.status(404).json({ error: "Thread not found." });
                     }
                     else {
-                        const isBanned = await Box.exists({ _id: thread.box, banned: user._id });
-                        if (thread.author != user._id || isBanned) {
-                            res.status(403).json({ error: "Unauthorized." });
-                        }
-                        else {
-                            thread.title = title;
-                            thread.body = body;
-                            await thread.save();
-                            res.status(200).json({ message: "Thread updated." });
-                        }
+                        
+                        res.status(200).json({ message: "Thread updated." });
                     }
                 }
             }
@@ -401,30 +450,16 @@ module.exports = {
         else {
             const session = await mongoose.startSession();
             try {
-                const user = await userUtil.findUserById(req);
-                if (user == null) {
-                    res.status(403).json({ error: "Invalid session." });
+                const result = await withTransactionForResult(session, async () => {
+                    const thread = await Thread.findOneAndDelete({ _id: thread_id });
+                    await Box.updateOne({ _id: thread.box }, { $pull: { threads: thread._id } });
+                    await User.updateOne({ _id: thread.author }, { $pull: { threads: thread._id } });
+                    return thread;
+                });
+                if (result.imageUrl && !result.imageUrl.startsWith('http')) {
+                    await deleteImage(thread_id, result.imageUrl);
                 }
-                else {
-                    const thread = await Thread.findOne({ _id: thread_id });
-                    if (thread == null) {
-                        res.status(404).json({ error: "Thread not found." });
-                    }
-                    else {
-                        const isBanned = await Box.exists({ _id: thread.box, banned: user._id });
-                        if ((user.role == 'user' && thread.author != user._id) || isBanned) {
-                            res.status(403).json({ error: "Unauthorized." });
-                        }
-                        else {
-                            session.withTransaction(async () => {
-                                // Do not use thread.delete() because it does not trigger the post hook.
-                                await Box.updateOne({ _id: thread.box }, { $pull: { threads: thread_id } });
-                                await Thread.findOneAndDelete({ _id: thread_id });
-                            });
-                            res.status(200).json({ message: "Thread deleted." });
-                        }
-                    }
-                }
+                res.status(200).json({ message: "Thread deleted." });
             }
             catch (err) {
                 res.status(500).json({ error: err });
@@ -445,7 +480,7 @@ module.exports = {
                 const user = await userUtil.findUserById(req);
                 const isUpvoted = await Thread.exists({ _id: thread_id, upvoted: user._id });
                 let voteStatus = isUpvoted ? 0 : 1;
-                session.withTransaction(async () => {
+                await session.withTransaction(async () => {
                     if (isUpvoted) {
                         await Thread.updateOne({ _id: thread_id }, { $pull: { upvoted: user._id } });
                     }
@@ -475,7 +510,7 @@ module.exports = {
                 const user = await userUtil.findUserById(req);
                 const isDownvoted = await Thread.exists({ _id: thread_id, downvoted: user._id });
                 let voteStatus = isDownvoted ? 0 : -1;
-                session.withTransaction(async () => {    
+                await session.withTransaction(async () => {    
                     if (isDownvoted) {
                         await Thread.updateOne({ _id: thread_id }, { $pull: { downvoted: user._id } });
                     }

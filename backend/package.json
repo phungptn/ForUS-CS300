@@ -36,7 +36,9 @@
     "validator": "^13.11.0",
     "xss-clean": "^0.1.4",
     "sanitize-html": "2.11.0",
-    "firebase": "^10.7.1"
+    "html-entities": "2.4.0",
+    "firebase": "^10.7.1",
+    "sharp": "0.33.1"
   },
   "engines": {
     "node": "14.17.0"
