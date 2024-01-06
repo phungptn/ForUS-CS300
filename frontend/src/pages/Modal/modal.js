@@ -1,6 +1,18 @@
-import React from "react";
+import { React, useEffect } from "react";
 
 export function DeleteModal({ isOpen, handleClose, handleDelete, modalTitle, modalContent }) {
+    const handleEscape = e => {
+        if (e.keyCode === 27) {
+            handleClose();
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener("keydown", handleEscape)
+
+        return () => document.removeEventListener("keydown", handleEscape)
+    }, [])
+
     const overlayStyle = {
         display: isOpen ? 'block' : 'none',
         position: 'fixed',
@@ -45,6 +57,18 @@ export function DeleteModal({ isOpen, handleClose, handleDelete, modalTitle, mod
 }
 
 export function UpdateModal({ isOpen, handleClose, modalTitle, modalContent }) {
+    const handleEscape = e => {
+        if (e.keyCode === 27) {
+            handleClose();
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener("keydown", handleEscape)
+
+        return () => document.removeEventListener("keydown", handleEscape)
+    }, [])
+    
     const overlayStyle = {
         display: isOpen ? 'block' : 'none',
         position: 'fixed',
