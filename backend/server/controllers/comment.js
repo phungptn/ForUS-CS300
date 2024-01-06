@@ -94,9 +94,8 @@ module.exports = {
                         res.status(404).json({ error: "Comment not found." });
                     } else {
                         const isBanned = await Box.exists({ _id: comment.thread.box, banned: user._id });
-                        if ((user.role == 'user' && comment.author != user._id) || isBanned) {
-                            res.status(403).json({ error: "Unauthorized." });
-                        } else {
+                        console.log('isBanned:', isBanned);
+                        if ((user.role == 'admin' || comment.author._id.equals(user._id)) && !isBanned) {
                             await session.withTransaction(async () => {
                                 await Comment.findOneAndDelete({ _id: comment_id });
                                 await Thread.updateOne({ _id: comment.thread }, { $pull: { comments: comment_id } });
@@ -104,6 +103,9 @@ module.exports = {
                                 // await Comment.updateMany({ replyTo: comment_id }, { $set: { replyTo: null } });
                             });
                             res.status(200).json({ message: "Comment deleted." });
+                            
+                        } else {
+                            res.status(403).json({ error: "Unauthorized." });
                         }
                     }
                 }
