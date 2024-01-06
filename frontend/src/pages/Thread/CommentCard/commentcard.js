@@ -84,15 +84,24 @@ export default function ({ comment, onReplyClick }) {
 
                                 {/* Display comment body */}
                                 <TextRenderer input={comment.body}/>
-                                <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
+
+                                {/* Display updated timestamp */}
+                                <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-between text-right" style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.8rem' }}>
+                                    Chỉnh sửa lần cuối: {getTimePassed(comment.updatedAt)}
+                                </div>
+
+                                <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-4">
+                                    {/* Vote bar */}
                                     <CommentHorizontalVoteBar comment={comment} />
+
+                                    {/* Reply button */}
                                     <button
                                         type="button"
                                         className="btn text-white"
                                         style={{ fontWeight: 'bold' }}
                                         onClick={() => {
-                                            onReplyClick(comment)
-                                            console.log('Replying to comment:', comment)
+                                            onReplyClick(comment);
+                                            console.log('Replying to comment:', comment);
                                         }}
                                     >
                                         <span className="ms-2"><i className="bi bi-reply"></i></span>

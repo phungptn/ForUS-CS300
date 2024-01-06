@@ -297,7 +297,7 @@ export function UpdateCommentButton({ setOnClick }) {
                 type="button" 
                 title="Chỉnh sửa comment" 
                 className="btn text-white rounded-2 p-0" 
-                style={{ justifyContent: 'center', alignItems: 'center', marginRight: '15px' }} 
+                style={{ justifyContent: 'center', alignItems: 'center', marginRight: '15px', outline: 'none', border: 'none' }} 
                 onClick={() => setOnClick()}>
                 <i className="bi bi-pencil-square"/>
             </button>    

@@ -4,7 +4,6 @@ import "react-quill/dist/quill.snow.css";
 import "./editor.scss";
 import { instance } from "../../api/config";
 import EditorContext from "./context";
-import { ThreadContext } from "../Thread/context";
 
 const ALLOWED = ["box", "thread", "comment"];
 
@@ -71,10 +70,8 @@ async function updateComment(thread, setThread, comment, body) {
   const recursivelyUpdateReplies = (comments) => {
     return comments.map((c) => {
       if (c._id === comment._id) {
-        // Update the comment
-        return { ...c, body: body };
+        return { ...c, body: body, updatedAt: new Date() - 1000 };
       } else if (c.replyTo && c.replyTo._id === comment._id) {
-        // Update the reply
         return { ...c, replyTo: { ...c.replyTo, body: body } };
       } else {
         return c;

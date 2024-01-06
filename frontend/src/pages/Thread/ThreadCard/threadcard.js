@@ -75,6 +75,13 @@ export default function ( {thread} ) {
                             <>
                                 {/* Render thread body */}
                                 <TextRenderer threadId={thread._id} input={thread.body} />
+
+                                {/* Display updated timestamp */}
+                                <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-between text-right" style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.8rem' }}>
+                                    Chỉnh sửa lần cuối: {getTimePassed(thread.updatedAt)}
+                                </div>
+
+                                {/* Vote bar */}
                                 <div className="py-2 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-5">
                                     < ThreadHorizontalVoteBar thread={thread} />
                                 </div>
