@@ -1,0 +1,15 @@
+.bg-card-primary {
+    background: #1D76C6;
+}
+
+.bg-card-secondary {
+    background: #162B40;
+}
+
+.round-left {
+    border-radius: 16px 0 0 16px;
+}
+
+.round-right {
+    border-radius: 0 16px 16px 0;
+}
