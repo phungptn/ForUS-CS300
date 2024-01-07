@@ -196,6 +196,7 @@ module.exports = {
                 try {
                     await authorOfCommentReplyFrom.save();
                     await notification.save();
+                    res.status(200).json({ message: "Notification sent." });
                 }
                 catch (err) {
                     res.status(500).json({ error: err });
@@ -215,6 +216,7 @@ module.exports = {
                 await authorOfThread.save();
 
                 await notification.save();
+                res.status(200).json({ message: "Notification sent." });
             }
             catch (err) {
                 res.status(500).json({ error: err });

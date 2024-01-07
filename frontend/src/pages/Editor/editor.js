@@ -69,12 +69,12 @@ async function createComment(thread_id, box_id, body, replyTo) {
       replyTo: replyTo,
       box_id: box_id,
     });
-    // await instance.post(`/notification/comment`, {
-    //   thread_id: thread_id,
-    //   box_id: box_id,
-    //   body: bodyText,
-    //   replyTo: replyTo,
-    // });
+     await instance.post(`/notification/comment`, {
+      thread_id: thread_id,
+      box_id: box_id,
+      body: bodyText,
+      replyTo: replyTo,
+    });
     const location = await getCommentLocation(response.data.comment_id);
     window.location.href = `/thread/${location.thread._id}/${location.page}#${location._id}`;
   }

@@ -1,0 +1,30 @@
+/* .notificationItem:hover {
+  background-color: #000000;
+} */
+
+.notificationItem:hover {
+  background-color: rgb(10, 98, 110) !important;
+}
+
+.notification{
+  display: flex;
+}
+
+.w-24 {
+  width: 24px;
+}
+
+.h-24 {
+  height: 24px;
+}
+
+.f-13 {
+  font-size: 13px;
+  padding-top: 2px;
+}
+
+
+p {
+  
+  white-space: normal;
+}

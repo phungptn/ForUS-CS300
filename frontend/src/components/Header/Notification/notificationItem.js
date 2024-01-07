@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
+import ReplyIcon from '@mui/icons-material/Reply';
 
 export default function NotificationItem({ notification }) {
     // Calculate time difference between createdAt and now
@@ -50,8 +53,27 @@ export default function NotificationItem({ notification }) {
     return (
 
 
-        <a href="#" class="dropdown-item list-group-item-action d-flex  gap-3 py-3 notificationItem  " id={notification._id} aria-current="true">
-        <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0"></img>
+        <a href={'/thread/' + notification.thread} class="dropdown-item list-group-item-action d-flex  gap-3 py-3 notificationItem  " id={notification._id} aria-current="true">
+              {
+        notification.from === "system" ? (
+            <SettingsSuggestIcon
+                fontSize="large"
+                className="rounded-circle flex-shrink-0"
+            ></SettingsSuggestIcon>
+            ) : (
+                notification.from === "thread" ? (
+                    <NotificationsIcon
+                        fontSize="large"
+                        className="rounded-circle flex-shrink-0"
+                    ></NotificationsIcon>
+                    ) : (
+                        <ReplyIcon
+                            fontSize="large"
+                            className="rounded-circle flex-shrink-0"
+                        ></ReplyIcon>
+                        )
+            )
+      }
         <div class="d-flex gap-2 w-100 justify-content-between">
           <div>
             <h6 class="mb-0">{notification.title}</h6>

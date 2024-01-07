@@ -25,6 +25,7 @@ export default function Notification() {
 
       setNotifications(response.data.notifications);
 
+      console.log(response.data.notifications);
       setLoading(false);
     };
 
@@ -39,8 +40,6 @@ export default function Notification() {
         notification.isRead = true;
         return notification;
       });
-
-      console.log(updatedNotifications);
       setNotifications(updatedNotifications);
     }
   };
@@ -58,7 +57,7 @@ export default function Notification() {
           <i className="bi bi-bell-fill me-2"></i>
           {notifications.length > 0 ? (
             <p className="position-absolute top-0 end-0 bg-danger text-white rounded-circle fw-bold f-13 w-24 h-24">
-              {notifications.length}
+              {notifications.filter((n) => n.isRead === false).length}
             </p>
           ) : (
             <></>
