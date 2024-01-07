@@ -1,0 +1,6 @@
+.comment-link {
+  cursor: pointer;
+}
+.comment-link:hover {
+  text-decoration: underline;
+}

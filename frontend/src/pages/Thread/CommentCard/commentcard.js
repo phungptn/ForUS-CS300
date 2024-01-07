@@ -8,6 +8,8 @@ import { DeleteCommentButton, UpdateCommentButton } from '../UserControl/usercon
 import Editor from '../../Editor/editor';
 import EditorContext from '../../Editor/context';
 import { ThreadContext } from '../context';
+import './commentcard.css';
+import getCommentLocation from '../../../utils/getCommentLocation';
 
 export default function ({ comment, onReplyClick }) {
     const [profilePicture, setProfilePicture] = useState(null);
@@ -32,7 +34,7 @@ export default function ({ comment, onReplyClick }) {
     const { thread, setThread } = useContext(ThreadContext);
 
     return (
-        <div className="card-body"style={{ margin: '20px 0' }}>
+        <div className="card-body"style={{ margin: '20px 0' }} id={comment._id}>
             <div className="row m-0 p-0">
                 <div className="col-2 bg-card-secondary round-left d-flex flex-column align-items-center text-center"
                     style={{ paddingTop: '20px', paddingLeft: '20px' }}
@@ -73,7 +75,16 @@ export default function ({ comment, onReplyClick }) {
                                 {/* Display replyTo information */}
                                 {comment.reply ? (
                                     <div className="justify-content-between" style={{ marginTop: '20px', border: '1px solid #46A5FA', borderRadius: '8px', backgroundColor: '#07457D', textAlign: 'left', color: 'rgba(255, 255, 255, 0.7)' }}>
-                                        <div style={{ color: '#FF944D', fontWeight: 'bold', borderBottom: '1px solid #46A5FA', padding: '8px 20px' }}>
+                                        <div
+                                            title={comment.reply._id}
+                                            className='comment-link'
+                                            style={{ color: '#FF944D', fontWeight: 'bold', borderBottom: '1px solid #46A5FA', padding: '8px 20px' }}
+                                            onClick={() => {
+                                                getCommentLocation(comment.reply._id).then((location) => {
+                                                    window.location.href = `/thread/${location.thread._id}/${location.page}#${location._id}`;
+                                                });
+                                            }} 
+                                        >
                                             {comment.reply && comment.reply.author && comment.reply.author.fullname}
                                             {' '} said:
                                         </div>

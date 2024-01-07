@@ -21,7 +21,11 @@ export default function Thread() {
     else {
         page = parseInt(page);
         if (page < 2) {
-            navigate(`/thread/${thread_id}`, { replace: true });
+            let url = `/thread/${thread_id}`;
+            if (location.hash) {
+                url += location.hash;
+            }
+            navigate(url, { replace: true });
         }
     }
 
@@ -58,6 +62,16 @@ export default function Thread() {
     useEffect(() => {
         getThread();
     }, [location.key]);
+
+    useEffect(() => {
+        if (location.hash) {
+            const comment_id = location.hash.substring(1);
+            const comment = document.getElementById(comment_id);
+            if (comment) {
+                comment.scrollIntoView();
+            }
+        }
+    }, [thread]);
 
     const [replyToComment, setReplyToComment] = useState(null);
 

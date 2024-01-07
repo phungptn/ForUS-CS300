@@ -5,6 +5,7 @@ const Thread = require('../models/thread');
 const Box = require('../models/box');
 const User = require('../models/user');
 const sanitizeHtml = require('sanitize-html');
+const PAGE_SIZE = 10;
 
 module.exports = {
     createComment: async (req, res) => {
@@ -39,12 +40,44 @@ module.exports = {
                             { $push: { comments: comment._id } }
                         );
                     });
-                    res.status(201).json({ message: "Comment created." });
+                    res.status(201).json({ message: "Comment created." , comment_id: comment._id});
                 }
             } catch (err) {
                 res.status(500).json({ error: err });
             } finally {
                 session.endSession();
+            }
+        }
+    },
+    readComment: async (req, res) => {
+        let comment_id = req.params.comment_id;
+        if (comment_id == null) {
+            res.status(400).json({ error: "Invalid request." });
+        } else {
+            try {
+                console.log('comment_id:', comment_id);
+                const comment = await Comment.aggregate([
+                    { $match: { _id: new mongoose.Types.ObjectId(comment_id) } },
+                    { $lookup: { from: 'threads', localField: 'thread', foreignField: '_id', as: 'thread' } },
+                    { $unwind: '$thread' },
+                    { 
+                        $addFields: {
+                            page: {
+                                $floor: {
+                                    $add: [
+                                        { $floor: { $divide: [ { $indexOfArray: [ '$thread.comments', new mongoose.Types.ObjectId(comment_id) ] }, PAGE_SIZE ] } },
+                                        1
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    { $project: { _id: 1, thread: { _id: 1 }, page: 1 } }
+                ]);
+                res.status(200).json({ comment: comment[0] });
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
             }
         }
     },

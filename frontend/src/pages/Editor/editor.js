@@ -4,6 +4,7 @@ import "react-quill/dist/quill.snow.css";
 import "./editor.scss";
 import { instance } from "../../api/config";
 import EditorContext from "./context";
+import getCommentLocation from "../../utils/getCommentLocation";
 
 const TITLE_MAX_LENGTH = 128;
 
@@ -63,18 +64,19 @@ async function createComment(thread_id, box_id, body, replyTo) {
     const bodyText = extractText(body);
     console.log(bodyText);
 
-    await instance.post(`/thread/${thread_id}/comment`, {
+    const response = await instance.post(`/thread/${thread_id}/comment`, {
       body: body,
       replyTo: replyTo,
       box_id: box_id,
     });
-    await instance.post(`/notification/comment`, {
-      thread_id: thread_id,
-      box_id: box_id,
-      body: bodyText,
-      replyTo: replyTo,
-    });
-    window.location.reload();
+    // await instance.post(`/notification/comment`, {
+    //   thread_id: thread_id,
+    //   box_id: box_id,
+    //   body: bodyText,
+    //   replyTo: replyTo,
+    // });
+    const location = await getCommentLocation(response.data.comment_id);
+    window.location.href = `/thread/${location.thread._id}/${location.page}#${location._id}`;
   }
   catch (error) {
     console.log(error);
