@@ -192,10 +192,9 @@ module.exports = {
                 }
                 let notification = new Notification({ title: "Reply Comment", body: body, thread: thread_id, comment: commentReplyFrom._id, user: authorOfCommentReplyFrom._id, from: "reply" });
                 authorOfCommentReplyFrom.notifications.push({ notification: notification._id });
-                await authorOfCommentReplyFrom.save();
-                console.log(authorOfCommentReplyFrom.notifications);
 
                 try {
+                    await authorOfCommentReplyFrom.save();
                     await notification.save();
                 }
                 catch (err) {
@@ -210,11 +209,11 @@ module.exports = {
             }
             let notification = new Notification({ title: "From thread: " + thread.title, body: body, thread: thread_id, user: authorOfThread._id, from: "thread" });
             authorOfThread.notifications.push({ notification: notification._id });
-            console.log(authorOfThread.notifications);
-            await authorOfThread.save();
             
             
             try {
+                await authorOfThread.save();
+
                 await notification.save();
             }
             catch (err) {
