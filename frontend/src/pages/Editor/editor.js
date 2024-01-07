@@ -78,9 +78,6 @@ async function createComment(thread_id, box_id, body, replyTo, page) {
     });
     const location = await getCommentLocation(response.data.comment_id);
     window.location.href = `/thread/${thread_id}/${location.page}#${location._id}`;
-    if (page === location.page) {
-      window.location.reload();
-    }
   }
   catch (error) {
     console.log(error);
