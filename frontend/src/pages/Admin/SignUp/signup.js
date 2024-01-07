@@ -167,10 +167,5 @@ export default function SignUp() {
       ================================================== */}
     {/* Placed at the end of the document so the pages load faster */}
   </div>
-  
-
-
-
-
   );
 }
