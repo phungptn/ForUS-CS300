@@ -66,7 +66,7 @@ export default function Notification() {
 
         {
           <ul className="dropdown-menu  dropdown-menu-md-end notification__content bg-white width-250"
-          style={{minWidth: '20.5vw', maxHeight: '70vh', overflowY: 'auto'}}
+          style={{minWidth: '30vw', maxHeight: '70vh', overflowY: 'auto'}}
           >
             <li>
               <div className="d-flex justify-content-between align-items-center">
@@ -86,7 +86,20 @@ export default function Notification() {
               </li>
             ))}
 
-            {notifications.length === 0 ? (
+{loading ? (
+              <li>
+                <div className="text-center">
+                  <div className="spinner-border text-warning" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </li>
+            ) : (
+              <></>
+            ) 
+            }
+
+            {notifications.length === 0 && !loading ? (
               <li>
                 <p className="text-center text-muted ">No notifications</p>
               </li>
@@ -101,6 +114,8 @@ export default function Notification() {
                 </a>
               </li>
             )}
+
+
           </ul>
         }
       </div>
