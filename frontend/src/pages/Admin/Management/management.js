@@ -7,7 +7,55 @@ import { v4 } from "uuid";
 import "./management.css";
 import { updateProfile, updatePassword, infoUser } from "../../../api/user";
 
-const Table = ({
+const UserTable = () => {
+  const [checked, setChecked] = useState(false);
+
+  return (
+    <table className="table mt-3 table-striped table-info justify-content-center">
+      <thead className="thead-dark">
+        <tr>
+          <th>Avatar</th>
+          <th>Student ID</th>
+          <th>Fullname</th>
+          <th>Faculty</th>
+          <th>Gender</th>
+          <th>Status</th>
+          <th>Year</th>
+          <th>Checkbox</th>
+        </tr>
+      </thead>
+      <tbody>
+        {/* Render 20 rows with user data */}
+        {Array.from({ length: 20 }, (_, index) => (
+          <tr key={index}>
+            <td>Avatar</td>
+            <td>Student ID</td>
+            <td>Fullname</td>
+            <td>Faculty</td>
+            <td>Gender</td>
+            <td>Status</td>
+            <td>Year</td>
+            <td className="d-flex justify-content-center">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  value=""
+                  id={checked ? "flexCheckDefault" : "flexCheckChecked"}
+                  onClick={
+                    checked ? () => setChecked(false) : () => setChecked(true)
+                  }
+                />
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+
+const ThreadTable = ({
   threadId,
   timeCreated,
   subForum,
@@ -19,8 +67,8 @@ const Table = ({
   const [checked, setChecked] = useState(false);
   return (
     <>
-      <table className="table">
-        <thead>
+      <table className="table mt-3 table-striped table-info justify-content-center">
+        <thead className="thead-dark">
           <tr>
             <td>Thread ID</td>
             <td>Time created</td>
@@ -31,7 +79,7 @@ const Table = ({
           </tr>
         </thead>
         <tbody>
-          {/* Render 20 rows with user data */}
+          {/* Render rows with data */}
           {threadId.map((id, index) => (
             <tr key={index}>
               <td>{id}</td>
@@ -39,7 +87,7 @@ const Table = ({
               <td>Subforum</td>
               <td>Box</td>
               <td>Author</td>
-              <td>
+              <td className="d-flex justify-content-center">
                 <div className="form-check">
                   <input
                     className="form-check-input"
@@ -52,6 +100,41 @@ const Table = ({
                   />
                 </div>
               </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  );
+};
+
+const ReportTable = ({ data }) => {
+  const [checked, setChecked] = useState(false);
+  return (
+    <>
+      <table className="table mt-3 table-striped table-info justify-content-center">
+        <thead className="thead-dark">
+          <tr>
+            <td>Thread ID</td>
+            <td>Time created</td>
+            <td>Target</td>
+            <td>Tag</td>
+            <td>Path</td>
+            <td>Reported by</td>
+            <td>Tools</td>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Render 20 rows with user data */}
+          {data.map((id, index) => (
+            <tr key={index}>
+              <td>{id}</td>
+              <td>Time created</td>
+              <td>Target</td>
+              <td>Tag</td>
+              <td>Path</td>
+              <td>Reported by</td>
+              <td>Tools</td>
             </tr>
           ))}
         </tbody>
@@ -231,35 +314,7 @@ export default function Profile() {
                   </div>
 
                   {/* Third Element: Table */}
-                  <table className="table mt-3 table-striped table-info">
-                    <thead className="thead-dark">
-                      <tr>
-                        <th>Avatar</th>
-                        <th>Student ID</th>
-                        <th>Fullname</th>
-                        <th>Faculty</th>
-                        <th>Gender</th>
-                        <th>Status</th>
-                        <th>Year</th>
-                        <th>Checkbox</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/* Render 20 rows with user data */}
-                      {Array.from({ length: 20 }, (_, index) => (
-                        <tr key={index}>
-                          <td>Avatar</td>
-                          <td>Student ID</td>
-                          <td>Fullname</td>
-                          <td>Faculty</td>
-                          <td>Gender</td>
-                          <td>Status</td>
-                          <td>Year</td>
-                          <td>Checkbox</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <UserTable />
 
                   {/* Fourth Element: Pagination Bar */}
                   <div className="d-flex justify-content-center mt-3">
@@ -301,14 +356,14 @@ export default function Profile() {
                 aria-labelledby="nav-password-tab"
               >
                 <div className="order-md-1 text-start ">
-                  <h1 className="mb-3 text-white">Pending threads</h1>
+                  <h1 className="mb-3 text-white">All threads</h1>
 
                   <div className="d-flex flex-column align-items-start">
                     {/* First Element: Search Bar and New User Button */}
                     <div className="d-flex align-items-center">
                       {/* <SearchBar />{" "} */}
                       {/* Replace with your actual SearchBar component */}
-                      <button className="btn btn-primary ms-3">New User</button>
+                      {/* <button className="btn btn-primary ms-3">New User</button> */}
                     </div>
 
                     {/* Second Element: Tools */}
@@ -326,8 +381,72 @@ export default function Profile() {
                       </div>
                     </div>
 
+                    {/* Third Element: ThreadTable */}
+                    <ThreadTable threadId={threadId} />
+
+                    {/* Fourth Element: Pagination Bar */}
+                    <div className="d-flex justify-content-center mt-3">
+                      {/* Render your pagination component here */}
+                      {/* Example: */}
+                      <nav aria-label="Page navigation example">
+                        <ul className="pagination">
+                          <li className="page-item">
+                            <a
+                              className="page-link"
+                              href="#"
+                              aria-label="Previous"
+                            >
+                              <span aria-hidden="true">&laquo;</span>
+                            </a>
+                          </li>
+                          <li className="page-item">
+                            <a className="page-link" href="#">
+                              1
+                            </a>
+                          </li>
+                          {/* Add more page items as needed */}
+                          <li className="page-item">
+                            <a className="page-link" href="#" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                className={`tab-pane fade ${
+                  activeTab === "report" ? "show active" : ""
+                }`}
+                id="nav-password"
+                role="tabpanel"
+                aria-labelledby="nav-password-tab"
+              >
+                <div className="order-md-1 text-start ">
+                  <h1 className="mb-3 text-white">All threads</h1>
+
+                  <div className="d-flex flex-column align-items-start">
+                    {/* First Element: Search Bar and New User Button */}
+                    <div className="d-flex align-items-center">
+                      {/* <SearchBar />{" "} */}
+                      {/* Replace with your actual SearchBar component */}
+                      {/* <button className="btn btn-primary ms-3">New User</button> */}
+                    </div>
+
+                    {/* Second Element: Tools */}
+                    <div className="container-fluid mt-3">
+                      <div className="d-flex">
+                        <select className="form-select me-3 w-auto">
+                          <option>Sort by...</option>
+                          {/* Add sorting options here */}
+                        </select>
+                      </div>
+                    </div>
+
                     {/* Third Element: Table */}
-                    <Table threadId={threadId} />
+                    <ReportTable data={threadId} />
 
                     {/* Fourth Element: Pagination Bar */}
                     <div className="d-flex justify-content-center mt-3">
