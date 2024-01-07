@@ -42,9 +42,9 @@ export default function ({ comment, onReplyClick }) {
                     <img className="rounded-circle centered-and-cropped bg-dark" width={100} height={100} src={
                         profilePicture ? profilePicture : 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'
                     } alt="avatar"/>
-                    <div className="username mt-2">
+                    <a className="username mt-2" href={`/user/${comment.author && comment.author._id}`}>
                         {comment.author && comment.author.fullname}
-                    </div>
+                    </a>
                 </div>
                 <div className="col-10 bg-card-primary round-right d-flex flex-column justify-content-between">
                     <div className="row-12 d-flex justify-content-between" style={{ margin: '0 20px',borderBottom: '1px solid rgba(255, 255, 255, 0.7)', padding: '16px 0px 10px' }}>

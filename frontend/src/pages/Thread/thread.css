@@ -1,3 +1,10 @@
 .white-shade-text {
     color: #f5f5dc;
 }
+.thread-creator-profile {
+    text-decoration: none;
+    color: inherit;
+}
+.thread-creator-profile:hover {
+    text-decoration: underline;
+}

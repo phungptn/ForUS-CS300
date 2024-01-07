@@ -92,7 +92,9 @@ export default function Thread() {
                         {/* Author and date */}
                         <div className="d-flex py-2 text-transwhite" style={{ fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.7)' }}>
                             <i className="bi bi-person"></i>
-                            <span className="ms-2">{thread.author && thread.author.fullname}</span>
+                            <a href={`/user/${thread.author && thread.author._id}`} className="ms-2 thread-creator-profile">
+                                {thread.author && thread.author.fullname}
+                            </a>
                             <i class="bi bi-dot ms-1"></i>
                             <div className="d-flex align-items-center">
                                 <i className="bi bi-clock"></i>

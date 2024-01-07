@@ -4,3 +4,11 @@
 .comment-link:hover {
   text-decoration: underline;
 }
+.username {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+.username:hover {
+  text-decoration: underline;
+}
