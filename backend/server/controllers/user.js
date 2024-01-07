@@ -376,6 +376,29 @@ const updateAllNotificationIsRead = async (req, res, next) => {
   }
 }
 
+const updateNotificationStatus = async (req, res, next) => {
+  try {
+    const user = await userUtil.findUserById(req);
+    if (user == null) res.status(403).json({ error: "Invalid session." });
+    else {
+      const { notification_id } = req.params;
+      const notification = await Notification.findOne({ _id: notification_id });
+      if (notification == null) res.status(403).json({ error: "Invalid notification id." });
+      else {
+        const userNotification = user.notifications.find((e) => e.notification.toString() == notification_id.toString());
+        if (userNotification == null) res.status(403).json({ error: "Invalid notification id." });
+        else {
+          userNotification.isRead = true;
+          await user.save();
+          res.status(200).json({ message: "Update notification status successfully." });
+        }
+      }
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+}
+
 
 module.exports = {
   loginUser,
@@ -391,5 +414,6 @@ module.exports = {
   getAllUser,
   getNotification,
   userProfile,
-  updateAllNotificationIsRead
+  updateAllNotificationIsRead,
+  updateNotificationStatus
 };

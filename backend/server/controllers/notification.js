@@ -145,6 +145,7 @@ module.exports = {
             }
         }
     },
+
     updateAllInboxNotificationStatus: async (req, res) => {
         let token = req.cookies.token;
         if (token == null) {

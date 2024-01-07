@@ -13,7 +13,8 @@ const {
   getAllUser,
   getNotification,
   userProfile,
-  updateAllNotificationIsRead
+  updateAllNotificationIsRead,
+  updateNotificationStatus
 } = require("../controllers/user");
 
 const router = express.Router();
@@ -31,6 +32,7 @@ router.get("/allUser", getAllUser);
 router.get("/notification", getNotification);
 router.get("/:id", userProfile);
 router.put("/notification", updateAllNotificationIsRead);
+router.put("/notification/:notification_id", updateNotificationStatus);
 
 
 module.exports = router;
