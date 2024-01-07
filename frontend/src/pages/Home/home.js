@@ -3,6 +3,7 @@ import { instance } from "../../api/config";
 import { GroupsContext } from "./context";
 import Group from "./Group/group";
 import LatestThread from "./LatestThread/latestThread";
+import News from "./News/news";
 import { checkAdmin } from "../../utils/checkAdmin";
 import "./home.css";
 import { CreateNewGroup, Management } from "./AdminControl/admincontrol";
@@ -26,7 +27,7 @@ export default function Home() {
     <>
       <div className="container">
         <div className="row">
-          <div className="col-md-8">
+          <div className="col-lg-8">
             {groups &&
               groups.map((group) => (
                 <GroupsContext.Provider
@@ -39,8 +40,8 @@ export default function Home() {
               <CreateNewGroup />
             </GroupsContext.Provider>
           </div>
-          <div className="col-md-4">
-            <LatestThread />
+          <div className="col-lg-4">
+            <News />
           </div>
         </div>
       </div>

@@ -10,7 +10,8 @@ const NotificationSchema = new Schema({
     isReport: { type: Boolean, default: false},
     from: {
         type: String,
-        enum: ['reply', 'thread', 'system'],
+        enum: ['reply', 'thread', 'admin'],
+        required: true
     }
 }, {timestamps: true});
 
