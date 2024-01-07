@@ -12,3 +12,11 @@
 .username:hover {
   text-decoration: underline;
 }
+.comment-card {
+  scroll-margin-top: 75px;
+}
+@media screen and (max-width: 991px) {
+  .comment-card {
+    scroll-margin-top: 150px;
+  }
+}
