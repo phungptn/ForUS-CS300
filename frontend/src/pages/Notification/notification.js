@@ -20,6 +20,7 @@ export default function Notification (){
           });
     
           setNotifications(response.data.notifications);
+          
     
           setLoading(false);
         };

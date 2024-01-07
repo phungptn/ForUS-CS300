@@ -83,7 +83,7 @@ export default function Thread() {
         <>
             <div className="container">
                 <div className="row">
-                    <div className="col-8">
+                    <div className="col-lg-8">
                         {/* Thread title */}
                         <div className="d-flex justify-content-between pb-2 pt-4">
                             <h3 className="text-white">{thread.title}</h3>
@@ -133,7 +133,7 @@ export default function Thread() {
                         )}
                         
                     </div>
-                    <div className="col-4 text-start">
+                    <div className="col-lg-4 text-start">
                         {/* <div className="card rounded-3 shadow-sm bg-primary">
                             <BoxContext.Provider value={{ box, setBox, moderatorStatus }}>
                                 <BoxDescription box={box}/>

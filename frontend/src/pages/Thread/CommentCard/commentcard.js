@@ -36,7 +36,7 @@ export default function ({ comment, onReplyClick }) {
     return (
         <div className="card-body comment-card"style={{ margin: '20px 0' }} id={comment._id}>
             <div className="row m-0 p-0">
-                <div className="col-2 bg-card-secondary round-left d-flex flex-column align-items-center text-center"
+                <div className="col-lg-2 bg-card-secondary round-left d-flex flex-column align-items-center text-center"
                     style={{ paddingTop: '20px', paddingLeft: '20px' }}
                 >
                     <img className="rounded-circle centered-and-cropped bg-dark" width={100} height={100} src={
@@ -46,7 +46,7 @@ export default function ({ comment, onReplyClick }) {
                         {comment.author && comment.author.fullname}
                     </a>
                 </div>
-                <div className="col-10 bg-card-primary round-right d-flex flex-column justify-content-between">
+                <div className="col-lg-10 bg-card-primary round-right d-flex flex-column justify-content-between">
                     <div className="row-12 d-flex justify-content-between" style={{ margin: '0 20px',borderBottom: '1px solid rgba(255, 255, 255, 0.7)', padding: '16px 0px 10px' }}>
                         <div style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
                             <i className="bi bi-clock"></i>

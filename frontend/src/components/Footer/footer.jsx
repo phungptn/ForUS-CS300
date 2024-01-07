@@ -1,4 +1,5 @@
 // import './footer.css';
+import EmailIcon from '@mui/icons-material/Email';
 import logo from "../../assets/icons/logo2.png";
 export default function Footer() {
   return (
@@ -51,36 +52,40 @@ export default function Footer() {
           <div className="col mb-3 mt-5">
             <h5 className="text-white text-start">Contact Us</h5>
             <ul className="nav flex-column">
-              <li className="nav-item mb-2 d-flex flex-row ">
-                <i className="bi bi-envelope text-white"></i>
+              <li className="nav-item mb-2 d-flex flex-row text-warning" >
+                <EmailIcon className="text-white large" />
+
                 <a href="#" className="nav-link p-0 text-body-secondary text-white px-1">
                   nsminh21@apcs.fitus.edu.vn
                 </a>
 
               </li>
-              <li className="nav-item mb-2 d-flex flex-row ">
-                <i className="bi bi-envelope text-white"></i>
+              <li className="nav-item mb-2 d-flex flex-row text-warning">
+                <EmailIcon className="text-white large" />
+
                 <a href="#" className="nav-link p-0 text-body-secondary text-white px-1">
                   ndtriet21@apcs.fitus.edu.vn
                 </a>
 
               </li>
-              <li className="nav-item mb-2 d-flex flex-row ">
-                <i className="bi bi-envelope text-white"></i>
+              <li className="nav-item mb-2 d-flex flex-row text-warning">
+                <EmailIcon className="text-white large" />
+
                 <a href="#" className="nav-link p-0 text-body-secondary text-white px-1">
                   nxhoa21@apcs.fitus.edu.vn
                 </a>
 
               </li>
-              <li className="nav-item mb-2 d-flex flex-row ">
-                <i className="bi bi-envelope text-white"></i>
+              <li className="nav-item mb-2 d-flex flex-row text-warning ">
+                <EmailIcon className="text-white large" />
+
                 <a href="#" className="nav-link p-0 text-body-secondary text-white px-1">
                   htkha21@apcs.fitus.edu.vn
                 </a>
 
               </li>
-              <li className="nav-item mb-2 d-flex flex-row ">
-                <i className="bi bi-envelope text-white"></i>
+              <li className="nav-item mb-2 d-flex flex-row text-warning">
+                <EmailIcon className="text-white large" />
                 <a href="#" className="nav-link p-0 text-body-secondary text-white px-1">
                   ntphung21@apcs.fitus.edu.vn
                 </a>
@@ -89,7 +94,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <p className="text-white text-center">©2023 Made with ❤️</p>
+          <p className="text-white text-center">©2023-2024 Made with ❤️</p>
     
         </div>
         

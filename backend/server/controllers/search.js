@@ -3,7 +3,7 @@ const Box = require("../models/box");
 const Thread = require("../models/thread");
 const { findUserById } = require("../utils/users");
 
-const RESULTS_PER_PAGE = 1;
+const RESULTS_PER_PAGE = 10;
 const ALLOWED_TYPES = new Set(["user", "box", "thread"]);
 const ALLOWED_DIRECTIONS = new Set(["asc", "desc"]);
 

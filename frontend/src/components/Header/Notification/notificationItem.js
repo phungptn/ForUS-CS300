@@ -61,7 +61,7 @@ export default function NotificationItem({ notification }) {
       aria-current="true"
       onClick={updateNotificationStatus}
     >
-      {notification.from === "system" ? (
+      {notification.from === "admin" ? (
         <SettingsSuggestIcon
           fontSize="large"
           className="rounded-circle flex-shrink-0"
@@ -79,10 +79,10 @@ export default function NotificationItem({ notification }) {
       )}
       <div class="d-flex gap-2 w-100 justify-content-between">
         <div>
-          <h6 class="mb-0">{notification.title}</h6>
-          <p class="mb-0 opacity-75  ">{notification.body}.</p>
+          <p className="mb-0 fw-bold">{notification.title}</p>
+          <p className="mb-0 opacity-75  ">{notification.body}.</p>
         </div>
-        <small class="opacity-50 text-nowrap">
+        <small className="opacity-50 text-nowrap">
           {diff} {unit} ago
         </small>
       </div>

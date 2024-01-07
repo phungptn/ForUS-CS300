@@ -8,13 +8,13 @@ const sanitizeHtml = require('sanitize-html');
 
 module.exports = {
     sendNotificationToUsers: async (req, res) => {
-        let { title, body, user_ids } = req.body;
+        let { title, body, user_ids, from } = req.body;
         if (title == null || body == null || user_ids == null || !Array.isArray(user_ids) || user_ids.length == 0) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
             const session = await mongoose.startSession();
-            let notification = new Notification({ title: title, body: body });
+            let notification = new Notification({ title: title, body: body, from });
             try {
                 await session.withTransaction(async () => {
                     await notification.save();

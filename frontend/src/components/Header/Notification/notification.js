@@ -23,14 +23,38 @@ export default function Notification() {
         notification.isRead = temp.isRead;
       });
 
+        console.log(response.data.notifications);
       setNotifications(response.data.notifications);
+      // // add read status to notifications
+      // notifications.forEach((notification) => {
+      //   let notificationItem = document.getElementById(notification._id);
+      //   // console.log(notificationItem);
+      //   if (notification.isRead && notificationItem) {
+      //     notificationItem.classList.add("read");
+      //   }
+      // });
 
-      console.log(response.data.notifications);
+      // console.log(response.data.notifications);
       setLoading(false);
     };
 
     fetchNotifications();
   }, []);
+
+  // useEffect(() => {
+  //   // add read status to notifications
+  //   notifications.forEach((notification) => {
+  //     let notificationItem = document.getElementById(notification._id);
+  //     // console.log(notificationItem);
+  //     if (notification.isRead && notificationItem) {
+  //       notificationItem.classList.add("read");
+
+  //     }
+  //   });
+
+
+  //   console.log(notifications);
+  // }, [notifications.filter((n) => n.isRead === false).length]);
 
   const markAllAsRead = async () => {
     const response = await updateAllNotificationIsRead();
@@ -66,7 +90,7 @@ export default function Notification() {
 
         {
           <ul className="dropdown-menu  dropdown-menu-md-end notification__content bg-white width-250"
-          style={{minWidth: '30vw', maxHeight: '70vh', overflowY: 'auto'}}
+          style={{minWidth: '30vw', maxHeight: '70vh', overflowY: 'auto', maxWidth: '50vw'}}
           >
             <li>
               <div className="d-flex justify-content-between align-items-center">
@@ -106,7 +130,7 @@ export default function Notification() {
             ) : (
               <li>
                 <a
-                  href="#"
+                  href=""
                   className="dropdown-item   py-1 text-center notificationItem"
                   onClick={markAllAsRead}
                 >

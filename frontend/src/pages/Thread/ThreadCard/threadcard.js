@@ -41,7 +41,7 @@ export default function ({ thread }) {
     <div className="card-bod m-0" style={{ margin: "20px 0" }}>
       <div className="row m-0 p-0 flex-grow-1">
         <div
-          className="col-2 bg-card-secondary round-left d-flex flex-column align-items-center text-center"
+          className="col-lg-2 bg-card-secondary round-left d-flex flex-column align-items-center text-center"
           style={{ paddingTop: "20px", paddingLeft: "20px" }}
         >
           <img
@@ -59,7 +59,7 @@ export default function ({ thread }) {
             {thread.author && thread.author.fullname}
           </div>
         </div>
-        <div className="col-10 bg-card-primary round-right d-flex flex-column justify-content-between">
+        <div className="col-lg-10 bg-card-primary round-right d-flex flex-column justify-content-between">
           <div
             className="row-12 d-flex justify-content-between"
             style={{
