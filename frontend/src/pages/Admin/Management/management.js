@@ -7,7 +7,15 @@ import { v4 } from "uuid";
 import "./management.css";
 import { updateProfile, updatePassword, infoUser } from "../../../api/user";
 
-const UserTable = () => {
+const UserTable = ({
+  avatarImg,
+  studentId,
+  fullName,
+  faculty,
+  gender,
+  status,
+  admitYear,
+}) => {
   const [checked, setChecked] = useState(false);
 
   return (
@@ -21,7 +29,19 @@ const UserTable = () => {
           <th>Gender</th>
           <th>Status</th>
           <th>Year</th>
-          <th>Checkbox</th>
+          <th className="d-flex justify-content-center">
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                value=""
+                id={checked ? "flexCheckDefault" : "flexCheckChecked"}
+                onClick={
+                  checked ? () => setChecked(false) : () => setChecked(true)
+                }
+              />
+            </div>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -75,18 +95,24 @@ const ThreadTable = ({
             <td>Subforum</td>
             <td>Box</td>
             <td>Author</td>
+            <td>UpDown</td>
+            <td>Replies</td>
             <td>Checkbox</td>
           </tr>
         </thead>
         <tbody>
           {/* Render rows with data */}
-          {threadId.map((id, index) => (
+          {threadId.map((tId, index) => (
             <tr key={index}>
-              <td>{id}</td>
-              <td>Time created</td>
-              <td>Subforum</td>
-              <td>Box</td>
-              <td>Author</td>
+              <td>{tId}</td>
+              <td>{timeCreated[index]}</td>
+              <td>{box[index]}</td>
+              <td>{subForum[index]}</td>
+              <td>{author[index]}</td>
+              <td>
+                {upDown[index][0]}/{upDown[index][1]}
+              </td>
+              <td>{replies[index]}</td>
               <td className="d-flex justify-content-center">
                 <div className="form-check">
                   <input
@@ -156,6 +182,12 @@ export default function Profile() {
   const [avatarFile, setAvatarFile] = useState(null); // [file, setFile]
   const [avatar, setAvatar] = useState("");
   const threadId = [1, 2, 3];
+  const timeCreated = ["8:00", "16:00", "21:00"];
+  const subForum = ["Bla", "Ble", "Blo"];
+  const box = ["b1", "b2", "b3"];
+  const author = ["ntp", "nsm", "nxh"];
+  const upDown = [(1, 2), (45, 23), (100, 15)];
+  const replies = [13, 45, 67];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -290,60 +322,63 @@ export default function Profile() {
                 role="tabpanel"
                 aria-labelledby="nav-user-tab"
               >
-                <div className="d-flex flex-column align-items-start">
-                  {/* First Element: Search Bar and New User Button */}
-                  <div className="d-flex align-items-center">
-                    {/* <SearchBar />{" "} */}
-                    {/* Replace with your actual SearchBar component */}
-                    <button className="btn btn-primary ms-3">New User</button>
-                  </div>
+                <div className="order-md-1 text-start ">
+                  <h1 className="mb-3 text-white">All users</h1>
+                  <div className="d-flex flex-column align-items-start">
+                    {/* First Element: Search Bar and New User Button */}
+                    <div className="d-flex align-items-center">
+                      {/* <SearchBar />{" "} */}
+                      {/* Replace with your actual SearchBar component */}
+                      <button className="btn btn-primary ms-3">New User</button>
+                    </div>
 
-                  {/* Second Element: Tools */}
-                  <div className="container-fluid mt-3">
-                    <div className="d-flex">
-                      <select className="form-select me-3 w-auto">
-                        <option>Sort by...</option>
-                        {/* Add sorting options here */}
-                      </select>
-                      <div className="btn-group ms-auto">
-                        <button className="btn btn-secondary">Tool 1</button>
-                        <button className="btn btn-secondary">Tool 2</button>
-                        <button className="btn btn-secondary">Tool 3</button>
+                    {/* Second Element: Tools */}
+                    <div className="container-fluid mt-3">
+                      <div className="d-flex">
+                        <select className="form-select me-3 w-auto">
+                          <option>Sort by...</option>
+                          {/* Add sorting options here */}
+                        </select>
+                        <div className="btn-group ms-auto">
+                          <button className="btn btn-secondary">Tool 1</button>
+                          <button className="btn btn-secondary">Tool 2</button>
+                          <button className="btn btn-secondary">Tool 3</button>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Third Element: Table */}
-                  <UserTable />
+                    {/* Third Element: Table */}
+                    <UserTable />
 
-                  {/* Fourth Element: Pagination Bar */}
-                  <div className="d-flex justify-content-center mt-3">
-                    {/* Render your pagination component here */}
-                    {/* Example: */}
-                    <nav aria-label="Page navigation example">
-                      <ul className="pagination">
-                        <li className="page-item">
-                          <a
-                            className="page-link"
-                            href="#"
-                            aria-label="Previous"
-                          >
-                            <span aria-hidden="true">&laquo;</span>
-                          </a>
-                        </li>
-                        <li className="page-item">
-                          <a className="page-link" href="#">
-                            1
-                          </a>
-                        </li>
-                        {/* Add more page items as needed */}
-                        <li className="page-item">
-                          <a className="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                          </a>
-                        </li>
-                      </ul>
-                    </nav>
+                    {/* Fourth Element: Pagination Bar */}
+                    <div className="d-flex justify-content-center mt-3">
+                      {/* Render your pagination component here */}
+                      {/* Example: */}
+                      <nav aria-label="Page navigation example">
+                        <ul className="pagination">
+                          <li className="page-item">
+                            <a
+                              className="page-link"
+                              href="#"
+                              aria-label="Previous"
+                            >
+                              <span aria-hidden="true">&laquo;</span>
+                            </a>
+                          </li>
+                          <li className="page-item">
+                            <a className="page-link" href="#">
+                              1
+                            </a>
+                          </li>
+                          {/* Add more page items as needed */}
+                          <li className="page-item">
+                            <a className="page-link" href="#" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </nav>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -382,7 +417,15 @@ export default function Profile() {
                     </div>
 
                     {/* Third Element: ThreadTable */}
-                    <ThreadTable threadId={threadId} />
+                    <ThreadTable
+                      threadId={threadId}
+                      timeCreated={timeCreated}
+                      subForum={subForum}
+                      box={box}
+                      author={author}
+                      upDown={upDown}
+                      replies={replies}
+                    />
 
                     {/* Fourth Element: Pagination Bar */}
                     <div className="d-flex justify-content-center mt-3">
@@ -425,7 +468,7 @@ export default function Profile() {
                 aria-labelledby="nav-password-tab"
               >
                 <div className="order-md-1 text-start ">
-                  <h1 className="mb-3 text-white">All threads</h1>
+                  <h1 className="mb-3 text-white">All reports</h1>
 
                   <div className="d-flex flex-column align-items-start">
                     {/* First Element: Search Bar and New User Button */}
