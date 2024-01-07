@@ -55,18 +55,39 @@ module.exports = {
             res.status(400).json({ error: "Invalid request." });
         } else {
             try {
-                console.log('comment_id:', comment_id);
                 const comment = await Comment.aggregate([
                     { $match: { _id: new mongoose.Types.ObjectId(comment_id) } },
-                    { $lookup: { from: 'threads', localField: 'thread', foreignField: '_id', as: 'thread' } },
+                    { 
+                        $lookup: {
+                            from: 'threads',
+                            let: { 'thread_id': '$thread' },
+                            pipeline: [
+                                { $match: { $expr: { $eq: [ '$_id', '$$thread_id' ] } } },
+                                {
+                                    $lookup: {
+                                        from: 'comments',
+                                        let: { 'comment_id': '$comments' },
+                                        pipeline: [
+                                            { $match: { $expr: { $in: [ '$_id', '$$comment_id' ] } } },
+                                            { $sort: { createdAt: 1 } },
+                                            { $project: { _id: 1 } }
+                                        ],
+                                        as: 'comments'
+                                    },
+                                },
+                                { $project: { _id: 1, comments: 1 } },
+                            ],
+                            as: 'thread'
+                        }
+                    },
                     { $unwind: '$thread' },
                     { 
                         $addFields: {
                             page: {
-                                $floor: {
-                                    $add: [
-                                        { $floor: { $divide: [ { $indexOfArray: [ '$thread.comments', new mongoose.Types.ObjectId(comment_id) ] }, PAGE_SIZE ] } },
-                                        1
+                                $ceil: {
+                                    $divide: [
+                                        { $indexOfArray: [ '$thread.comments._id', '$_id' ] },
+                                        PAGE_SIZE
                                     ]
                                 }
                             }

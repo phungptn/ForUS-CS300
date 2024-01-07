@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";
+import { useParams } from "react-router-dom";
 import "react-quill/dist/quill.snow.css";
 import "./editor.scss";
 import { instance } from "../../api/config";
@@ -59,7 +60,7 @@ async function updateThread(thread, setThread, body) {
   }
 }
 
-async function createComment(thread_id, box_id, body, replyTo) {
+async function createComment(thread_id, box_id, body, replyTo, page) {
   try {
     const bodyText = extractText(body);
     console.log(bodyText);
@@ -76,7 +77,10 @@ async function createComment(thread_id, box_id, body, replyTo) {
     //   replyTo: replyTo,
     // });
     const location = await getCommentLocation(response.data.comment_id);
-    window.location.href = `/thread/${location.thread._id}/${location.page}#${location._id}`;
+    window.location.href = `/thread/${thread_id}/${location.page}#${location._id}`;
+    if (page === location.page) {
+      window.location.reload();
+    }
   }
   catch (error) {
     console.log(error);
@@ -146,9 +150,17 @@ function TitleInput({ title, setTitle }) {
 }
 
 export default function Editor() {
+  let page = useParams().page;
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const { type, state, setState, replyTo, oldBody, update, comment } = useContext(EditorContext);
+
+  if (page == null) {
+    page = 1;
+  }
+  else {
+    page = parseInt(page);
+  }
 
   const handleChange = (html) => {
     setBody(html);
@@ -210,7 +222,7 @@ export default function Editor() {
                 updateThread(state, setState, body); update();
               }
               else if (type === "createComment") {
-                createComment(state._id, state.box, body, replyTo);
+                createComment(state._id, state.box, body, replyTo, page);
               }
               else if (type === "updateComment") {
                 updateComment(state, setState, comment, body); update();
