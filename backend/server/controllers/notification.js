@@ -1,7 +1,10 @@
 const Notification = require('../models/notification');
 const User = require('../models/user');
+const Thread = require('../models/thread');
+const Comment = require('../models/comment');
 const { findUserById } = require('../utils/users');
 const mongoose = require('mongoose');
+const sanitizeHtml = require('sanitize-html');
 
 module.exports = {
     sendNotificationToUsers: async (req, res) => {
@@ -160,6 +163,62 @@ module.exports = {
                 catch (err) {
                     res.status(500).json({ error: err });
                 }
+            }
+        }
+    },
+    commentNotification : async (req, res) => {
+        let {thread_id, body, replyTo} = req.body;
+        body = sanitizeHtml(body);
+        console.log('Notification body:', body);
+
+
+        // console.log(thread_id, body, replyTo);
+        if (thread_id == null  || body == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            if (!!replyTo) {
+                console.log('Reply to:', replyTo);
+                let commentReplyFrom = await Comment.findOne({ _id: replyTo });
+                console.log('Comment reply from:', commentReplyFrom);
+                if (commentReplyFrom == null) {
+                    res.status(400).json({ error: "Invalid reply comment." });
+                    return
+                }
+                const authorOfCommentReplyFrom = await User.findOne({ _id: commentReplyFrom.author });
+                if (authorOfCommentReplyFrom == null) {
+                    res.status(400).json({ error: "Invalid author's reply comment." });
+                    return
+                }
+                let notification = new Notification({ title: "Reply Comment", body: body, thread: thread_id, comment: commentReplyFrom._id, user: authorOfCommentReplyFrom._id, from: "reply" });
+                authorOfCommentReplyFrom.notifications.push({ notification: notification._id });
+                await authorOfCommentReplyFrom.save();
+                console.log(authorOfCommentReplyFrom.notifications);
+
+                try {
+                    await notification.save();
+                }
+                catch (err) {
+                    res.status(500).json({ error: err });
+                }
+            }
+            const thread = await Thread.findOne({ _id: thread_id });
+            const authorOfThread = await User.findOne({ _id: thread.author });
+            if (authorOfThread == null) {
+                res.status(400).json({ error: "Invalid author's thread." });
+                return
+            }
+            let notification = new Notification({ title: "From thread: " + thread.title, body: body, thread: thread_id, user: authorOfThread._id, from: "thread" });
+            authorOfThread.notifications.push({ notification: notification._id });
+            console.log(authorOfThread.notifications);
+            await authorOfThread.save();
+            
+            
+            try {
+                await notification.save();
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
             }
         }
     }

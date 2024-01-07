@@ -7,6 +7,12 @@ import EditorContext from "./context";
 
 const TITLE_MAX_LENGTH = 128;
 
+function extractText(htmlString) {
+  let tempDiv = document.createElement("div");
+  tempDiv.innerHTML = htmlString;
+  return tempDiv.textContent || tempDiv.innerText || "";
+}
+
 async function createThread(box_id, title, body) {
   try {
     const response = await instance.post(`/box/${box_id}/thread`, {
@@ -54,10 +60,19 @@ async function updateThread(thread, setThread, body) {
 
 async function createComment(thread_id, box_id, body, replyTo) {
   try {
+    const bodyText = extractText(body);
+    console.log(bodyText);
+
     await instance.post(`/thread/${thread_id}/comment`, {
       body: body,
       replyTo: replyTo,
       box_id: box_id,
+    });
+    await instance.post(`/notification/comment`, {
+      thread_id: thread_id,
+      box_id: box_id,
+      body: bodyText,
+      replyTo: replyTo,
     });
     window.location.reload();
   }

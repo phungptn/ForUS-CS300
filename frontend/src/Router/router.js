@@ -14,6 +14,7 @@ const Search = lazy(() => import("../pages/Search/search"));
 const Home = lazy(() => import("../pages/Home/home"));
 const Profile = lazy(() => import("../pages/Profile/profile"));
 const Admin = lazy(() => import("../pages/Admin/admin"));
+const Notification = lazy(() => import("../pages/Notification/notification"));
 const ForgotPassword = lazy(() =>
   import("../pages/Login/ForgotPassword/forgotPassword")
 );
@@ -67,6 +68,7 @@ function Router() {
         <Route path="search/:page" element={<Search />} />
         <Route path="user/:user_id" element={<UserProfile />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="notification" element={<Notification />} />
       </Route>
       <Route
         exact

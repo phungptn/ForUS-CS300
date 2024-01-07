@@ -8,6 +8,10 @@ const NotificationSchema = new Schema({
     comment: { type: Schema.Types.ObjectId, ref: 'Comment', default: null},
     user: { type: Schema.Types.ObjectId, ref: 'User', default: null},
     isReport: { type: Boolean, default: false},
+    from: {
+        type: String,
+        enum: ['reply', 'thread', 'system'],
+    }
 }, {timestamps: true});
 
 module.exports = mongoose.model('Notification', NotificationSchema);

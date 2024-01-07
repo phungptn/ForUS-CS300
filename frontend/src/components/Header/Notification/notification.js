@@ -18,15 +18,10 @@ export default function Notification() {
       response.data.notifications.forEach((notification) => {
         let temp = userResponse.data.user.notifications.find(
           (n) => n.notification === notification._id
-        )
+        );
 
         notification.isRead = temp.isRead;
-
-  
-        
       });
-
-
 
       setNotifications(response.data.notifications);
 
@@ -50,7 +45,6 @@ export default function Notification() {
     }
   };
 
-
   return (
     <>
       <div class="btn-group dropdown-center">
@@ -61,27 +55,30 @@ export default function Notification() {
           data-bs-display="static"
           aria-expanded="false"
         >
-
           <i className="bi bi-bell-fill me-2"></i>
-          {notifications.length > 0? (
-                      <p className="position-absolute top-0 end-0 bg-danger text-white rounded-circle fw-bold f-13 w-24 h-24">
-                      {notifications.length}
-                    </p>
-          ):(
+          {notifications.length > 0 ? (
+            <p className="position-absolute top-0 end-0 bg-danger text-white rounded-circle fw-bold f-13 w-24 h-24">
+              {notifications.length}
+            </p>
+          ) : (
             <></>
-          ) }
-
-
-
+          )}
         </button>
-        
 
-        { (
-          <ul className="dropdown-menu  dropdown-menu-end notification__content bg-white width-250">
-   <li><h1 className="dropdown-header">Notification</h1></li>
+        {
+          <ul className="dropdown-menu  dropdown-menu-md-end notification__content bg-white width-250"
+          style={{minWidth: '20.5vw', maxHeight: '70vh', overflowY: 'auto'}}
+          >
+            <li>
+              <div className="d-flex justify-content-between align-items-center">
+                <h1 className="dropdown-header">Notification</h1>
+                <a href="/notification" className="pe-2">
+                  See all notifications
+                </a>
+              </div>
+            </li>
 
-
-            {notifications.map((notification) => (
+            {notifications.slice(0, 5).map((notification) => (
               <li key={notification._id}>
                 <NotificationItem
                   key={notification._id}
@@ -92,20 +89,21 @@ export default function Notification() {
 
             {notifications.length === 0 ? (
               <li>
-                <p className="text-center text-muted">No notifications</p>
+                <p className="text-center text-muted ">No notifications</p>
               </li>
-            ):
-            <li>
-            <a href="#" className="dropdown-item   py-1 text-center notificationItem" onClick={markAllAsRead}>
-              Mark all as read
-            </a>
-          </li>
-            }
-
-
-
+            ) : (
+              <li>
+                <a
+                  href="#"
+                  className="dropdown-item   py-1 text-center notificationItem"
+                  onClick={markAllAsRead}
+                >
+                  Mark all as read
+                </a>
+              </li>
+            )}
           </ul>
-        )}
+        }
       </div>
     </>
   );

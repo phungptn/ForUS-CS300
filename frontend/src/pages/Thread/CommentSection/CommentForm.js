@@ -5,7 +5,7 @@ import Editor from '../../Editor/editor';
 const CommentForm = ({ thread, replyTo }) => {
     return (
       <EditorContext.Provider value={{ type: 'createComment', state: thread, replyTo: replyTo}}>
-        <Editor />
+        <Editor/>
       </EditorContext.Provider>
     );
   };
