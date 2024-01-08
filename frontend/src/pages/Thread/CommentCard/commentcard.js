@@ -47,7 +47,7 @@ export default function ({ comment, onReplyClick }) {
                     <a className="username mt-2 user-link" href={`/user/${comment.author && comment.author._id}`}>
                         {comment.author && comment.author.fullname}
                     </a>
-                    {comment.isUpdater != 1 ? <ReportUserButton user={comment.author}/> : null}
+                    <p style={{ cursor: "pointer" }}>{comment.isUpdater != 1 ? <ReportUserButton user={comment.author}/> : null}</p>
                 </div>
                 <div className="col-lg-10 bg-card-primary round-right d-flex flex-column justify-content-between">
                     <div className="row-12 d-flex justify-content-between" style={{ margin: '0 20px',borderBottom: '1px solid rgba(255, 255, 255, 0.7)', padding: '16px 0px 10px' }}>

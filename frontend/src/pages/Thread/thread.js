@@ -41,11 +41,12 @@ export default function Thread() {
                 if (page > 1 && response.data.thread.pageCount === 0) {
                     navigate(`/thread/${thread_id}`, { replace: true });
                 }
-            } 
+            }
+            return true;
         } 
         catch (e) {
-            console.log(e);
             navigate("/404", { replace: true });
+            return false;
         }
     } 
 
@@ -59,11 +60,8 @@ export default function Thread() {
         }
     }, [autoRedirect]);
 
-    useEffect(() => {
-        getThread();
-    }, [location.key]);
-
-    async function getComment () {
+    async function getComment (success) {
+        if (!success) return;
         if (location.hash) {
             const comment_id = location.hash.substring(1);
             let commentCard = document.getElementById(comment_id);
@@ -73,15 +71,15 @@ export default function Thread() {
             else {
                 let loc = await getCommentLocation(comment_id);
                 if (loc == null) window.location.hash = "";
-                else window.location.href = `/thread/${loc.thread._id}/${loc.page + 1}#${comment_id}`;
+                else navigate(`/thread/${loc.thread._id}/${loc.page}#${comment_id}`, { replace: true });
             }
         }
         return () => {}
     }
 
     useEffect(() => {
-        getComment();
-    }, [location.hash]);
+        getThread().then(getComment);
+    }, [location.key]);
 
     const [replyToComment, setReplyToComment] = useState(null);
 
