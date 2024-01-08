@@ -22,56 +22,56 @@ export function DeleteModal({
 
     return (
         <>
-            <div className="react-modal-overlay" style={{ display: isOpen ? 'block' : 'none' }} onClick={handleClose}>
+            <div className="react-modal-overlay" style={{display: isOpen ? 'block' : 'none'}} onClick={handleClose}>
                 <div
                     className={`modal fade react-modal-style ${isOpen ? "show" : ""}`}
                     tabIndex="-1"
                     role="dialog"
                     style={{ display: isOpen ? "block" : "none" }}
                 >
-                    <div className="modal-dialog modal-dialog-centered" onClick={e => e.stopPropagation()}>
-
-                        <div
-                            class="modal-content"
-                            style={{ background: "#1D76C6", border: "1px solid #46A5FA" }}
-                        >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="react-modal-wrapper" onClick={e => e.stopPropagation()}>
                             <div
-                                class="modal-header"
-                                style={{ borderBottom: "1px solid #46A5FA" }}
+                                class="modal-content"
+                                style={{ background: "#1D76C6", border: "1px solid #46A5FA" }}
                             >
-                                <h1 className="modal-title fs-5 text-white" id="deleteModalLabel">
-                                    {modalTitle}
-                                </h1>
-                                <button
-                                    type="button"
-                                    className="btn text-white"
-                                    onClick={handleClose}
+                                <div
+                                    class="modal-header"
+                                    style={{ borderBottom: "1px solid #46A5FA" }}
                                 >
-                                    x
-                                </button>
-                            </div>
-                            <div className="modal-body text-white">{modalContent}</div>
-                            <div
-                                class="modal-footer"
-                                style={{ borderTop: "1px solid #46A5FA" }}
-                            >
-                                <button
-                                    type="button"
-                                    className="btn btn-primary"
-                                    onClick={handleClose}
+                                    <h1 className="modal-title fs-5 text-white" id="deleteModalLabel">
+                                        {modalTitle}
+                                    </h1>
+                                    <button
+                                        type="button"
+                                        className="btn text-white"
+                                        onClick={handleClose}
+                                    >
+                                        x
+                                    </button>
+                                </div>
+                                <div className="modal-body text-white">{modalContent}</div>
+                                <div
+                                    class="modal-footer"
+                                    style={{ borderTop: "1px solid #46A5FA" }}
                                 >
-                                    Không
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-danger"
-                                    onClick={handleDelete}
-                                >
-                                    Xóa
-                                </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                        onClick={handleClose}
+                                    >
+                                        Đóng
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-danger"
+                                        onClick={handleDelete}
+                                    >
+                                        Xóa
+                                    </button>
+                                </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -94,21 +94,65 @@ export function ReportModal({ isOpen, handleClose, handleDelete, modalTitle }) {
     
     return (
         <>
+            <div className="react-modal-overlay" style={{display: isOpen ? 'block' : 'none' }} onClick={handleClose}>
+                <div className={`modal fade react-modal-stye ${isOpen ? 'show' : ''}`} tabIndex="-1" role="dialog" style={{ display: isOpen ? 'block' : 'none' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="react-modal-wrapper" onClick={e => e.stopPropagation()}>
+                            <div class="modal-content" style={{ background: '#1D76C6', border: '1px solid #46A5FA' }}>
+                                <div class="modal-header" style={{ borderBottom: '1px solid #46A5FA'}}>
+                                    <h1 className="modal-title fs-5 text-white" id="deleteModalLabel">{modalTitle}</h1>
+                                    <button type="button" className="btn text-white" onClick={handleClose}>x</button>
+                                </div>
+                                <div className="modal-body text-white">
+                                    <b>Nội dung báo cáo:</b>
+                                    <textarea id="report-content-textarea" style= {{ width: "100%" }} rows="12"></textarea>
+                                </div>
+                                <div class="modal-footer" style={{ borderTop: '1px solid #46A5FA'}}>
+                                    <button type="button" className="btn btn-primary" onClick={handleClose}>Đóng</button>
+                                    <button type="button" className="btn btn-danger" onClick={handleDelete}>Báo cáo</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+export function ReportCardModal({ isOpen, handleClose, report }) {
+    const handleEscape = e => {
+        if (e.keyCode === 27) {
+            handleClose();
+        }
+    }
+
+    const handleDelete = async () => {
+
+    }
+
+    useEffect(() => {
+        document.addEventListener("keydown", handleEscape)
+
+        return () => document.removeEventListener("keydown", handleEscape)
+    }, [])
+    
+    return (
+        <>
             <div className="react-modal-overlay" style={{display: isOpen ? 'block' : 'none'}} onClick={handleClose}>
                 <div className={`modal fade react-modal-stye ${isOpen ? 'show' : ''}`} tabIndex="-1" role="dialog" style={{ display: isOpen ? 'block' : 'none' }}>
                     <div className="modal-dialog modal-dialog-centered" onClick={e => e.stopPropagation()}>
                         <div class="modal-content" style={{ background: '#1D76C6', border: '1px solid #46A5FA' }}>
                             <div class="modal-header" style={{ borderBottom: '1px solid #46A5FA'}}>
-                                <h1 className="modal-title fs-5 text-white" id="deleteModalLabel">{modalTitle}</h1>
+                                <h1 className="modal-title fs-5 text-white" id="deleteModalLabel">Nội dung báo cáo</h1>
                                 <button type="button" className="btn text-white" onClick={handleClose}>x</button>
                             </div>
                             <div className="modal-body text-white">
-                                <b>Nội dung báo cáo:</b>
-                                <textarea id="report-content-textarea" style= {{ width: "100%" }} rows="12"></textarea>
+                                <p>Something...</p>
                             </div>
                             <div class="modal-footer" style={{ borderTop: '1px solid #46A5FA'}}>
                                 <button type="button" className="btn btn-primary" onClick={handleClose}>Đóng</button>
-                                <button type="button" className="btn btn-danger" onClick={handleDelete}>Báo cáo</button>
+                                <button type="button" className="btn btn-success" onClick={handleDelete}>Mark As Resolved</button>
                             </div>
                         </div>
                     </div>
@@ -135,12 +179,14 @@ export const Modal = ({ children, isOpen, onClose }) => {
 
     return (
         <div className="react-modal-overlay" style={{display: isOpen ? 'block' : 'none'}} onClick={onClose}>
-            <div className={`modal fade ${isOpen ? 'show' : ''}`} tabIndex="-1" role="dialog" style={{ display: isOpen ? 'block' : 'none' }}>
-                <div className="modal-dialog modal-dialog-centered" onClick={e => e.stopPropagation()}>
-                    <div class="modal-content" style={{ background: '#1D76C6', border: '1px solid #46A5FA' }}>
-                        <ModalContext.Provider value={{ onClose }}>
-                            {children}
-                        </ModalContext.Provider>
+            <div className={`modal fade react-modal-style ${isOpen ? 'show' : ''}`} tabIndex="-1" role="dialog" style={{ display: isOpen ? 'block' : 'none' }}>
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="react-modal-wrapper" onClick={e => e.stopPropagation()}>
+                        <div class="modal-content" style={{ background: '#1D76C6', border: '1px solid #46A5FA' }}>
+                            <ModalContext.Provider value={{ onClose }}>
+                                {children}
+                            </ModalContext.Provider>
+                        </div>
                     </div>
                 </div>
             </div>

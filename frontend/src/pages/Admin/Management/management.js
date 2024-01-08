@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { storage } from "../../../Firebase/config";
 import { downloadImage } from "../../../utils/loadImage";
 import "./management.css";
-import { ReportModal } from "../../Modal/modal";
+import { ReportCardModal } from "../../Modal/modal";
 import { getAllUsers } from "../../../api/user";
 import { getTimePassed } from "../../../utils/getTimePassed";
 
@@ -209,18 +209,14 @@ const ReportTable = ({ data }) => {
                     id="newUserBtn"
                     onClick={() => openModal()}
                   >
-                    <i className="bi bi-info-circle"></i> View detail
-                    {/* Modal */}
-                    <ReportModal
+                    <i className="bi bi-info-circle"></i> View details
+                  </button>
+                  {/* Modal */}
+                  <ReportCardModal
                       isOpen={isModalOpen}
                       handleClose={() => closeModal()}
-                      handleDelete={() => {
-                        closeModal();
-                      }}
-                      modalTitle="Report details"
-                      modalContent="Đây là chi tiết về report"
-                    />
-                  </button>
+                      report={Number}
+                  />
                   <span className="mx-2"></span>
                   <button
                     className="btn btn-secondary custom-btn-green rounded"
