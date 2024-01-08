@@ -249,7 +249,7 @@ export function CreateNotificationModal({
                 <div className="modal-body text-white">
                   <div className="mb-3">
                     <label htmlFor="notificationRecipient" className="form-label">
-                      Body:
+                      Recipient:
                     </label>
                     <select
                       className="form-control text-white"
@@ -259,7 +259,7 @@ export function CreateNotificationModal({
                       onChange={onRecipientChange}
                     >
                         <option value="all">All users</option>
-                        <option value="selected">Selected users</option>
+                        <option value="selected">Selected users only</option>
                     </select>
                   </div>
                   <div className="mb-3">
