@@ -67,16 +67,16 @@ export default function NotificationItem({ notification }) {
           fontSize="large"
           className="rounded-circle flex-shrink-0"
         ></SettingsSuggestIcon>
-      ) : notification.from === "thread" ? (
-        <NotificationsIcon
-          fontSize="large"
-          className="rounded-circle flex-shrink-0"
-        ></NotificationsIcon>
-      ) : (
+      ) : notification.from === "reply" ? (
         <ReplyIcon
           fontSize="large"
           className="rounded-circle flex-shrink-0"
         ></ReplyIcon>
+      ) : (
+        <NotificationsIcon
+          fontSize="large"
+          className="rounded-circle flex-shrink-0"
+        ></NotificationsIcon>
       )}
       <div class="d-flex gap-2 w-100 justify-content-between">
         <div>

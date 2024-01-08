@@ -12,6 +12,8 @@ export default function NewsItem({notification}) {
         });
       }
 
+    
+
     return (
         <div className="row mb-4 rounded-3 bg-primary ">
             {/* Time creadted month/ day */}

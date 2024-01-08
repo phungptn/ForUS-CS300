@@ -56,22 +56,22 @@ export default function NotificationItem({ notification }) {
         className="rounded-circle flex-shrink-0"
       ></NotificationsIcon> */}
       {
-        notification.from === "system" ? (
+        notification.from === "admin" ? (
             <SettingsSuggestIcon
                 fontSize="large"
                 className="rounded-circle flex-shrink-0"
             ></SettingsSuggestIcon>
             ) : (
-                notification.from === "thread" ? (
-                    <NotificationsIcon
+                notification.from === "reply" ? (
+                    <ReplyIcon
                         fontSize="large"
                         className="rounded-circle flex-shrink-0"
-                    ></NotificationsIcon>
+                    ></ReplyIcon>
                     ) : (
-                        <ReplyIcon
+                        <NotificationsIcon
                             fontSize="large"
                             className="rounded-circle flex-shrink-0"
-                        ></ReplyIcon>
+                        ></NotificationsIcon>
                         )
             )
       }
