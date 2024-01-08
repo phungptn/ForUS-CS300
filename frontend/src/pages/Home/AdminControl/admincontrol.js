@@ -168,7 +168,7 @@ export function GroupControl({ group_id }) {
           </div>
           <div class="form-group">
             <label for="boxDescription">Mô tả của box:</label>
-            <textarea type="text" class="form-control bg-white" id="boxDescription" placeholder="(Ít nhất 32 ký tự)" rows="3" spellCheck={false} value={boxDescription} onChange={(e) => setBoxDescription(e.target.value)}/>
+            <textarea type="text" class="form-control bg-white" id="boxDescription" placeholder="(Ít nhất 32 ký tự)" rows="7" spellCheck={false} value={boxDescription} onChange={(e) => setBoxDescription(e.target.value)}/>
           </div>
         </Modal.Body>
         <Modal.Footer>

@@ -82,29 +82,78 @@ export function RenameBoxButton() {
 
 export function ChangeBoxDescriptionButton() {
     const { box, setBox, moderatorStatus } = useContext(BoxContext);
-    async function changeBoxDescription() {
-        const description = prompt("Enter new box description:");
-        if (description) {
+    const [isChangeBoxDescriptionModalOpen, setIsChangeBoxDescriptionModalOpen] = useState(false);
+    const [boxDescription, setBoxDescription] = useState(box.description);
+    async function changeBoxDescription(boxDescription) {
+        if (boxDescription) {
             try {
-                const response = await instance.put(`/box/${box._id}/description`, { description: description });
+                const response = await instance.put(`/box/${box._id}/description`, { description: boxDescription });
                 if (response.status === 200) {
-                    setBox({ ...box, description: description });
+                    setBox({ ...box, description: boxDescription });
+                    setError({message: ""});
+                    setIsChangeBoxDescriptionModalOpen(false);
                 }
             }
             catch (e) {
                 console.log(e);
+                setError({message: error.message});
             }
         }
+    }
+    const openChangeBoxDescriptionModal = () => {
+        setIsChangeBoxDescriptionModalOpen(true);
+    };
+    const closeChangeBoxDescriptionModal = () => {
+        setError({message: ""});
+        setBoxDescription(box.description);
+        setIsChangeBoxDescriptionModalOpen(false);
+    };
+    const [error, setError] = useState({});
+    const checkValidBox = (boxDescription) => {
+        if (boxDescription.length > 512 || boxDescription.length < 32) {
+            setError({message: "Mô tả box phải từ 32 đến 512 ký tự"});
+            return;
+        }
+        changeBoxDescription(boxDescription);
     }
     if (!moderatorStatus) {
         return null;
     }
     return (
-        <button type="button" className="btn btn-info text-white col rounded-0 border-end" onClick={changeBoxDescription}>
+        <>
+        <button type="button" className="btn btn-info text-white col rounded-0 border-end" onClick={() => openChangeBoxDescriptionModal()}>
             <div className="text-center">
                 <i className="bi bi-pencil-square me-2"/>
             </div>Đổi mô tả
         </button>
+
+            <Modal
+            isOpen={isChangeBoxDescriptionModalOpen}
+            onClose={() => closeChangeBoxDescriptionModal()}
+            >
+            <Modal.Header><h5 className="text-white">Sửa mô tả box</h5></Modal.Header>
+            <Modal.Body>
+                <div
+                    className={`alert alert-danger mx-3 mt-3 d-flex align-items-center font-weight-bold mb-0 ${
+                    error.message ? "d-block" : "d-none"
+                    }`}
+                >
+                    <PriorityHighIcon className="me-2"></PriorityHighIcon>
+                    <div className="">{error.message}</div>
+                </div>
+                <div class="form-group">
+                    <label className="text-white" for="boxDescription">Mô tả box:</label>
+                    <textarea type="text" class="form-control bg-white" id="boxDescription" placeholder="(Ít nhất 32 ký tự)" rows="7" spellCheck={false} value={boxDescription} onChange={(e) => setBoxDescription(e.target.value)}/>
+                </div>
+            </Modal.Body>
+            <Modal.Footer>
+            <Modal.DismissButton className="btn btn-danger">Hủy</Modal.DismissButton>
+                <button className="btn btn-primary" onClick={() => {checkValidBox(boxDescription)}}>
+                    Đổi
+                </button>
+            </Modal.Footer>
+            </Modal>
+        </>
     );
 }
 
