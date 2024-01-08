@@ -96,6 +96,15 @@ module.exports = {
                                 author: user._id,
                                 box: box_id
                             });
+                            const match = image_data.match(REGEX_FIREBASE_URL);
+                            if (match) {
+                                if (image_data.includes('-thumbnail')) {
+                                    thread.body = thread.body.replace(REGEX_SRC, image_data.replace('-thumbnail', ''));
+                                }
+                                else {
+                                    thread.imageUrl = thread.imageUrl.replace(match[1], `${match[1]}-thumbnail`);
+                                }
+                            }
                         }
                         else if (image_data.includes('data:image')) {
                             const image_id = v4();
@@ -450,10 +459,20 @@ module.exports = {
                                 const match = image_data.match(REGEX_FIREBASE_URL);
                                 if (match) {
                                   const path = match[1];
-                                  const imageUrl = path.split('%2F')[1];
-                                  thread.body = thread.body.replace(REGEX_SRC, imageUrl);
-                                  thread.imageUrl = imageUrl;
-                                  console.log(thread.body);
+                                  const directory = path.split('%2F');
+                                  console.log(directory);
+                                  if (directory[0] === thread_id) {
+                                    thread.body = thread.body.replace(REGEX_SRC, directory[1]);
+                                    thread.imageUrl = directory[1];
+                                  }
+                                  else {
+                                    if (image_data.includes('-thumbnail')) {
+                                      thread.body = thread.body.replace(REGEX_SRC, image_data.replace('-thumbnail', ''));
+                                    }
+                                    else {
+                                      thread.imageUrl = decode(image_data.replace(match[1], `${match[1]}-thumbnail`));
+                                    }
+                                  }
                                 }
                                 else {
                                   thread.imageUrl = decode(image_data);
