@@ -13,6 +13,8 @@ export default function Login() {
 
   const [valid, setValid] = useState(true);
 
+  const [errorMessage, setErrorMessage] = useState({});
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -21,15 +23,20 @@ export default function Login() {
   const Login = async (event) => {
     try {
       event.preventDefault();
+      setLoading(true);
 
       if (
-        formData.username.length >= 0 &&
+        formData.username.length >= 4 &&
         formData.username.length <= 20 &&
-        formData.password.length >= 0 &&
+        formData.password.length >= 4 &&
         formData.password.length <= 20
       ) {
         const response = await login(formData);
         console.log(response);
+        if (response.status !== 200) {
+          console.log(response.data.error);
+          setErrorMessage({ message: response.data.error });
+        }
         if (response.status === 200) {
           // console.log(rememberMe);
           // if (rememberMe) {
@@ -43,10 +50,15 @@ export default function Login() {
         } else {
           setValid(false);
         }
+      } else {
+        setErrorMessage({ message: "Invalid Username or Password" });
       }
 
       setLoading(false);
     } catch (error) {
+      setLoading(false);
+
+      setErrorMessage({ message: error.message });
       console.error(error);
     }
   };
@@ -62,11 +74,11 @@ export default function Login() {
       <h3 className="text-center mb-4">Please Sign in</h3>
       <div
         className={`alert alert-danger my-2 d-flex align-items-center font-weight-bold ${
-          !valid ? "d-block" : "d-none"
+          !!errorMessage.message ? "d-block" : "d-none"
         }`}
       >
         <PriorityHighIcon className="me-2"></PriorityHighIcon>
-        <div className="">Invalid Username or Password</div>
+        <div className="">{errorMessage.message}</div>
       </div>
       <div className="form-floating">
         <input
@@ -103,11 +115,19 @@ export default function Login() {
       </div> */}
 
       <button
-        className="btn btn-primary w-100 mt-2 py-2 "
+        className="btn btn-primary w-100 mt-2 py-2 d-flex align-items-center justify-content-center "
         type="submit"
         onClick={(event) => Login(event)}
+        disabled={isLoading}
       >
-        Sign in
+        <span
+          className={`spinner-border spinner-border-sm ${
+            isLoading ? "d-block" : "d-none"
+          }`}
+          role="status"
+          aria-hidden="true"
+        ></span>
+        <p className="mb-0 ms-2">Sign in</p>
       </button>
       <hr className="my-4" />
       <button
