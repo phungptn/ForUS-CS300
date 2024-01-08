@@ -5,7 +5,7 @@ const Thread = require('../models/thread');
 const Box = require('../models/box');
 const sharp = require('sharp');
 const { storage } = require('../utils/firebase');
-const { ref, uploadString, deleteObject } = require('firebase/storage');
+const { ref, uploadString, deleteObject, getDownloadURL } = require('firebase/storage');
 const { v4 } = require('uuid');
 const { decode } = require('html-entities');
 const sanitizeHtml = require('sanitize-html');
@@ -13,6 +13,8 @@ const ERROR = require('./error');
 
 const COMMENTS_PER_PAGE = 10;
 const THUMBNAIL_SIZE = 50;
+const REGEX_SRC = /(?<=src=")([^"]+)(?=")/g;
+const REGEX_FIREBASE_URL = /(?:https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/forusdb\.appspot\.com\/o\/images%2Fthread%2F)([a-zA-Z0-9%-]+)/;
 
 const resizeImage = async (image_data) => {
     let temp = image_data.split(';');
@@ -81,7 +83,7 @@ module.exports = {
                     console.log("Creating thread...");
                     let thread;
                     if (imgCount === 1) {
-                        const image_data = body.match(/(?<=src=")([^"]+)(?=")/g)[0];
+                        const image_data = body.match(REGEX_SRC)[0];
                         if (!Boolean(image_data)) {
                             res.status(400).json({ error: ERROR.IMAGE_VALIDATION_FAILED });
                             return;
@@ -111,7 +113,7 @@ module.exports = {
                                 res.status(500).json({ error: ERROR.IMAGE_UPLOAD_FAILED });
                                 return;
                             }
-                            thread.body = thread.body.replace(/(?<=src=")([^"]+)(?=")/g, image_id);
+                            thread.body = thread.body.replace(REGEX_SRC, image_id);
                         }
                     }
                     else {
@@ -419,21 +421,66 @@ module.exports = {
     updateThread: async (req, res) => {
         let { body } = req.body;
         let thread_id = req.params.thread_id;
-        if (body == null || thread_id == null) {
+        if (thread_id == null || !Boolean(body)) {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
+            body = sanitizeHtml(body, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
+            console.log(body);
+            let imgCount = body.split('&lt;img').length - 1;
             try {
                 const user = await userUtil.findUserById(req);
                 if (user == null) {
                     res.status(403).json({ error: ERROR.INVALID_SESSION });
                 }
                 else {
-                    const thread = await Thread.findOneAndUpdate({ _id: thread_id }, { body: body });
+                    let thread = await Thread.findOne({ _id: thread_id });
                     if (thread == null) {
                         res.status(404).json({ error: ERROR.NOT_FOUND });
                     }
                     else {
+                        if (imgCount === 1) {
+                            const image_data = body.match(REGEX_SRC)[0];
+                            if (!Boolean(image_data)) {
+                                res.status(400).json({ error: ERROR.IMAGE_VALIDATION_FAILED });
+                                return;
+                            }
+                            else if (image_data.startsWith('http')) {
+                                thread.body = body;
+                                const match = image_data.match(REGEX_FIREBASE_URL);
+                                if (match) {
+                                  const path = match[1];
+                                  const imageUrl = path.split('%2F')[1];
+                                  thread.body = thread.body.replace(REGEX_SRC, imageUrl);
+                                  thread.imageUrl = imageUrl;
+                                  console.log(thread.body);
+                                }
+                                else {
+                                  thread.imageUrl = decode(image_data);
+                                }
+                            }
+                            else if (image_data.includes('data:image')) {
+                                const image_id = v4();
+                                thread.body = body;
+                                thread.imageUrl = image_id;
+                                try {
+                                    await uploadImage(thread._id, image_data, image_id);
+                                }
+                                catch (err) {
+                                    res.status(500).json({ error: ERROR.IMAGE_UPLOAD_FAILED });
+                                    return;
+                                }
+                                thread.body = thread.body.replace(REGEX_SRC, image_id);
+                            }
+                        }
+                        else {
+                            if (thread.imageUrl) {
+                                await deleteImage(thread_id, thread.imageUrl);
+                            }
+                            thread.body = body;
+                            thread.imageUrl = null;
+                        }
+                        thread.save();
                         res.status(200).json({ message: "Thread updated." });
                     }
                 }

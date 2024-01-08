@@ -109,7 +109,7 @@ export default function ({ thread }) {
             <div style={{ padding: "0px 20px" }}>
               {/* Render thread body */}
               <div style={{ padding: "10px 0px 20px" }}>
-                <TextRenderer input={thread.body} />
+                <TextRenderer input={thread.body} thread={thread} setThread={setThread} />
               </div>
 
               {/* Display updated timestamp */}
