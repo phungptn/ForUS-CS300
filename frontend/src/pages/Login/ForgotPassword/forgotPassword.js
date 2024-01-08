@@ -6,17 +6,28 @@ import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 
 export default function ForgotPassword() {
   const [username, setUsername] = useState("");
-  const [valid, setValid] = useState(true);
-  const [emailSent, setEmailSent] = useState(false);
+  const [status, setStatus] = useState({}); 
+  const [isLoading, setLoading] = useState(false);
+
   const requestReset = async () => {
+   try {
+    setLoading(true);
+    
     const response = await forgotPassword({ username });
+    setLoading(false);
+
     console.log(response);
     if (response.status === 200) {
-      setEmailSent(true);
-      setValid(true);
+
+      setStatus({message:'Email is sent.', level: 'success'});
     } else {
-      setValid(false);
-      setEmailSent(false);
+      setStatus({message: response.data.error , level: 'error'});
+    }}
+    catch (error) {
+      console.log(error);
+      setLoading(false);
+      setStatus({message:error.message, level: 'error'});
+
     }
   };
 
@@ -25,17 +36,17 @@ export default function ForgotPassword() {
       <h3 className="text-center mb-4">Forgot Password</h3>
       <div
         className={`alert alert-danger my-2 d-flex align-items-center font-weight-bold ${
-          !valid ? "d-block" : "d-none"
+          !!status.message && status.level ==='error'  ? "d-block" : "d-none"
         }`}
       >
         <PriorityHighIcon className="me-2"></PriorityHighIcon>
-        <div className="">Invalid Username</div>
+        <div className="">{status.message}</div>
 
 
       </div>
       <div
           className={`alert alert-info my-2 d-flex align-items-center font-weight-bold ${
-            emailSent ? "d-block" : "d-none"
+            !!status.message && status.level === 'success'  ? "d-block" : "d-none"
           }`}
         >
           <EmailIcon className="me-2"></EmailIcon>
@@ -59,14 +70,21 @@ export default function ForgotPassword() {
       </div>
 
       <button
-        className="w-100 btn btn-lg btn-primary mt-4"
+        className="w-100 btn btn-lg btn-primary mt-4 d-flex align-items-center justify-content-center"
         type="submit"
         onClick={(event) => {
           event.preventDefault();
           requestReset();
         }}
+
+        disabled={isLoading}
+        
       >
-        Reset Password
+          <span className={`spinner-border spinner-border-sm ${isLoading? "d-block" : "d-none"}`}  role="status" aria-hidden="true"  >
+    
+          </span>
+          <p className="mb-0 ms-2">Send Email</p>
+
       </button>
     </div>
   );

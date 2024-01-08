@@ -3,6 +3,7 @@ import { resetPassword } from "../../../api/user";
 import { useParams } from "react-router-dom";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 export default function ResetPassword() {
+  const [isLoading, setLoading] = useState(false);
   let { reset_token } = useParams();
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -10,6 +11,7 @@ export default function ResetPassword() {
 
   const updatePasswordFunction = async () => {
     try {
+      setLoading(true);
       const passwordAlertText = document.getElementById("password-alert-text");
 
       if (newPassword !== confirmNewPassword) {
@@ -32,8 +34,10 @@ export default function ResetPassword() {
           passwordAlertText.innerHTML = "Invalid Password";
         }
       }
+      setLoading(false);
     } catch (e) {
       console.log(e);
+      setLoading(false);
     }
   };
   return (
@@ -80,14 +84,23 @@ export default function ResetPassword() {
         </div>
 
         <button
-          className="w-100 btn btn-warning btn-lg btn-block "
+          className="w-100 btn btn-warning btn-lg btn-block d-flex align-items-center justify-content-center "
           type="submit"
           onClick={(event) => {
             event.preventDefault();
             updatePasswordFunction();
           }}
+          disabled={isLoading}
         >
+                  <span
+          className={`spinner-border spinner-border-sm ${
+            isLoading ? "d-block" : "d-none"
+          }`}
+          role="status"
+          aria-hidden="true"
+        ></span>
           Update
+          
         </button>
       </div>
     </div>
