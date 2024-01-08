@@ -3,11 +3,15 @@ import React, { useState, useEffect } from "react";
 import { storage } from "../../../Firebase/config";
 import { downloadImage } from "../../../utils/loadImage";
 import "./management.css";
-import { ReportCardModal } from "../../Modal/modal";
+import { ReportCardModal, CreateNotificationModal } from "../../Modal/modal";
 import { getAllUsers } from "../../../api/user";
 import { getTimePassed } from "../../../utils/getTimePassed";
+import {
+  sendNotificationToUsers,
+  sendNotificationToAllUsers,
+} from "../../../api/admin";
 
-const UserTable = () => {
+const UserTable = ({ onSelectedUsersChange }) => {
   const [selectAll, setSelectAll] = useState(false);
   const [checked, setChecked] = useState(Array(0).fill(false));
   const [users, setUsers] = useState([]);
@@ -38,6 +42,7 @@ const UserTable = () => {
   const handleSelectAll = () => {
     setSelectAll(!selectAll);
     setChecked(Array(users.length).fill(!selectAll));
+    onSelectedUsersChange(selectAll ? [] : users.map((user) => user.username));
   };
 
   const handleCheckboxChange = (index) => {
@@ -45,6 +50,11 @@ const UserTable = () => {
     updatedChecked[index] = !updatedChecked[index];
     setChecked(updatedChecked);
     setSelectAll(updatedChecked.every((isChecked) => isChecked));
+    onSelectedUsersChange(
+      updatedChecked
+        .map((isChecked, i) => (isChecked ? users[i].username : null))
+        .filter(Boolean)
+    );
   };
 
   return (
@@ -213,9 +223,9 @@ const ReportTable = ({ data }) => {
                   </button>
                   {/* Modal */}
                   <ReportCardModal
-                      isOpen={isModalOpen}
-                      handleClose={() => closeModal()}
-                      report={Number}
+                    isOpen={isModalOpen}
+                    handleClose={() => closeModal()}
+                    report={Number}
                   />
                   <span className="mx-2"></span>
                   <button
@@ -238,18 +248,55 @@ const ReportTable = ({ data }) => {
 
 export default function Management() {
   const [activeTab, setActiveTab] = useState("user");
-  const [showSignUp, setShowSignUp] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [isSendNotificationModalOpen, setIsSendNotificationModalOpen] =
+    useState(false);
+  const [notificationTitle, setNotificationTitle] = useState("");
+  const [notificationBody, setNotificationBody] = useState("");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
-  const handleNewUserClick = () => {
-    setShowSignUp(true);
-  };
-
   const goToSignUp = () => {
     window.location.href = "/signup";
+  };
+
+  const handleSelectedUsersChange = (users) => {
+    setSelectedUsers(users);
+  };
+
+  const handleSendNotification = () => {
+    // Use selectedUsers for sending notifications
+    console.log("Selected Users:", selectedUsers);
+    setIsSendNotificationModalOpen(true);
+  };
+
+  const handleSendNotificationConfirm = async () => {
+    // Prepare the data for sending notifications
+    const notificationData = {
+      title: notificationTitle,
+      body: notificationBody,
+      users: selectedUsers,
+    };
+
+    // Call the API function to send notifications
+    const response = await sendNotificationToUsers(notificationData);
+
+    // Check the response and handle accordingly
+    if (response && response.status === 200) {
+      console.log("Notification sent successfully");
+    } else {
+      console.error("Error sending notification:", response.statusText);
+    }
+
+    // Close the modal after sending the notification
+    setIsSendNotificationModalOpen(false);
+  };
+
+  const handleSendNotificationCancel = () => {
+    // Close the modal without sending the notification
+    setIsSendNotificationModalOpen(false);
   };
 
   //Fake data for report tab
@@ -333,16 +380,34 @@ export default function Management() {
                           <button
                             className="btn btn-secondary custom-btn-blue rounded"
                             id="sendNotificationBtn"
+                            onClick={() => handleSendNotification()}
+                            disabled={selectedUsers.length === 0}
                           >
                             <i className="bi bi-envelope"></i> Send notification
                           </button>
+                          {/* CreateNotificationModal */}
+                          <CreateNotificationModal
+                            isOpen={isSendNotificationModalOpen}
+                            onCancel={() => handleSendNotificationCancel()}
+                            onConfirm={() => handleSendNotificationConfirm()}
+                            title={notificationTitle}
+                            body={notificationBody}
+                            onTitleChange={(e) =>
+                              setNotificationTitle(e.target.value)
+                            }
+                            onBodyChange={(e) =>
+                              setNotificationBody(e.target.value)
+                            }
+                          />
                           <span className="mx-2"></span>
                         </div>
                       </div>
                     </div>
 
                     {/* Third Element: Table */}
-                    <UserTable />
+                    <UserTable
+                      onSelectedUsersChange={handleSelectedUsersChange}
+                    />
 
                     {/* Fourth Element: Pagination Bar
                     <div className="d-flex justify-content-center mt-3">
