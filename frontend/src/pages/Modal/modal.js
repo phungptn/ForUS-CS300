@@ -187,6 +187,7 @@ export function CreateNotificationModal({
   title,
   body,
   onTitleChange,
+  onRecipientChange,
   onBodyChange,
 }) {
   const handleEscape = (e) => {
@@ -247,12 +248,27 @@ export function CreateNotificationModal({
                 </div>
                 <div className="modal-body text-white">
                   <div className="mb-3">
+                    <label htmlFor="notificationRecipient" className="form-label">
+                      Body:
+                    </label>
+                    <select
+                      className="form-control text-white"
+                      id="notificationRecipient"
+                      rows="4"
+                      value={body}
+                      onChange={onRecipientChange}
+                    >
+                        <option value="all">All users</option>
+                        <option value="selected">Selected users</option>
+                    </select>
+                  </div>
+                  <div className="mb-3">
                     <label htmlFor="notificationTitle" className="form-label">
                       Title:
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-control text-white"
                       id="notificationTitle"
                       value={title}
                       onChange={onTitleChange}
@@ -263,7 +279,7 @@ export function CreateNotificationModal({
                       Body:
                     </label>
                     <textarea
-                      className="form-control"
+                      className="form-control text-white"
                       id="notificationBody"
                       rows="4"
                       value={body}
@@ -367,7 +383,7 @@ export function ReportCardModal({ isOpen, handleClose, handleDelete, report }) {
                     <tr>
                       <th>Report Content:</th>
                       <td>
-                        <a style={{ color: "white" }} target="_blank">
+                        <a style={{ color: "white" }} href={info.link} target="_blank">
                           {info.link.replace(/^([^]{20})[^]+$/, "$1...")}
                         </a>
                       </td>

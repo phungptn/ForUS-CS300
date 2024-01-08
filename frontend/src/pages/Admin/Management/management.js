@@ -177,7 +177,7 @@ const ReportTable = () => {
               try {
                 await instance.put("/report/" + report._id);
                 alert("Resolved report successfully.");
-                window.location.reload();
+                window.location.search = "?tab=report";
               } catch (e) {
                 console.log(e);
               }
@@ -228,19 +228,24 @@ const ReportTable = () => {
 };
 
 export default function Management() {
-  const [activeTab, setActiveTab] = useState("user");
+  const [activeTab, setActiveTab] = useState(new URLSearchParams(window.location.search).get("tab") == "report" ? "report" : "user");
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [isSendNotificationModalOpen, setIsSendNotificationModalOpen] =
     useState(false);
   const [notificationTitle, setNotificationTitle] = useState("");
   const [notificationBody, setNotificationBody] = useState("");
+  const [recipient, setRecipient] = useState("all");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+    if (window.history.pushState) {
+      var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?tab=' + tab;
+      window.history.pushState({path:newurl},'',newurl);
+    }
   };
 
   const goToSignUp = () => {
-    window.location.href = "/signup";
+    window.open("/signup", "_blank");
   };
 
   const handleSelectedUsersChange = (users) => {
@@ -264,12 +269,12 @@ export default function Management() {
 
     // Call the API function to send notifications
     try {
-      const response = await sendNotificationToUsers(notificationData);
+      const response = await (recipient == "all" ? sendNotificationToAllUsers : sendNotificationToUsers)(notificationData);
       if (response && response.status === 200) {
-        console.log("Notification sent successfully");
+        alert("Notification sent successfully");
         return response;
       } else {
-        console.log("Notification sent failed");
+        alert("Notification sent failed");
       }
     } catch (error) {
       console.error("Error sending notification:", error.response);
@@ -283,9 +288,6 @@ export default function Management() {
     // Close the modal without sending the notification
     setIsSendNotificationModalOpen(false);
   };
-
-  //Fake data for report tab
-  const reportId = [1, 2, 3];
 
   return (
     <div className="container">
@@ -365,7 +367,6 @@ export default function Management() {
                             className="btn btn-secondary custom-btn-blue rounded"
                             id="sendNotificationBtn"
                             onClick={() => handleSendNotification()}
-                            disabled={selectedUsers.length === 0}
                           >
                             <i className="bi bi-envelope"></i> Send notification
                           </button>
@@ -381,6 +382,9 @@ export default function Management() {
                             }
                             onBodyChange={(e) =>
                               setNotificationBody(e.target.value)
+                            }
+                            onRecipientChange={(e) =>
+                              setRecipient(e.target.value)
                             }
                           />
                           <span className="mx-2"></span>
