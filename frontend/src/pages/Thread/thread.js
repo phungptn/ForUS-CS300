@@ -4,7 +4,7 @@ import { instance } from "../../api/config";
 import { Pagination, formatDateToDDMMYYYY } from "./UserControl/usercontrol";
 import CommentCard from "./CommentCard/commentcard";
 import { ThreadContext } from "./context";
-import { checkModerator } from "../../utils/checkModerator";
+import getCommentLocation from "../../utils/getCommentLocation"
 import Threadcard from "./ThreadCard/threadcard";
 import './thread.css';
 import CommentSection from "./CommentSection/CommentSection";
@@ -63,15 +63,25 @@ export default function Thread() {
         getThread();
     }, [location.key]);
 
-    useEffect(() => {
+    async function getComment () {
         if (location.hash) {
             const comment_id = location.hash.substring(1);
-            const comment = document.getElementById(comment_id);
-            if (comment) {
-                comment.scrollIntoView();
+            let commentCard = document.getElementById(comment_id);
+            if (commentCard) {
+                commentCard.scrollIntoView();
+            }
+            else {
+                let loc = await getCommentLocation(comment_id);
+                if (loc == null) window.location.hash = "";
+                else window.location.href = `/thread/${loc.thread._id}/${loc.page + 1}#${comment_id}`;
             }
         }
-    }, [thread]);
+        return () => {}
+    }
+
+    useEffect(() => {
+        getComment();
+    }, [location.hash]);
 
     const [replyToComment, setReplyToComment] = useState(null);
 
@@ -103,7 +113,7 @@ export default function Thread() {
                         </div>
 
                         {/* Pagination */}
-                        <div className="d-flex mt-2 mb-4">
+                        <div className="d-flex pt-2 pb-4">
                             <Pagination thread={thread} page={page} />
                         </div>
 
@@ -120,6 +130,12 @@ export default function Thread() {
                                 <CommentCard key={comment._id} comment={comment} onReplyClick={handleReplyClick}/>
                             </ThreadContext.Provider>
                         ))}
+
+                        {/* Pagination */}
+                        <div className="d-flex justify-content-end py-2">
+                            <Pagination thread={thread} page={page} />
+                        </div>
+
 
                         {/* Post comment */}
                         {thread.currentUser && thread.currentUser._id && (

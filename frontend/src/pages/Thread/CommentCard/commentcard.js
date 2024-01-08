@@ -1,5 +1,5 @@
 import '../card.css';
-import { CommentHorizontalVoteBar, ReportUserButton } from '../UserControl/usercontrol';
+import { CommentHorizontalVoteBar, CopyLinkButton, ReportUserButton } from '../UserControl/usercontrol';
 import { useEffect, useState, useContext, createContext } from "react";
 import { downloadImage } from "../../../utils/loadImage";
 import { getTimePassed } from '../../../utils/getTimePassed';
@@ -57,6 +57,7 @@ export default function ({ comment, onReplyClick }) {
                             {getTimePassed(comment.createdAt)}
                         </div>
                         <div className="d-flex justify-content-between">
+                            <CopyLinkButton url={"/thread/" + thread._id + "#" + comment._id}/>
                             <ReportCommentButton comment={comment}/>
                             {comment.isUpdater == 1 ? (
                                 <UpdateCommentButton setOnClick={handleUpdateClick}/>

@@ -8,7 +8,8 @@ import {
   UpdateThreadButton,
   DeleteThreadButton,
   ReportThreadButton,
-  ReportUserButton
+  ReportUserButton,
+  CopyLinkButton
 } from "../UserControl/usercontrol";
 import Editor from "../../Editor/editor";
 import EditorContext from "../../Editor/context";
@@ -77,6 +78,7 @@ export default function ({ thread }) {
               <i className="bi bi-clock"></i> {getTimePassed(thread.createdAt)}
             </div>
             <div className="d-flex justify-content-between">
+              <CopyLinkButton url={"/thread/" + thread._id }/>
               <ReportThreadButton thread={thread}/>
               {thread.isUpdater == 1 ? (
                 <UpdateThreadButton setOnClick={handleUpdateClick} />

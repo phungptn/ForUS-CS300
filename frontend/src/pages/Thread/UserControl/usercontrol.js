@@ -388,6 +388,29 @@ export function ReportThreadButton({ thread }) {
     );
 }
 
+export function CopyLinkButton({ url }) {
+    const copyToClipboard = async (url) => {
+        try {
+            await navigator.clipboard.writeText(window.location.protocol + "://" + window.location.host + "/" + url.replace(/^\//, ""));
+        }
+        catch (e) {
+
+        }
+    }
+    return (
+        <>
+            <button 
+                type="button" 
+                title="Sao chép link" 
+                className="btn rounded-2 p-0" 
+                style={{ justifyContent: 'center', marginRight: '15px', alignItems: 'center', outline: 'none', border: 'none' }} 
+                onClick={() => copyToClipboard(url)}>
+                <i className="bi bi-clipboard"/>
+            </button>
+        </>
+    );
+}
+
 export function UpdateCommentButton({ setOnClick }) {
     return (
         <div>
