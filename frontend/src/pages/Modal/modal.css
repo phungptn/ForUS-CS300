@@ -15,7 +15,15 @@
   overflow-x: hidden;
   overflow-y: hidden;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1;
+  z-index: 1000;
+}
+
+.react-modal-style {
+  position: 'fixed';
+  top: '50%';
+  left: '50%';
+  transform: 'translate(-50%, -50%)';
+  z-index: 1001;
 }
 
 .react-modal-wrapper {
@@ -24,7 +32,7 @@
 }
 
 .react-modal-content {
-  /* position: relative; */
+  position: relative;
   background-color: #1D76C6;
   border: 1px solid #46A5FA;
   background-clip: padding-box;
