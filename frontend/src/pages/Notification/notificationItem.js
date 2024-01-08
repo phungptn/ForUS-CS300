@@ -38,7 +38,7 @@ export default function NotificationItem({ notification }) {
 
   return (
     <a
-      href={"/thread/" + notification.thread}
+      href={!!notification.thread ? "/thread/" + notification.thread : "#"}
       className="dropdown-item list-group-item-action d-flex  gap-3 p-3 notificationItem  "
       id={notification._id}
       aria-current="true"
@@ -75,9 +75,9 @@ export default function NotificationItem({ notification }) {
                         )
             )
       }
-      <div className="d-flex gap-2 w-100 justify-content-between">
+      <div className="d-lg-flex gap-2 w-100 justify-content-between">
         <div>
-          <h6 className="mb-0">{notification.title}</h6>
+          <p className="mb-0  fw-bold">{notification.title}</p>
           <p className="mb-0 opacity-75  ">{notification.body}.</p>
         </div>
         <small className="opacity-50 text-nowrap">

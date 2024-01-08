@@ -7,6 +7,7 @@ import { getTimePassed } from "../../../utils/getTimePassed";
 import { downloadImage } from "../../../utils/loadImage";
 // dropdowns will not work without this import
 import { Dropdown } from "bootstrap";
+import { ReportModal } from "../../Modal/modal";
 
 
 async function voteThread(box, setBox, thread_id, vote) {
@@ -40,6 +41,49 @@ async function TempCreateThread(box_id) {
     }
 }
 
+export function ReportThreadButton({thread}) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+        document.querySelectorAll("#report-content-textarea").forEach(e => (e.value = ""));
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    async function report(thread_id) {
+        try {
+            const response = await instance.post(`/report/`, {
+                body: document.querySelector(".modal.show #report-content-textarea").value,
+                thread: thread_id
+            });
+            if (response.status === 200) {
+                alert("Báo cáo đã được gửi");
+                closeModal();
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+    return (
+        <>
+            <button type="button" title="Báo cáo thread" className="btn btn-warning text-white rounded-2" style={{marginInlineStart: '12px', width: '48px', height: '48px', flexShrink: 0}} onClick={() => openModal()}>
+                <i className="bi bi-flag"/>
+            </button>
+
+            {/* Modal */}
+            <ReportModal
+                isOpen={isModalOpen}
+                handleClose={() => closeModal()}
+                handleDelete={() => {report(thread._id);}}
+                modalTitle="Báo cáo thread"
+            />
+        </>
+    );
+}
 
 export function BoxDescription() {
     const { box } = useContext(BoxContext);

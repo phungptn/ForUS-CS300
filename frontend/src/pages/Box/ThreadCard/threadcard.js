@@ -1,6 +1,6 @@
 import './threadcard.css';
 import { useState, useEffect } from 'react';
-import { HorizontalVoteBar, CommentsCounter, ThreadInformation } from '../UserControl/usercontrol';
+import { HorizontalVoteBar, CommentsCounter, ThreadInformation, ReportThreadButton } from '../UserControl/usercontrol';
 import { DeleteThreadButton } from '../ModeratorControl/moderatorcontrol';
 import { downloadImage } from '../../../utils/loadImage';
 
@@ -37,7 +37,10 @@ export default function ( { thread, search } ) {
                             <a href={`/thread/${thread._id}`} className="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" style={{wordBreak: 'break-word'}}>
                                 <h4 className="text-start text-white m-0">{thread.title}</h4>
                             </a>
-                            {!search && <DeleteThreadButton thread={thread} />}
+                            <div>
+                                <ReportThreadButton thread={thread} />
+                                {!search && <DeleteThreadButton thread={thread} />}
+                            </div>
                         </div>
                         <div className="d-flex justify-content-between flex-wrap">
                             <ThreadInformation thread={thread} />

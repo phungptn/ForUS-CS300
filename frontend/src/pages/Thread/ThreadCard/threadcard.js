@@ -7,7 +7,8 @@ import TextRenderer from "../../Text/renderer";
 import {
   UpdateThreadButton,
   DeleteThreadButton,
-  ReportThreadButton
+  ReportThreadButton,
+  ReportUserButton
 } from "../UserControl/usercontrol";
 import Editor from "../../Editor/editor";
 import EditorContext from "../../Editor/context";
@@ -18,7 +19,9 @@ export default function ({ thread }) {
   const [profilePicture, setProfilePicture] = useState(null);
   useEffect(() => {
     async function getProfilePicture() {
-      const url = await downloadImage(
+      var url;
+      if (!thread.author.avatarUrl) url = null;
+      else url = await downloadImage(
         "images/avatar/" + thread.author.avatarUrl
       );
       setProfilePicture(url);
@@ -58,6 +61,7 @@ export default function ({ thread }) {
           />
           <div className="username mt-2">
             <a className="text-start user-link" href={`/user/${thread.author._id}`}>{thread.author && thread.author.fullname}</a>
+            {thread.isUpdater != 1 ? <ReportUserButton user={thread.author}/> : null}
           </div>
         </div>
         <div className="col-lg-10 bg-card-primary round-right d-flex flex-column justify-content-between">

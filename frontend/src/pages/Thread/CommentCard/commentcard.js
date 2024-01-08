@@ -1,5 +1,5 @@
 import '../card.css';
-import { CommentHorizontalVoteBar } from '../UserControl/usercontrol';
+import { CommentHorizontalVoteBar, ReportUserButton } from '../UserControl/usercontrol';
 import { useEffect, useState, useContext, createContext } from "react";
 import { downloadImage } from "../../../utils/loadImage";
 import { getTimePassed } from '../../../utils/getTimePassed';
@@ -15,7 +15,9 @@ export default function ({ comment, onReplyClick }) {
     const [profilePicture, setProfilePicture] = useState(null);
     useEffect(() => {
         async function getProfilePicture() {
-            const url = await downloadImage('images/avatar/' + comment.author.avatarUrl);
+            var url;
+            if (!comment.author.avatarUrl) url = null;
+            else url = await downloadImage('images/avatar/' + comment.author.avatarUrl);
             setProfilePicture(url);
         }
         getProfilePicture();
@@ -45,6 +47,7 @@ export default function ({ comment, onReplyClick }) {
                     <a className="username mt-2 user-link" href={`/user/${comment.author && comment.author._id}`}>
                         {comment.author && comment.author.fullname}
                     </a>
+                    {comment.isUpdater != 1 ? <ReportUserButton user={comment.author}/> : null}
                 </div>
                 <div className="col-lg-10 bg-card-primary round-right d-flex flex-column justify-content-between">
                     <div className="row-12 d-flex justify-content-between" style={{ margin: '0 20px',borderBottom: '1px solid rgba(255, 255, 255, 0.7)', padding: '16px 0px 10px' }}>

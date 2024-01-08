@@ -55,7 +55,8 @@ export default function NotificationItem({ notification }) {
 
   return (
     <a
-      href={"/thread/" + notification.thread}
+      href={!!notification.thread ? "/thread/" + notification.thread : "#"}
+
       class="dropdown-item list-group-item-action d-flex  gap-3 py-3 notificationItem  "
       id={notification._id}
       aria-current="true"

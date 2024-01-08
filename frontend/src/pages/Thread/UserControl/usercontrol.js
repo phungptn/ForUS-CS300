@@ -4,7 +4,7 @@ import { ThreadContext } from "../context";
 import './usercontrol.scss';
 import { getTimePassed } from "../../../utils/getTimePassed";
 import { useNavigate } from "react-router-dom";
-import { DeleteModal, ReportModal } from "../../Modal/modal";
+import { UpdateModal, DeleteModal, ReportModal } from "../../Modal/modal";
 import EditorContext from "../../Editor/context";
 import Editor from "../../Editor/editor";
 
@@ -285,6 +285,55 @@ export function DeleteThreadButton({ thread }) {
                 handleDelete={() => deleteThread(thread._id)}
                 modalTitle="Xóa thread"
                 modalContent="Bạn có chắc chắn muốn xóa thread này không?"
+            />
+        </>
+    );
+}
+
+export function ReportUserButton({ user }) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+        document.querySelectorAll("#report-content-textarea").forEach(e => (e.value = ""));
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const report = async (user_id) => {
+        try {
+            const response = await instance.post(`/report/`, {
+                body: document.querySelector(".modal.show #report-content-textarea").value,
+                user: user_id
+            });
+            if (response.status === 200) {
+                alert("Báo cáo đã được gửi");
+                closeModal();
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+    return (
+        <>
+            <a 
+                type="button" 
+                title="Báo cáo user" 
+                className="text-warning" 
+                style={{ justifyContent: 'center', alignItems: 'center', outline: 'none', border: 'none' }} 
+                onClick={() => openModal()}>
+                Báo cáo
+            </a>
+
+            {/* Modal */}
+            <ReportModal
+                isOpen={isModalOpen}
+                handleClose={() => closeModal()}
+                handleDelete={() => report(user._id)}
+                modalTitle="Báo cáo user"
             />
         </>
     );
