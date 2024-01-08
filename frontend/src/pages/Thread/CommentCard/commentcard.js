@@ -4,7 +4,7 @@ import { useEffect, useState, useContext, createContext } from "react";
 import { downloadImage } from "../../../utils/loadImage";
 import { getTimePassed } from '../../../utils/getTimePassed';
 import TextRenderer from '../../Text/renderer';
-import { DeleteCommentButton, UpdateCommentButton } from '../UserControl/usercontrol';
+import { DeleteCommentButton, UpdateCommentButton, ReportCommentButton } from '../UserControl/usercontrol';
 import Editor from '../../Editor/editor';
 import EditorContext from '../../Editor/context';
 import { ThreadContext } from '../context';
@@ -54,6 +54,7 @@ export default function ({ comment, onReplyClick }) {
                             {getTimePassed(comment.createdAt)}
                         </div>
                         <div className="d-flex justify-content-between">
+                            <ReportCommentButton comment={comment}/>
                             {comment.isUpdater == 1 ? (
                                 <UpdateCommentButton setOnClick={handleUpdateClick}/>
                             ) : null}
