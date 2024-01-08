@@ -4,7 +4,7 @@ import { ThreadContext } from "../context";
 import './usercontrol.scss';
 import { getTimePassed } from "../../../utils/getTimePassed";
 import { useNavigate } from "react-router-dom";
-import { UpdateModal, DeleteModal } from "../../Modal/modal";
+import { UpdateModal, DeleteModal, ReportModal } from "../../Modal/modal";
 import EditorContext from "../../Editor/context";
 import Editor from "../../Editor/editor";
 
@@ -288,7 +288,56 @@ export function DeleteThreadButton({ thread }) {
             />
         </>
     );
-}   
+}
+
+export function ReportThreadButton({ thread }) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+        document.querySelectorAll("#report-content-textarea").forEach(e => (e.value = ""));
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const report = async (thread_id) => {
+        try {
+            const response = await instance.post(`/report/`, {
+                body: document.querySelector(".modal.show #report-content-textarea").value,
+                thread: thread_id
+            });
+            if (response.status === 200) {
+                alert("Báo cáo đã được gửi");
+                closeModal();
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+    return (
+        <>
+            <button 
+                type="button" 
+                title="Báo cáo thread" 
+                className="btn text-warning rounded-2 p-0" 
+                style={{ justifyContent: 'center', marginRight: '15px', alignItems: 'center', outline: 'none', border: 'none' }} 
+                onClick={() => openModal()}>
+                <i className="bi bi-flag"/>
+            </button>
+
+            {/* Modal */}
+            <ReportModal
+                isOpen={isModalOpen}
+                handleClose={() => closeModal()}
+                handleDelete={() => report(thread._id)}
+                modalTitle="Báo cáo thread"
+            />
+        </>
+    );
+}
 
 export function UpdateCommentButton({ setOnClick }) {
     return (
@@ -347,6 +396,56 @@ export function DeleteCommentButton({ comment }) {
                 handleDelete={() => DeleteComment(comment._id)}
                 modalTitle="Xóa comment"
                 modalContent="Bạn có chắc chắn muốn xóa comment này không?"
+            />
+        </div>
+    );
+}
+
+export function ReportCommentButton({ comment }) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+        document.querySelectorAll("#report-content-textarea").forEach(e => (e.value = ""));
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    async function ReportComment(comment_id) {
+        try {
+            const response = await instance.post(`/report/`, {
+                body: document.querySelector(".modal.show #report-content-textarea").value,
+                comment: comment_id
+            });
+            if (response.status === 200) {
+                alert("Báo cáo đã được gửi");
+                closeModal();
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+
+    return (
+        <div>
+            <button 
+                type="button" 
+                title="Báo cáo comment" 
+                className="btn text-warning rounded-2 p-0" 
+                style={{ justifyContent: 'center', marginRight: '15px', alignItems: 'center', outline: 'none', border: 'none' }} 
+                onClick={() => openModal()}>
+                <i className="bi bi-flag"/>
+            </button>
+
+            {/* Modal */}
+            <ReportModal
+                isOpen={isModalOpen}
+                handleClose={() => closeModal()}
+                handleDelete={() => ReportComment(comment._id)}
+                modalTitle="Báo cáo comment"
             />
         </div>
     );
