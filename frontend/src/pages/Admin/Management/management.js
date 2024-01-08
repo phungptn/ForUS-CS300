@@ -15,7 +15,20 @@ const UserTable = ({
   status,
   admitYear,
 }) => {
-  const [checked, setChecked] = useState(false);
+  const [selectAll, setSelectAll] = useState(false);
+  const [checked, setChecked] = useState(Array(studentId.length).fill(false));
+
+  const handleSelectAll = () => {
+    setSelectAll(!selectAll);
+    setChecked(Array(studentId.length).fill(!selectAll));
+  };
+
+  const handleCheckboxChange = (index) => {
+    const updatedChecked = [...checked];
+    updatedChecked[index] = !updatedChecked[index];
+    setChecked(updatedChecked);
+    setSelectAll(updatedChecked.every((isChecked) => isChecked));
+  };
 
   return (
     <table className="table mt-3 table-striped table-info justify-content-center">
@@ -27,33 +40,32 @@ const UserTable = ({
           <th>Gender</th>
           <th>Status</th>
           <th>Year</th>
-          <th className="d-flex justify-content-center">
+          <th>
             <div className="form-check">
               <input
                 className="form-check-input"
                 type="checkbox"
                 value=""
-                id={checked ? "flexCheckDefault" : "flexCheckChecked"}
-                onClick={
-                  checked ? () => setChecked(false) : () => setChecked(true)
-                }
+                id="selectAllCheckbox"
+                checked={selectAll}
+                onChange={handleSelectAll}
               />
             </div>
           </th>
         </tr>
       </thead>
       <tbody>
-        {/* Render 20 rows with user data */}
+        {/* Render rows with user data */}
         {studentId.map((sId, index) => (
           <tr key={index}>
-            <td colSpan="1">
+            <td>
               <img
                 src={
                   avatarImg[index]
                     ? avatarImg[index]
                     : "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
                 }
-                className="avatar-img rounded-5 text-center centered-and-cropped "
+                className="avatar-img rounded-5 centered-and-cropped"
                 id="avatarImage"
                 alt="avatar"
               />
@@ -63,16 +75,15 @@ const UserTable = ({
             <td>{gender[index]}</td>
             <td>{status[index]}</td>
             <td>{admitYear[index]}</td>
-            <td className="d-flex justify-content-center" height="50px">
+            <td className="align-middle">
               <div className="form-check">
                 <input
                   className="form-check-input"
                   type="checkbox"
                   value=""
-                  id={checked ? "flexCheckDefault" : "flexCheckChecked"}
-                  onClick={
-                    checked ? () => setChecked(false) : () => setChecked(true)
-                  }
+                  id={`flexCheckChecked_${index}`}
+                  checked={checked[index]}
+                  onChange={() => handleCheckboxChange(index)}
                 />
               </div>
             </td>
@@ -149,10 +160,9 @@ const ReportTable = ({ data }) => {
       <table className="table mt-3 table-striped table-info justify-content-center">
         <thead className="thead-dark">
           <tr>
-            <td>Thread ID</td>
+            <td>Report ID</td>
             <td>Time created</td>
             <td>Target</td>
-            <td>Tag</td>
             <td>Path</td>
             <td>Reported by</td>
             <td>Tools</td>
@@ -165,10 +175,27 @@ const ReportTable = ({ data }) => {
               <td>{id}</td>
               <td>Time created</td>
               <td>Target</td>
-              <td>Tag</td>
               <td>Path</td>
               <td>Reported by</td>
-              <td>Tools</td>
+              <td className="align-middle text-center">
+                {/* Second Element: Tools */}
+                <div className="btn-group ms-auto">
+                  <button
+                    className="btn btn-secondary custom-btn-yellow rounded"
+                    id="newUserBtn"
+                  >
+                    <i className="bi bi-info-circle"></i> View detail
+                  </button>
+                  <span className="mx-2"></span>
+                  <button
+                    className="btn btn-secondary custom-btn-green rounded"
+                    id="sendNotificationBtn"
+                  >
+                    <i className="bi bi-check-circle"></i> Resolved
+                  </button>
+                  <span className="mx-2"></span>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -210,6 +237,18 @@ export default function Profile() {
   const gender = ["f", "m", "m"];
   const status = [1, 2, 3];
   const admitYear = [2021, 2022, 2023];
+
+  // //Fake data test for user tab
+  // const avatarImg = [
+  //   "https://png.pngtree.com/png-clipart/20230512/original/pngtree-isolated-cat-on-white-background-png-image_9158356.png",
+  //   "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*",
+  //   "https://i.natgeofe.com/k/6d301bfc-ff93-4f6f-9179-b1f66b19b9b3/pig-young-closeup_3x4.jpg",
+  // ];
+  // const studentID = [21125000, 21125001, 21125002];
+  // const fullName = ["ntp", "nsm", "nxh"];
+  // const gender = ["f", "m", "m"];
+  // const status = [1, 2, 3];
+  // const admitYear = [2021, 2022, 2023];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -351,7 +390,6 @@ export default function Profile() {
                     <div className="d-flex align-items-center">
                       {/* <SearchBar />{" "} */}
                       {/* Replace with your actual SearchBar component */}
-                      <button className="btn btn-primary ms-3">New User</button>
                     </div>
 
                     {/* Second Element: Tools */}
@@ -362,9 +400,26 @@ export default function Profile() {
                           {/* Add sorting options here */}
                         </select>
                         <div className="btn-group ms-auto">
-                          <button className="btn btn-secondary">Tool 1</button>
-                          <button className="btn btn-secondary">Tool 2</button>
-                          <button className="btn btn-secondary">Tool 3</button>
+                          <button
+                            className="btn btn-secondary custom-btn-yellow rounded"
+                            id="newUserBtn"
+                          >
+                            <i className="bi bi-person-plus"></i> New user
+                          </button>
+                          <span className="mx-2"></span>
+                          <button
+                            className="btn btn-secondary custom-btn-blue rounded"
+                            id="sendNotificationBtn"
+                          >
+                            <i className="bi bi-envelope"></i> Send notification
+                          </button>
+                          <span className="mx-2"></span>
+                          <button
+                            className="btn btn-secondary custom-btn-red rounded"
+                            id="deleteUserBtn"
+                          >
+                            <i className="bi bi-trash"></i> Delete user
+                          </button>
                         </div>
                       </div>
                     </div>

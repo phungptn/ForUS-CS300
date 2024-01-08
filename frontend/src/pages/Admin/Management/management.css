@@ -9,6 +9,47 @@ td {
 
 .avatar-img {
   height: 100%;
-  width: auto; /* or set a specific height */
+  width: auto; /* or set a specific width */
   max-height: 33px; /* Adjust the maximum width as needed */
+  max-width: 33px;
+}
+.custom-btn-yellow {
+  background-color: yellow;
+  color: black;
+  transition: background-color 0.3s;
+}
+
+.custom-btn-green {
+  background-color: green;
+  color: black;
+  transition: background-color 0.3s;
+}
+
+.custom-btn-red {
+  background-color: red;
+  color: black;
+  transition: background-color 0.3s;
+}
+
+.custom-btn-blue {
+  background-color: blue;
+  color: black;
+  transition: background-color 0.3s;
+}
+
+/* Hover effect */
+.custom-btn-yellow:hover {
+  background-color: #ffcc00; /* Adjust the color for hover */
+}
+
+.custom-btn-green:hover {
+  background-color: #4caf50; /* Adjust the color for hover */
+}
+
+.custom-btn-red:hover {
+  background-color: #920707; /* Adjust the color for hover */
+}
+
+.custom-btn-blue:hover {
+  background-color: #3c53e7; /* Adjust the color for hover */
 }
