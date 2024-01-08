@@ -48,7 +48,20 @@ const UserTable = ({
         {/* Render 20 rows with user data */}
         {Array.from({ length: 20 }, (_, index) => (
           <tr key={index}>
-            <td>Avatar</td>
+            <td>
+              <img
+                src={
+                  avatarImg
+                    ? avatarImg
+                    : "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
+                }
+                className="rounded-5 text-center centered-and-cropped "
+                id="avatarImage"
+                alt="avatar"
+                width="30"
+                height="3 0"
+              />
+            </td>
             <td>Student ID</td>
             <td>Fullname</td>
             <td>Faculty</td>
@@ -181,6 +194,8 @@ export default function Profile() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [avatarFile, setAvatarFile] = useState(null); // [file, setFile]
   const [avatar, setAvatar] = useState("");
+
+  //Fake data test for thread tab
   const threadId = [1, 2, 3];
   const timeCreated = ["8:00", "16:00", "21:00"];
   const subForum = ["Bla", "Ble", "Blo"];
