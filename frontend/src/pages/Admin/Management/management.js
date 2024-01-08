@@ -6,22 +6,41 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
 import "./management.css";
 import { updateProfile, updatePassword, infoUser } from "../../../api/user";
-import { DeleteModal } from "../../Modal/modal";
+import { ReportModal } from "../../Modal/modal";
+import { getAllUsers } from "../../../api/user";
+import { getTimePassed } from "../../../utils/getTimePassed";
 
-const UserTable = ({
-  avatarImg,
-  studentId,
-  fullName,
-  gender,
-  status,
-  admitYear,
-}) => {
+const UserTable = () => {
   const [selectAll, setSelectAll] = useState(false);
-  const [checked, setChecked] = useState(Array(studentId.length).fill(false));
+  const [checked, setChecked] = useState(Array(0).fill(false));
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await getAllUsers();
+        console.log(response);
+        // Check if the request was successful (status code 200)
+        if (response.status === 200) {
+          // Update the state with the received user data
+          setUsers(response.data.users);
+        } else {
+          // Handle other status codes (optional)
+          console.error("Error fetching users:", response.statusText);
+        }
+      } catch (error) {
+        // Handle network errors or other exceptions
+        console.error("Error fetching users:", error.message);
+      }
+    };
+
+    // Call the fetchUsers function when the component mounts
+    fetchUsers();
+  }, []); // The empty dependency array ensures that this effect runs once, similar to componentDidMount
 
   const handleSelectAll = () => {
     setSelectAll(!selectAll);
-    setChecked(Array(studentId.length).fill(!selectAll));
+    setChecked(Array(users.length).fill(!selectAll));
   };
 
   const handleCheckboxChange = (index) => {
@@ -36,11 +55,11 @@ const UserTable = ({
       <thead className="thead-dark">
         <tr>
           <th>Avatar</th>
-          <th>Student ID</th>
+          <th>Username</th>
           <th>Fullname</th>
-          <th>Gender</th>
-          <th>Status</th>
-          <th>Year</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Last Accessed</th>
           <th>
             <div className="form-check">
               <input
@@ -56,14 +75,13 @@ const UserTable = ({
         </tr>
       </thead>
       <tbody>
-        {/* Render rows with user data */}
-        {studentId.map((sId, index) => (
+        {users.map((user, index) => (
           <tr key={index}>
             <td>
               <img
                 src={
-                  avatarImg[index]
-                    ? avatarImg[index]
+                  user.avatarUrl
+                    ? user.avatarUrl
                     : "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
                 }
                 className="avatar-img rounded-5 centered-and-cropped"
@@ -71,11 +89,11 @@ const UserTable = ({
                 alt="avatar"
               />
             </td>
-            <td>{sId}</td>
-            <td>{fullName[index]}</td>
-            <td>{gender[index]}</td>
-            <td>{status[index]}</td>
-            <td>{admitYear[index]}</td>
+            <td>{user.username}</td>
+            <td>{user.fullname}</td>
+            <td>{user.email}</td>
+            <td>{user.role}</td>
+            <td>{getTimePassed(user.lastAccessed)}</td>
             <td className="align-middle">
               <div className="form-check">
                 <input
@@ -196,7 +214,7 @@ const ReportTable = ({ data }) => {
                   >
                     <i className="bi bi-info-circle"></i> View detail
                     {/* Modal */}
-                    <DeleteModal
+                    <ReportModal
                       isOpen={isModalOpen}
                       handleClose={() => closeModal()}
                       handleDelete={() => {
@@ -437,19 +455,10 @@ export default function Profile() {
                     </div>
 
                     {/* Third Element: Table */}
-                    <UserTable
-                      avatarImg={avatarImg}
-                      studentId={studentID}
-                      fullName={fullName}
-                      gender={gender}
-                      status={status}
-                      admitYear={admitYear}
-                    />
+                    <UserTable />
 
-                    {/* Fourth Element: Pagination Bar */}
+                    {/* Fourth Element: Pagination Bar
                     <div className="d-flex justify-content-center mt-3">
-                      {/* Render your pagination component here */}
-                      {/* Example: */}
                       <nav aria-label="Page navigation example">
                         <ul className="pagination">
                           <li className="page-item">
@@ -466,7 +475,6 @@ export default function Profile() {
                               1
                             </a>
                           </li>
-                          {/* Add more page items as needed */}
                           <li className="page-item">
                             <a className="page-link" href="#" aria-label="Next">
                               <span aria-hidden="true">&raquo;</span>
@@ -474,7 +482,7 @@ export default function Profile() {
                           </li>
                         </ul>
                       </nav>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>

@@ -53,45 +53,65 @@ const resetPassword = async (data) => {
 };
 
 const updatePassword = async (data) => {
-    try {
-        const response = await instance.put("/users/update-password", data);
-        return response;
-    } catch (error) {
-      console.error(error);
-      return error.response;
-    }
-};
-
-const login = async (data) => {
   try {
-      const response = await instance.post("/users/login", data);
-      return response;
+    const response = await instance.put("/users/update-password", data);
+    return response;
   } catch (error) {
     console.error(error);
     return error.response;
   }
-}
+};
+
+const login = async (data) => {
+  try {
+    const response = await instance.post("/users/login", data);
+    return response;
+  } catch (error) {
+    console.error(error);
+    return error.response;
+  }
+};
 
 const getNotification = async () => {
   try {
     const response = instance.get("/users/notification");
     return response;
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
     return error.response;
   }
-}
+};
 
 const updateAllNotificationIsRead = async () => {
   try {
     const response = instance.put("/users/notification");
     return response;
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error);
     return error.response;
   }
-}
+};
 
-export { logout, infoUser, updateProfile, forgotPassword, resetPassword, updatePassword, login, getNotification, updateAllNotificationIsRead };
+const getAllUsers = async () => {
+  try {
+    const response = await instance.get("/users/all-info");
+    return response;
+  } catch (error) {
+    console.error("Error fetching users:", error.response);
+  }
+
+  return null;
+};
+
+export {
+  logout,
+  infoUser,
+  updateProfile,
+  forgotPassword,
+  resetPassword,
+  updatePassword,
+  login,
+  getNotification,
+  updateAllNotificationIsRead,
+  getAllUsers,
+};

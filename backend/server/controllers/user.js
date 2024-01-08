@@ -2,26 +2,27 @@ const userUtil = require("../utils/users");
 const bcrypt = require("bcrypt");
 const userModel = require("../models/user");
 const sendEmail = require("../utils/sendEmail");
-const Notification = require('../models/notification');
-const Thread = require('../models/thread');
-const Comment = require('../models/comment');
+const Notification = require("../models/notification");
+const Thread = require("../models/thread");
+const Comment = require("../models/comment");
 const user = require("../models/user");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const loginUser = async (req, res, next) => {
   try {
-    
     let { username, password } = req.body;
 
     // check if user exists
-    if (username == null || password == null) return res.status(403).json({ error: "Missing username or password." });
-    
-    
-    if (await userUtil.userByIdExists(req)) return res.status(403).json({ error: "Already logged in." });
+    if (username == null || password == null)
+      return res.status(403).json({ error: "Missing username or password." });
+
+    if (await userUtil.userByIdExists(req))
+      return res.status(403).json({ error: "Already logged in." });
 
     const user = await userUtil.findUserByCredentials(username, password);
-    if (user == null) return res.status(403).json({ error: "Invalid username or password." });
-    const token =  await userUtil.getToken(user);
+    if (user == null)
+      return res.status(403).json({ error: "Invalid username or password." });
+    const token = await userUtil.getToken(user);
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
@@ -30,9 +31,7 @@ const loginUser = async (req, res, next) => {
       message: "Login successfully.",
       token: token,
     });
-
-  }
-  catch (e) {
+  } catch (e) {
     res.status(500).json({ error: e.message });
   }
 };
@@ -66,13 +65,22 @@ const registerUser = async (req, res, next) => {
         .status(403)
         .json({ error: "Access denied because you are not admin." });
     else {
-      let { username, fullname, email , dateOfBirth, address, role} = req.body;
-      if (username == null  || fullname == null || email == null || address == null || role == null || dateOfBirth == null) return res.status(403).json({ error: "Missing required fields." });
+      let { username, fullname, email, dateOfBirth, address, role } = req.body;
+      if (
+        username == null ||
+        fullname == null ||
+        email == null ||
+        address == null ||
+        role == null ||
+        dateOfBirth == null
+      )
+        return res.status(403).json({ error: "Missing required fields." });
       const password = dateOfBirth.split("-").join("");
 
-      let exists = await userModel.findOne({ username })
-      if (exists != null) return res.status(403).json({ error: "User already exists." });
-      
+      let exists = await userModel.findOne({ username });
+      if (exists != null)
+        return res.status(403).json({ error: "User already exists." });
+
       let newUser = new userModel();
       newUser.username = username;
       newUser.fullname = fullname;
@@ -83,14 +91,12 @@ const registerUser = async (req, res, next) => {
 
       await userUtil.setPassword(newUser, password);
 
-
-
-      res
-        .status(200)
-        .json({
-          message: "User created successfully.",
-          access_token: await userUtil.getToken(newUser),
-          username, fullname, password
+      res.status(200).json({
+        message: "User created successfully.",
+        access_token: await userUtil.getToken(newUser),
+        username,
+        fullname,
+        password,
       });
     }
   } catch (e) {
@@ -101,7 +107,7 @@ const registerUser = async (req, res, next) => {
 const infoUser = async (req, res, next) => {
   try {
     let user = await userUtil.findUserById(req);
-    console.log('infoUser');
+    console.log("infoUser");
     // const usertemp = await userModel.aggregate(
     //   [{
     //     $match: { _id: user._id },
@@ -116,15 +122,18 @@ const infoUser = async (req, res, next) => {
     //       dateOfBirth: 1
     //     }
     //   }])
-    
-    user = await userModel.findOne({ _id: user._id }).select('-passwordHash -passwordResetExpiry -passwordResetToken -sessionStart -lastAccessed');
 
+    user = await userModel
+      .findOne({ _id: user._id })
+      .select(
+        "-passwordHash -passwordResetExpiry -passwordResetToken -sessionStart -lastAccessed"
+      );
 
     if (user == null) res.status(403).json({ error: "Invalid session." });
     else {
       res.status(200).json({
         message: "User info.",
-        user: user
+        user: user,
       });
     }
   } catch (e) {
@@ -138,15 +147,17 @@ const userProfile = async (req, res, next) => {
     const { id } = req.params;
     console.log("Userid", id);
 
-    const user = await userModel.findOne({ _id: new mongoose.Types.ObjectId(id) }).select('-passwordHash -passwordResetExpiry -passwordResetToken -sessionStart -lastAccessed -notifications');
-      
+    const user = await userModel
+      .findOne({ _id: new mongoose.Types.ObjectId(id) })
+      .select(
+        "-passwordHash -passwordResetExpiry -passwordResetToken -sessionStart -lastAccessed -notifications"
+      );
 
     if (user == null) res.status(403).json({ error: "Invalid session." });
-
     else {
       res.status(200).json({
         message: "User info.",
-        user: user
+        user: user,
       });
     }
   } catch (e) {
@@ -154,26 +165,27 @@ const userProfile = async (req, res, next) => {
   }
 };
 
-    
-
 // Forgot password and reset password
 const forgotPassword = async (req, res, next) => {
   try {
     const { username } = req.body;
-    if (username == null) return res.status(403).json({ error: "Missing username." });
-    
-    if (await userUtil.findUserById(req) != null) return res.status(403).json({ error: "Already logged in." });
+    if (username == null)
+      return res.status(403).json({ error: "Missing username." });
+
+    if ((await userUtil.findUserById(req)) != null)
+      return res.status(403).json({ error: "Already logged in." });
 
     const user = await userModel.findOne({ username });
-    if (user == null) return res.status(403).json({ error: "Invalid username." });
-    
+    if (user == null)
+      return res.status(403).json({ error: "Invalid username." });
+
     // Send email to user
     const resetPasswordToken = await userUtil.getPasswordResetToken(user, true);
-    console.log("token reset" , resetPasswordToken);
+    console.log("token reset", resetPasswordToken);
     const html = `<h1>Forgot password request</h1>
   <p>Click <a target="_blank" href="http://localhost:3000/login/reset-password/${resetPasswordToken}">here</a> to reset your password.</p>
   <p>If you didn't make this request, please ignore this message.</p>`;
-    
+
     const info = await sendEmail({ email: user.email, html });
     // console.log(info);
     res.status(200).json({
@@ -187,25 +199,31 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
-
 const resetPassword = async (req, res, next) => {
   try {
     const { passwordResetToken, newPassword, confirmNewPassword } = req.body;
-    console.log('resetPassword', passwordResetToken, newPassword, confirmNewPassword);
+    console.log(
+      "resetPassword",
+      passwordResetToken,
+      newPassword,
+      confirmNewPassword
+    );
 
+    if (newPassword != confirmNewPassword)
+      return res.status(403).json({
+        code: "PASSWORD_MISMATCH",
+        message: "Password and password retype doesn't match",
+      });
 
-    if (newPassword != confirmNewPassword) return res.status(403).json({
-      code: "PASSWORD_MISMATCH",
-      message: "Password and password retype doesn't match"
-    });
+    let user = await userUtil.findUserWithPasswordTokenRequest(
+      passwordResetToken
+    );
 
-    let user = await userUtil.findUserWithPasswordTokenRequest(passwordResetToken);
-
-
-    if (user == null) return res.status(403).json({
-      code: "INVALID_REQUEST_TOKEN",
-      message: "Password reset token is expired or invalid"
-    });
+    if (user == null)
+      return res.status(403).json({
+        code: "INVALID_REQUEST_TOKEN",
+        message: "Password reset token is expired or invalid",
+      });
 
     user.passwordResetExpiry = null;
     await userUtil.resetTokenLifespan(user);
@@ -213,7 +231,7 @@ const resetPassword = async (req, res, next) => {
 
     res.status(200).json({
       code: "SUCCESS",
-      message: "Password reset successfully"
+      message: "Password reset successfully",
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -224,41 +242,44 @@ const resetPassword = async (req, res, next) => {
 const updatePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
-    if (newPassword != confirmNewPassword) return res.status(403).json({
-      code: "PASSWORD_MISMATCH",
-      message: "Password and password retype doesn't match"
-    });
+    if (newPassword != confirmNewPassword)
+      return res.status(403).json({
+        code: "PASSWORD_MISMATCH",
+        message: "Password and password retype doesn't match",
+      });
 
     let user = await userUtil.findUserById(req);
 
-    if (user == null) return res.status(403).json({
-      code: "INVALID_SESSION",
-      message: "Invalid session"
-    });
+    if (user == null)
+      return res.status(403).json({
+        code: "INVALID_SESSION",
+        message: "Invalid session",
+      });
 
     let match = await bcrypt.compare(currentPassword, user.passwordHash);
-    if (!match) return res.status(403).json({
-      code: "WRONG_PASSWORD",
-      message: "Wrong password"
-    });
+    if (!match)
+      return res.status(403).json({
+        code: "WRONG_PASSWORD",
+        message: "Wrong password",
+      });
 
     await userUtil.setPassword(user, newPassword);
 
     res.status(200).json({
       code: "SUCCESS",
-      message: "Password updated successfully"
+      message: "Password updated successfully",
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
-}
+};
 
 const isAdmin = async (req, res, next) => {
   try {
     const user = await userUtil.findUserById(req);
     if (user == null) res.status(403).json({ error: "Invalid session." });
     else {
-      if (user.role === 'admin') next();
+      if (user.role === "admin") next();
       else res.status(403).json({ error: "Access denied." });
     }
   } catch (e) {
@@ -268,30 +289,28 @@ const isAdmin = async (req, res, next) => {
 
 const privilegeConfirmation = async (req, res) => {
   res.status(200).json({ message: "Access granted." });
-}
+};
 
 const updateProfile = async (req, res, next) => {
   try {
-    console.log('updateProfile');
+    console.log("updateProfile");
     const user = await userUtil.findUserById(req);
     console.log(user);
     if (user == null) res.status(403).json({ error: "Invalid session." });
     else {
       console.log(req.body);
       const { fullname, email, avatarUrl, description, address } = req.body;
-      
 
       if (!!fullname) user.fullname = fullname;
       if (!!email) user.email = email;
-      if (!!description ) user.description = description;
+      if (!!description) user.description = description;
       if (!!address) user.address = address;
-      if (!!avatarUrl ) user.avatarUrl = avatarUrl;
+      if (!!avatarUrl) user.avatarUrl = avatarUrl;
       // throw error if not save user
       await user.save();
 
-
       // console.log(user);
-      console.log('updateProfile');
+      console.log("updateProfile");
       res.status(200).json({ message: "Update profile successfully." });
     }
   } catch (e) {
@@ -304,63 +323,66 @@ const getNotification = async (req, res, next) => {
     const user = await userUtil.findUserById(req);
     if (user == null) res.status(403).json({ error: "Invalid session." });
     else {
-      const notificationIds = user.notifications.map((notification) => notification.notification );
+      const notificationIds = user.notifications.map(
+        (notification) => notification.notification
+      );
       // console.log(notificationIds);
-      const notifications = await Notification.find({ _id: { $in: notificationIds } });
+      const notifications = await Notification.find({
+        _id: { $in: notificationIds },
+      });
 
       notifications.sort((a, b) => b.createdAt - a.createdAt);
 
       // filter notifications have thread or comment deleted
       for (let i = 0; i < notifications.length; i++) {
         const thread = await Thread.findOne({ _id: notifications[i].thread });
-        const comment = await Comment.findOne({ _id: notifications[i].comment });
-        console.log('thread', thread);
+        const comment = await Comment.findOne({
+          _id: notifications[i].comment,
+        });
+        console.log("thread", thread);
         if (notifications[i].from == "thread" && thread == null) {
           // delete notifications[i];
 
-          await user.updateOne({ $pull: { notifications: { notification: notifications[i]._id } } });
+          await user.updateOne({
+            $pull: { notifications: { notification: notifications[i]._id } },
+          });
 
           notifications.splice(i, 1);
 
           // await user.updateOne({ $pull: { notifications: { notification: notifications[i]._id } } });
           i--;
-        }
-        else if (notifications[i].from == "reply" && comment == null) {
+        } else if (notifications[i].from == "reply" && comment == null) {
           // delete notifications[i];
-          await user.updateOne({ $pull: { notifications: { notification: notifications[i]._id } } });
+          await user.updateOne({
+            $pull: { notifications: { notification: notifications[i]._id } },
+          });
 
           notifications.splice(i, 1);
           i--;
         }
-
       }
 
       // await user.save();
-      
 
-
-
-      
-      res.status(200).json({ message: "Get all notifications successfully.", notifications: notifications });
+      res.status(200).json({
+        message: "Get all notifications successfully.",
+        notifications: notifications,
+      });
     }
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
-}
+};
 
-const getAllUser = async (req, res, next) => {
+const getAllUsers = async (req, res, next) => {
   try {
     const user = await userUtil.findUserById(req);
-    if (user == null || user.role != "admin") res.status(403).json({ error: "Not permitted." });
+    if (user == null || user.role != "admin")
+      res.status(403).json({ error: "Not permitted." });
     else {
       let result = await userModel.find({});
-      
-      const getableFields = [
-        "username",
-        "fullname",
-        "avatarUrl",
-        "role"
-      ];
+
+      const getableFields = ["username", "fullname", "avatarUrl", "role"];
 
       // result = result.sort().map(e => {
       //   let x = {};
@@ -368,12 +390,12 @@ const getAllUser = async (req, res, next) => {
       //   return x;
       // });
 
-      res.status(200).send({ message: "Fetched successfully", users: result});
+      res.status(200).send({ message: "Fetched successfully", users: result });
     }
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
-}
+};
 
 const updateAllNotificationIsRead = async (req, res, next) => {
   try {
@@ -385,14 +407,14 @@ const updateAllNotificationIsRead = async (req, res, next) => {
       });
       await user.save();
 
-      
-
-      res.status(200).json({ message: "Update all notifications successfully." });
+      res
+        .status(200)
+        .json({ message: "Update all notifications successfully." });
     }
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
-}
+};
 
 const updateNotificationStatus = async (req, res, next) => {
   try {
@@ -401,22 +423,27 @@ const updateNotificationStatus = async (req, res, next) => {
     else {
       const { notification_id } = req.params;
       const notification = await Notification.findOne({ _id: notification_id });
-      if (notification == null) res.status(403).json({ error: "Invalid notification id." });
+      if (notification == null)
+        res.status(403).json({ error: "Invalid notification id." });
       else {
-        const userNotification = user.notifications.find((e) => e.notification.toString() == notification_id.toString());
-        if (userNotification == null) res.status(403).json({ error: "Invalid notification id." });
+        const userNotification = user.notifications.find(
+          (e) => e.notification.toString() == notification_id.toString()
+        );
+        if (userNotification == null)
+          res.status(403).json({ error: "Invalid notification id." });
         else {
           userNotification.isRead = true;
           await user.save();
-          res.status(200).json({ message: "Update notification status successfully." });
+          res
+            .status(200)
+            .json({ message: "Update notification status successfully." });
         }
       }
     }
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
-}
-
+};
 
 module.exports = {
   loginUser,
@@ -429,9 +456,10 @@ module.exports = {
   isAdmin,
   privilegeConfirmation,
   updatePassword,
-  getAllUser,
+  getAllUsers,
   getNotification,
   userProfile,
   updateAllNotificationIsRead,
-  updateNotificationStatus
+  updateNotificationStatus,
+  getAllUsers,
 };
