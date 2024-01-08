@@ -6,6 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
 import "./management.css";
 import { updateProfile, updatePassword, infoUser } from "../../../api/user";
+import { DeleteModal } from "../../Modal/modal";
 
 const UserTable = ({
   avatarImg,
@@ -154,7 +155,15 @@ const ThreadTable = ({
 };
 
 const ReportTable = ({ data }) => {
-  const [checked, setChecked] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
   return (
     <>
       <table className="table mt-3 table-striped table-info justify-content-center">
@@ -169,7 +178,7 @@ const ReportTable = ({ data }) => {
           </tr>
         </thead>
         <tbody>
-          {/* Render 20 rows with user data */}
+          {/* Render 20 rows with report data */}
           {data.map((id, index) => (
             <tr key={index}>
               <td>{id}</td>
@@ -183,8 +192,19 @@ const ReportTable = ({ data }) => {
                   <button
                     className="btn btn-secondary custom-btn-yellow rounded"
                     id="newUserBtn"
+                    onClick={() => openModal()}
                   >
                     <i className="bi bi-info-circle"></i> View detail
+                    {/* Modal */}
+                    <DeleteModal
+                      isOpen={isModalOpen}
+                      handleClose={() => closeModal()}
+                      handleDelete={() => {
+                        closeModal();
+                      }}
+                      modalTitle="Report details"
+                      modalContent="Đây là chi tiết về report"
+                    />
                   </button>
                   <span className="mx-2"></span>
                   <button
@@ -196,6 +216,7 @@ const ReportTable = ({ data }) => {
                   <span className="mx-2"></span>
                 </div>
               </td>
+              {/* Modal */}
             </tr>
           ))}
         </tbody>
@@ -238,17 +259,8 @@ export default function Profile() {
   const status = [1, 2, 3];
   const admitYear = [2021, 2022, 2023];
 
-  // //Fake data test for user tab
-  // const avatarImg = [
-  //   "https://png.pngtree.com/png-clipart/20230512/original/pngtree-isolated-cat-on-white-background-png-image_9158356.png",
-  //   "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*",
-  //   "https://i.natgeofe.com/k/6d301bfc-ff93-4f6f-9179-b1f66b19b9b3/pig-young-closeup_3x4.jpg",
-  // ];
-  // const studentID = [21125000, 21125001, 21125002];
-  // const fullName = ["ntp", "nsm", "nxh"];
-  // const gender = ["f", "m", "m"];
-  // const status = [1, 2, 3];
-  // const admitYear = [2021, 2022, 2023];
+  // //Fake data test for report tab
+  const reportid = 1;
 
   useEffect(() => {
     const fetchData = async () => {

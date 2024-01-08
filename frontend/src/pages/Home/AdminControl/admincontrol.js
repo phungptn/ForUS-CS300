@@ -62,15 +62,15 @@ async function createGroup(groups, setGroups) {
 }
 
 export function GroupControl({ group_id }) {
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const openModal = () => {
-        setIsModalOpen(true);
-    };
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
 
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
   let { groups, setGroups, adminStatus } = useContext(GroupsContext);
   if (!adminStatus) return null;
   return (
@@ -103,7 +103,10 @@ export function GroupControl({ group_id }) {
       <DeleteModal
         isOpen={isModalOpen}
         handleClose={() => closeModal()}
-        handleDelete={() => {deleteGroup(groups, setGroups, group_id); closeModal()}}
+        handleDelete={() => {
+          deleteGroup(groups, setGroups, group_id);
+          closeModal();
+        }}
         modalTitle="Xóa group"
         modalContent="Bạn có chắc chắn muốn xóa group này không?"
       />
@@ -121,22 +124,6 @@ export function CreateNewGroup() {
     >
       <h4 className="user-select-none">
         <i className="bi bi-plus-lg"></i> Tạo group mới
-      </h4>
-    </div>
-  );
-}
-
-export function Management() {
-  let { adminStatus } = useContext(GroupsContext);
-  if (!adminStatus) return null;
-  return (
-    <div>
-      <h4
-        className="user-select-none text-black"
-        style={{ fontSize: "5px" }}
-        /*onClick={}*/
-      >
-        Thorough Management
       </h4>
     </div>
   );
