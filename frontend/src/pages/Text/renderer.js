@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { downloadImage } from '../../utils/loadImage';
 import './renderer.css';
 
-export default function TextRenderer({ threadId, input }) {
+export default function TextRenderer({ input, thread, setThread }) {
     useEffect(() => {
-        if (threadId) {
+        if (thread) {
             let textRenderer = document.getElementById('textRenderer');
             let image = textRenderer.getElementsByTagName('img');
             for (let i = 0; i < image.length; i++) {
@@ -13,8 +13,9 @@ export default function TextRenderer({ threadId, input }) {
                     continue;
                 }
                 else {
-                    downloadImage(`images/thread/${threadId}/${url}`).then((decodedUrl) => {
+                    downloadImage(`images/thread/${thread._id}/${url}`).then((decodedUrl) => {
                         image[i].setAttribute('src', decodedUrl);
+                        setThread({ ...thread, body: textRenderer.innerHTML });
                     });
                 }
             }

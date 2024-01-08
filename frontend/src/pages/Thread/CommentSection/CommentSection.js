@@ -18,7 +18,7 @@ export default function CommentSection({ thread, replyTo, setReplyToComment }) {
         getProfilePicture();
     }, []);
     return (
-        <div className="card-body py-4 m-0">
+        <div id="comment-editor" className="card-body py-4 m-0">
             <div className="row m-0 p-0 flex-grow-1">
                 {/* Display avatar and username */}
                 <div className="col-lg-2 bg-card-secondary round-left d-flex flex-column align-items-center text-center"

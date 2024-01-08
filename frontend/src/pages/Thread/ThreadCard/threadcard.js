@@ -109,7 +109,7 @@ export default function ({ thread }) {
             <div style={{ padding: "0px 20px" }}>
               {/* Render thread body */}
               <div style={{ padding: "10px 0px 20px" }}>
-                <TextRenderer input={thread.body} />
+                <TextRenderer input={thread.body} thread={thread} setThread={setThread} />
               </div>
 
               {/* Display updated timestamp */}
@@ -123,9 +123,24 @@ export default function ({ thread }) {
                 Chỉnh sửa lần cuối: {getTimePassed(thread.updatedAt)}
               </div>
 
-              {/* Vote bar */}
               <div className="py-3 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-4">
-                <ThreadHorizontalVoteBar thread={thread} />
+                  {/* Vote bar */}
+                  <div className="py-3 px-0 m-0 d-flex flex-row-reverse justify-content-stretch gap-4">
+                    <ThreadHorizontalVoteBar thread={thread} />
+                  </div>
+
+                  {/* Reply button */}
+                  <button
+                      type="button"
+                      className="btn text-white"
+                      style={{ fontWeight: 'bold' }}
+                      onClick={() => {
+                          document.querySelector("#comment-editor")?.scrollIntoView?.();
+                      }}
+                  >
+                      <span className="ms-2"><i className="bi bi-chat"></i></span>
+                      {' '} Bình luận
+                  </button>
               </div>
             </div>
           )}

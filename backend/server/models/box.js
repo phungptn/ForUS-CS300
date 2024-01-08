@@ -13,7 +13,6 @@ const BoxSchema = new Schema({
         type: [{ type: Schema.Types.ObjectId, ref: 'User'}],
         default: [],
     },
-    autoApprove: { type: Boolean, default: true },
     threads: {
         type: [{ type: Schema.Types.ObjectId, ref: 'Thread'}],
         default: [],

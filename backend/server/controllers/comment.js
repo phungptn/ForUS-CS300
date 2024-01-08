@@ -106,7 +106,8 @@ module.exports = {
     updateComment: async (req, res) => {
         let { body } = req.body;
         let comment_id = req.params.comment_id;
-        if (body == null || comment_id == null) {
+        body = sanitizeHtml(body);
+        if (comment_id == null || !Boolean(body)) {
             res.status(400).json({ error: ERROR.INVALID_REQUEST });
         } else {
             try {

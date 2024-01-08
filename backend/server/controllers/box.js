@@ -14,7 +14,7 @@ module.exports = {
     if (group_id == null || name == null || description == null) {
       res.status(400).json({ error: ERROR.INVALID_REQUEST });
     } else {
-      // let box = new Box({ name: name, description: description, autoApprove: !!(autoApprove ?? true) });
+      let box = new Box({ name: name, description: description });
       const session = await mongoose.startSession();
       try {
         await session.withTransaction(async () => {
@@ -32,24 +32,6 @@ module.exports = {
         res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
       } finally {
         session.endSession();
-      }
-    }
-  },
-  updateBoxAutoApprove: async function (req, res) {
-    let box_id = req.params.box_id;
-    if (box_id == null) {
-      res.status(400).json({ error: ERROR.INVALID_REQUEST });
-    } else {
-      try {
-        let box = await Box.findById(box_id);
-        if (box == null) throw { message: "No boxes found." };
-        await Box.updateOne({ _id: box_id }, { autoApprove: !box.autoApprove });
-        res.status(200).json({
-          message: "Box Auto Approve options changed.",
-          autoApprove: !box.autoApprove,
-        });
-      } catch (err) {
-        res.status(403).json({ error: err.message });
       }
     }
   },
