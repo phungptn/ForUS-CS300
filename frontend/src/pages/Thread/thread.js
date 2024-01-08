@@ -103,7 +103,7 @@ export default function Thread() {
                         </div>
 
                         {/* Pagination */}
-                        <div className="d-flex pt-2 pb-4">
+                        <div className="d-flex mt-2 mb-4">
                             <Pagination thread={thread} page={page} />
                         </div>
 
@@ -120,12 +120,6 @@ export default function Thread() {
                                 <CommentCard key={comment._id} comment={comment} onReplyClick={handleReplyClick}/>
                             </ThreadContext.Provider>
                         ))}
-
-                        {/* Pagination */}
-                        <div className="d-flex justify-content-end py-2">
-                            <Pagination thread={thread} page={page} />
-                        </div>
-
 
                         {/* Post comment */}
                         {thread.currentUser && thread.currentUser._id && (
