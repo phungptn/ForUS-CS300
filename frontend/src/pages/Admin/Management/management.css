@@ -37,14 +37,14 @@ td {
   transition: background-color 0.3s;
 }
 .custom-btn-blue {
-  background-color: blue;
+  background-color: rgb(0, 194, 253);
   color: black;
   transition: background-color 0.3s;
 }
 
 /* Hover effect */
 .custom-btn-yellow:hover {
-  background-color: #ffcc00; /* Adjust the color for hover */
+  background-color: #ff9100; /* Adjust the color for hover */
 }
 
 .custom-btn-green:hover {
