@@ -3,15 +3,13 @@ import React, { useState, useEffect } from "react";
 import { storage } from "../../../Firebase/config";
 import { downloadImage } from "../../../utils/loadImage";
 import "./management.css";
-import { ReportCardModal, CreateNotificationModal } from "../../Modal/modal";
+import { ReportCardModal } from "../../Modal/modal";
 import { getAllUsers } from "../../../api/user";
 import { getTimePassed } from "../../../utils/getTimePassed";
-import {
-  sendNotificationToUsers,
-  sendNotificationToAllUsers,
-} from "../../../api/admin";
+import { instance } from "../../../api/config";
+import { ThreadInformation } from "../../Box/UserControl/usercontrol";
 
-const UserTable = ({ onSelectedUsersChange }) => {
+const UserTable = () => {
   const [selectAll, setSelectAll] = useState(false);
   const [checked, setChecked] = useState(Array(0).fill(false));
   const [users, setUsers] = useState([]);
@@ -42,7 +40,6 @@ const UserTable = ({ onSelectedUsersChange }) => {
   const handleSelectAll = () => {
     setSelectAll(!selectAll);
     setChecked(Array(users.length).fill(!selectAll));
-    onSelectedUsersChange(selectAll ? [] : users.map((user) => user.username));
   };
 
   const handleCheckboxChange = (index) => {
@@ -50,11 +47,6 @@ const UserTable = ({ onSelectedUsersChange }) => {
     updatedChecked[index] = !updatedChecked[index];
     setChecked(updatedChecked);
     setSelectAll(updatedChecked.every((isChecked) => isChecked));
-    onSelectedUsersChange(
-      updatedChecked
-        .map((isChecked, i) => (isChecked ? users[i].username : null))
-        .filter(Boolean)
-    );
   };
 
   return (
@@ -179,7 +171,7 @@ const UserTable = ({ onSelectedUsersChange }) => {
 //   );
 // };
 
-const ReportTable = ({ data }) => {
+const ViewDetailsButton = ({ report, onFinish }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
@@ -189,57 +181,84 @@ const ReportTable = ({ data }) => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
+  return <>
+    <button
+        className="btn btn-secondary custom-btn-yellow rounded"
+        onClick={() => openModal()}
+      >
+        <i className="bi bi-info-circle"></i> View details
+      </button>
+      {/* Modal */}
+      <ReportCardModal
+          isOpen={isModalOpen}
+          handleClose={() => closeModal()}
+          handleDelete={onFinish}
+          report={report}
+      />
+  </>
+}
+
+const ReportTable = () => {
+  const [data, setData] = useState([]);
+
+  const getReports = async () => {
+    try {
+      return (await instance.get("/report/-1")).data.reports.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+    }
+    catch (e) { return [] }
+  }
+
+  useEffect(() => {
+    getReports().then(setData);
+  }, []);
+
   return (
     <>
       <table className="table mt-3 table-striped table-info justify-content-center">
         <thead className="thead-dark">
-          <tr>
-            <td>Report ID</td>
-            <td>Time created</td>
-            <td>Target</td>
-            <td>Path</td>
-            <td>Reported by</td>
-            <td>Tools</td>
+          <tr style={{textAlign: "center"}}>
+            <th>Time created</th>
+            <th>Target</th>
+            <th>Path</th>
+            <th>Reported by</th>
+            <th>Tools</th>
           </tr>
         </thead>
         <tbody>
-          {/* Render 20 rows with report data */}
-          {data.map((id, index) => (
-            <tr key={index}>
-              <td>{id}</td>
-              <td>Time created</td>
-              <td>Target</td>
-              <td>Path</td>
-              <td>Reported by</td>
-              <td className="align-middle text-center">
-                {/* Second Element: Tools */}
-                <div className="btn-group ms-auto">
-                  <button
-                    className="btn btn-secondary custom-btn-yellow rounded"
-                    id="newUserBtn"
-                    onClick={() => openModal()}
-                  >
-                    <i className="bi bi-info-circle"></i> View details
-                  </button>
-                  {/* Modal */}
-                  <ReportCardModal
-                    isOpen={isModalOpen}
-                    handleClose={() => closeModal()}
-                    report={Number}
-                  />
-                  <span className="mx-2"></span>
-                  <button
-                    className="btn btn-secondary custom-btn-green rounded"
-                    id="sendNotificationBtn"
-                  >
-                    <i className="bi bi-check-circle"></i> Resolved
-                  </button>
-                  <span className="mx-2"></span>
-                </div>
-              </td>
-              {/* Modal */}
-            </tr>
-          ))}
+          {data.map(report => {
+            const resolveReport = async () => {
+              if (!window.confirm("Are you sure to resolve this report?")) return;
+              try {
+                await instance.put("/report/" + report._id);
+                alert("Resolved report successfully.");
+                window.location.reload();
+              }
+              catch (e) { console.log(e) }
+            }
+            let info = ReportCardModal.generateLink(report);
+            return (
+              <tr>
+                <td>{getTimePassed(Date.parse(report.createdAt))}</td>
+                <td>{info.type}</td>
+                <td><a href={info.link} target="_blank">{info.link.replace(/^([^]{20})[^]+$/, "$1...")}</a></td>
+                <td><ThreadInformation thread={{ author: report.reporter }} hideTime={true} customColor="black" target="_blank"/></td>
+                <td className="align-middle text-center">
+                  {/* Second Element: Tools */}
+                  <div className="btn-group ms-auto">
+                    <ViewDetailsButton report={report} onFinish={resolveReport}/>
+                    <span className="mx-2"></span>
+                    <button
+                      className="btn btn-secondary custom-btn-green rounded"
+                      onClick={resolveReport}
+                    >
+                      <i className="bi bi-check-circle"></i> Resolve
+                    </button>
+                    <span className="mx-2"></span>
+                  </div>
+                </td>
+              </tr>
+          )})}
         </tbody>
       </table>
     </>
@@ -248,59 +267,19 @@ const ReportTable = ({ data }) => {
 
 export default function Management() {
   const [activeTab, setActiveTab] = useState("user");
-  const [selectedUsers, setSelectedUsers] = useState([]);
-  const [isSendNotificationModalOpen, setIsSendNotificationModalOpen] =
-    useState(false);
-  const [notificationTitle, setNotificationTitle] = useState("");
-  const [notificationBody, setNotificationBody] = useState("");
+  const [showSignUp, setShowSignUp] = useState(false);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
+  const handleNewUserClick = () => {
+    setShowSignUp(true);
+  };
+
   const goToSignUp = () => {
     window.location.href = "/signup";
   };
-
-  const handleSelectedUsersChange = (users) => {
-    setSelectedUsers(users);
-  };
-
-  const handleSendNotification = () => {
-    // Use selectedUsers for sending notifications
-    console.log("Selected Users:", selectedUsers);
-    setIsSendNotificationModalOpen(true);
-  };
-
-  const handleSendNotificationConfirm = async () => {
-    // Prepare the data for sending notifications
-    const notificationData = {
-      title: notificationTitle,
-      body: notificationBody,
-      users: selectedUsers,
-    };
-
-    // Call the API function to send notifications
-    const response = await sendNotificationToUsers(notificationData);
-
-    // Check the response and handle accordingly
-    if (response && response.status === 200) {
-      console.log("Notification sent successfully");
-    } else {
-      console.error("Error sending notification:", response.statusText);
-    }
-
-    // Close the modal after sending the notification
-    setIsSendNotificationModalOpen(false);
-  };
-
-  const handleSendNotificationCancel = () => {
-    // Close the modal without sending the notification
-    setIsSendNotificationModalOpen(false);
-  };
-
-  //Fake data for report tab
-  const reportId = [1, 2, 3];
 
   return (
     <div className="container">
@@ -380,34 +359,16 @@ export default function Management() {
                           <button
                             className="btn btn-secondary custom-btn-blue rounded"
                             id="sendNotificationBtn"
-                            onClick={() => handleSendNotification()}
-                            disabled={selectedUsers.length === 0}
                           >
                             <i className="bi bi-envelope"></i> Send notification
                           </button>
-                          {/* CreateNotificationModal */}
-                          <CreateNotificationModal
-                            isOpen={isSendNotificationModalOpen}
-                            onCancel={() => handleSendNotificationCancel()}
-                            onConfirm={() => handleSendNotificationConfirm()}
-                            title={notificationTitle}
-                            body={notificationBody}
-                            onTitleChange={(e) =>
-                              setNotificationTitle(e.target.value)
-                            }
-                            onBodyChange={(e) =>
-                              setNotificationBody(e.target.value)
-                            }
-                          />
                           <span className="mx-2"></span>
                         </div>
                       </div>
                     </div>
 
                     {/* Third Element: Table */}
-                    <UserTable
-                      onSelectedUsersChange={handleSelectedUsersChange}
-                    />
+                    <UserTable />
 
                     {/* Fourth Element: Pagination Bar
                     <div className="d-flex justify-content-center mt-3">
@@ -468,7 +429,7 @@ export default function Management() {
                     </div>
 
                     {/* Third Element: Table */}
-                    <ReportTable data={reportId} />
+                    <ReportTable />
 
                     {/* Fourth Element: Pagination Bar */}
                     <div className="d-flex justify-content-center mt-3">

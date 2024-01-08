@@ -137,7 +137,7 @@ export function CommentsCounter({ thread }) {
     );
 }
 
-export function ThreadInformation({ thread }) {
+export function ThreadInformation({ thread, hideTime = false, customColor = null, target = "_self" }) {
     const [profilePicture, setProfilePicture] = useState(null);
     useEffect(() => {
         async function getProfilePicture() {
@@ -153,8 +153,8 @@ export function ThreadInformation({ thread }) {
                 profilePicture ? profilePicture : 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'
             } alt="avatar"/>
             <div className="d-flex flex-column justify-content-start">
-                <a className="text-start user-link" href={`/user/${thread.author._id}`}>{thread.author.fullname}</a>
-                <small className="text-gray text-start">{getTimePassed(thread.createdAt)}</small>
+                <a style={{ color: customColor ?? "" }} className="text-start user-link" target={target} href={`/user/${thread.author._id}`}>{thread.author.fullname}</a>
+                {hideTime ? null : <small className="text-gray text-start">{getTimePassed(thread.createdAt)}</small>}
             </div>
         </div>
     );
