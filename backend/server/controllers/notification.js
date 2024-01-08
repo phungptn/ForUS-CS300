@@ -34,7 +34,7 @@ module.exports = {
         }
         else {
             const session = await mongoose.startSession();
-            let notification = new Notification({ title: title, body: body, from });
+            let notification = new Notification({ title: title, body: sanitizeHtml(body), from });
             try {
                 await session.withTransaction(async () => {
                     await notification.save();
@@ -82,7 +82,7 @@ module.exports = {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
-            let notification = new Notification({ title: "Report", body: body, thread: thread, comment: comment, user: user, reporter: await findUserById(req), isReport: true, from: 'report' });
+            let notification = new Notification({ title: "Report", body: sanitizeHtml(body), thread: thread, comment: comment, user: user, reporter: await findUserById(req), isReport: true, from: 'report' });
             try {
                 await notification.save();
                 res.status(200).json({ message: "Report sent." });
@@ -236,7 +236,7 @@ module.exports = {
                     res.status(400).json({ error: "Invalid author's reply comment." });
                     return
                 }
-                let notification = new Notification({ title: "Reply Comment", body: body, thread: thread_id, comment: commentReplyFrom._id, user: authorOfCommentReplyFrom._id, from: "reply" });
+                let notification = new Notification({ title: "Reply Comment", body: sanitizeHtml(body), thread: thread_id, comment: commentReplyFrom._id, user: authorOfCommentReplyFrom._id, from: "reply" });
                 authorOfCommentReplyFrom.notifications.push({ notification: notification._id });
 
                 try {
@@ -254,7 +254,7 @@ module.exports = {
                 res.status(400).json({ error: "Invalid author's thread." });
                 return
             }
-            let notification = new Notification({ title: "From thread: " + thread.title, body: body, thread: thread_id, user: authorOfThread._id, from: "thread" });
+            let notification = new Notification({ title: "From thread: " + thread.title, body: sanitizeHtml(body), thread: thread_id, user: authorOfThread._id, from: "thread" });
             authorOfThread.notifications.push({ notification: notification._id });
             
             
