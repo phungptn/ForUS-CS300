@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const userModel = require("../models/user");
 const sendEmail = require("../utils/sendEmail");
 const Notification = require('../models/notification');
+const Thread = require('../models/thread');
+const Comment = require('../models/comment');
 const user = require("../models/user");
 const mongoose = require('mongoose');
 
@@ -305,20 +307,36 @@ const getNotification = async (req, res, next) => {
       const notificationIds = user.notifications.map((notification) => notification.notification );
       // console.log(notificationIds);
       const notifications = await Notification.find({ _id: { $in: notificationIds } });
-      // notifications.map((notification) => {
-      //   let x = user.notifications.find((e) => e.notification.toString() == notification._id.toString());
-      //   // console.log(x);
-      //   // add isRead field to notification
-      //   notification.isRead = x.isRead;
-      //   console.log(notification.isRead);
 
-      // });
-
-      // const userIsRead = userModel.findOne({ _id: user._id }).select('notifications.isRead');
-      // console.log(userIsRead);
-
-      // sort notifications by createdAt
       notifications.sort((a, b) => b.createdAt - a.createdAt);
+
+      // filter notifications have thread or comment deleted
+      for (let i = 0; i < notifications.length; i++) {
+        const thread = await Thread.findOne({ _id: notifications[i].thread });
+        const comment = await Comment.findOne({ _id: notifications[i].comment });
+        console.log('thread', thread);
+        if (notifications[i].from == "thread" && thread == null) {
+          // delete notifications[i];
+
+          await user.updateOne({ $pull: { notifications: { notification: notifications[i]._id } } });
+
+          notifications.splice(i, 1);
+
+          // await user.updateOne({ $pull: { notifications: { notification: notifications[i]._id } } });
+          i--;
+        }
+        else if (notifications[i].from == "reply" && comment == null) {
+          // delete notifications[i];
+          await user.updateOne({ $pull: { notifications: { notification: notifications[i]._id } } });
+
+          notifications.splice(i, 1);
+          i--;
+        }
+
+      }
+
+      // await user.save();
+      
 
 
 
