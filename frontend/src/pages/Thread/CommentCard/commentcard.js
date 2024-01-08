@@ -134,6 +134,7 @@ export default function ({ comment, onReplyClick }) {
                                     onClick={() => {
                                         onReplyClick(comment);
                                         console.log('Replying to comment:', comment);
+                                        document.querySelector("#comment-editor")?.scrollIntoView?.();
                                     }}
                                 >
                                     <span className="ms-2"><i className="bi bi-reply"></i></span>
