@@ -386,6 +386,8 @@ const getAllUsers = async (req, res, next) => {
         "_id",
         "username",
         "fullname",
+        "email",
+        "lastAccessed",
         "avatarUrl",
         "role",
       ];

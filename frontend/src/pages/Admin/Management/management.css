@@ -10,8 +10,8 @@ td {
 .avatar-img {
   height: 100%;
   width: auto; /* or set a specific width */
-  max-height: 33px; /* Adjust the maximum width as needed */
-  max-width: 33px;
+  max-height: 40px; /* Adjust the maximum width as needed */
+  max-width: 40px;
 }
 .custom-btn-yellow {
   background-color: yellow;

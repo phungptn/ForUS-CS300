@@ -62,7 +62,6 @@ const UserTable = ({ onSelectedUsersChange }) => {
       <thead className="thead-dark">
         <tr style={{ textAlign: "center" }}>
           <th>Avatar</th>
-          <th>UserId</th>
           <th>Username</th>
           <th>Fullname</th>
           <th>Email</th>
@@ -97,7 +96,6 @@ const UserTable = ({ onSelectedUsersChange }) => {
                 alt="avatar"
               />
             </td>
-            <td>{user._id}</td>
             <td>{user.username}</td>
             <td>{user.fullname}</td>
             <td>{user.email}</td>
