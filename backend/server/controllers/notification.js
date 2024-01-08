@@ -7,16 +7,18 @@ const mongoose = require('mongoose');
 const sanitizeHtml = require('sanitize-html');
 
 const sanitizeReport = async function(report) {
-    let { title, body, comment, thread, user, reporter } = report;
+    let { _id, body, comment, thread, user, reporter, createdAt } = report;
+    if (comment) comment = await Comment.findById(comment._id) ?? {};
     reporter = await User.findById(reporter._id) ?? {};
     return {
-        title,
+        _id,
         body,
+        createdAt,
         comment_id: comment?._id ?? null,
-        thread_id: thread?._id ?? null,
+        thread_id: (thread ?? (comment?.thread))?._id ?? null,
         user_id: user?._id ?? null,
         reporter: {
-            id: reporter._id ?? null,
+            _id: reporter._id ?? null,
             username: reporter.username ?? null,
             fullname: reporter.fullname ?? null,
             avatarUrl: reporter.avatarUrl ?? null

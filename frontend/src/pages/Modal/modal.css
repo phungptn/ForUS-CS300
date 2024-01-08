@@ -78,3 +78,15 @@
 .react-modal-footer > * {
   margin: 0 0.25rem;
 }
+
+.table-standard th {
+  text-align: left;
+}
+
+.table-standard td {
+  text-align: center;
+}
+
+.table-standard * {
+  padding: 1%;
+}
