@@ -61,9 +61,9 @@ const UserTable = ({ onSelectedUsersChange }) => {
     <table className="table mt-3 table-striped table-info justify-content-center">
       <thead className="thead-dark">
         <tr style={{ textAlign: "center" }}>
-          <th>Avatar</th>
+          <th>UserId</th>
+          <th>User</th>
           <th>Username</th>
-          <th>Fullname</th>
           <th>Email</th>
           <th>Role</th>
           <th>Last Accessed</th>
@@ -84,20 +84,9 @@ const UserTable = ({ onSelectedUsersChange }) => {
       <tbody>
         {users.map((user, index) => (
           <tr key={index}>
-            <td>
-              <img
-                src={
-                  user.avatarUrl
-                    ? user.avatarUrl
-                    : "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
-                }
-                className="avatar-img rounded-5 centered-and-cropped"
-                id="avatarImage"
-                alt="avatar"
-              />
-            </td>
+            <td>{user._id}</td>
+            <td><ThreadInformation thread={{ author: user }} hideTime={true} customColor="black" target="_blank"/></td>
             <td>{user.username}</td>
-            <td>{user.fullname}</td>
             <td>{user.email}</td>
             <td>{user.role}</td>
             <td>{getTimePassed(user.lastAccessed)}</td>
@@ -175,6 +164,7 @@ const ReportTable = () => {
             <th>Time created</th>
             <th>Target</th>
             <th>Path</th>
+            <th>Content</th>
             <th>Reported by</th>
             <th>Tools</th>
           </tr>
@@ -202,6 +192,7 @@ const ReportTable = () => {
                     {info.link.replace(/^([^]{20})[^]+$/, "$1...")}
                   </a>
                 </td>
+                <td>{report.body.replace(/^([^]{20})[^]+/, "$1...")}</td>
                 <td>
                   <ThreadInformation
                     thread={{ author: report.reporter }}
@@ -356,10 +347,9 @@ export default function Management() {
                     {/* Second Element: Tools */}
                     <div className="container-fluid mt-3">
                       <div className="d-flex">
-                        <select className="form-select me-3 w-auto">
+                        {/* <select className="form-select me-3 w-auto">
                           <option>Sort by...</option>
-                          {/* Add sorting options here */}
-                        </select>
+                          </select> */}
                         <div className="btn-group ms-auto">
                           <button
                             className="btn btn-secondary custom-btn-yellow rounded"
@@ -452,22 +442,19 @@ export default function Management() {
                     </div>
 
                     {/* Second Element: Tools */}
-                    <div className="container-fluid mt-3">
+                    {/*<div className="container-fluid mt-3">
                       <div className="d-flex">
                         <select className="form-select me-3 w-auto">
                           <option>Sort by...</option>
-                          {/* Add sorting options here */}
                         </select>
                       </div>
-                    </div>
+                    </div>*/}
 
                     {/* Third Element: Table */}
                     <ReportTable />
 
                     {/* Fourth Element: Pagination Bar */}
-                    <div className="d-flex justify-content-center mt-3">
-                      {/* Render your pagination component here */}
-                      {/* Example: */}
+                    {/*<div className="d-flex justify-content-center mt-3">
                       <nav aria-label="Page navigation example">
                         <ul className="pagination">
                           <li className="page-item">
@@ -484,7 +471,6 @@ export default function Management() {
                               1
                             </a>
                           </li>
-                          {/* Add more page items as needed */}
                           <li className="page-item">
                             <a className="page-link" href="#" aria-label="Next">
                               <span aria-hidden="true">&raquo;</span>
@@ -492,7 +478,7 @@ export default function Management() {
                           </li>
                         </ul>
                       </nav>
-                    </div>
+                    </div>*/}
                   </div>
                 </div>
               </div>
