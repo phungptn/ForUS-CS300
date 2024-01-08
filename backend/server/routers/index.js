@@ -8,6 +8,7 @@ const threadRouter = require("./thread");
 const commentRouter = require("./comment");
 const notificationRouter = require("./notification");
 const searchRouter = require("./search");
+const reportRouter = require("./report");
 
 const isPath = function (url, sample) {
 	return url.startsWith(sample + "/") || url == sample;
@@ -39,6 +40,7 @@ module.exports = function (app) {
 	app.use("/group", groupRouter);
 	app.use("/box", boxRouter);
 	app.use("/thread", threadRouter);
+	app.use("/report", reportRouter);
 	app.use("/comment", commentRouter);
 	app.use("/notification", notificationRouter);
 	app.use("/search", searchRouter);

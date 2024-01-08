@@ -7,10 +7,11 @@ const NotificationSchema = new Schema({
     thread: { type: Schema.Types.ObjectId, ref: 'Thread', default: null},
     comment: { type: Schema.Types.ObjectId, ref: 'Comment', default: null},
     user: { type: Schema.Types.ObjectId, ref: 'User', default: null},
+    reporter: { type: Schema.Types.ObjectId, ref: 'User', default: null},
     isReport: { type: Boolean, default: false},
     from: {
         type: String,
-        enum: ['reply', 'thread', 'admin'],
+        enum: ['reply', 'thread', 'admin', 'report'],
         required: true
     }
 }, {timestamps: true});
