@@ -6,172 +6,6 @@ import "./management.css";
 import { ReportModal } from "../../Modal/modal";
 import { getAllUsers } from "../../../api/user";
 import { getTimePassed } from "../../../utils/getTimePassed";
-import { signup } from "../../../api/admin";
-import { Input, Ripple, initMDB } from "mdb-ui-kit";
-import "../SignUp/signup.css";
-initMDB({ Input, Ripple });
-
-const SignUp = () => {
-  const [fullName, setFullName] = useState("");
-  const [studentID, setStudentID] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
-  const [role, setRole] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-
-  const registerFunction = async () => {
-    try {
-      // convert dateofbirth to password
-
-      const data = {
-        fullname: fullName,
-        username: studentID,
-        email: email,
-        address: address,
-        role: role,
-        dateOfBirth: dateOfBirth,
-      };
-      console.log(data);
-      const response = await signup(data);
-      if (response.status === 200) {
-        alert("Registered successfully");
-        // window.location.href = "/login";
-      } else {
-        alert("Error");
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  // if (!showSignUp) {
-  //   return null;
-  // }
-  return (
-    <div>
-      <meta charSet="utf-8" />
-      <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico" />
-      <title>Checkout example for Bootstrap</title>
-
-      <div className="py-5 container">
-        <div className="order-md-1 text-start">
-          <h1 className="mb-3 ">Register Form</h1>
-          <form className="needs-validation" noValidate>
-            <div className="row">
-              <div className="col-md-6 mb-3">
-                <label htmlFor="firstName">Full name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="firstName"
-                  required
-                  onChange={(e) => setFullName(e.target.value)}
-                />
-                <div className="invalid-feedback">
-                  Valid first name is required.
-                </div>
-              </div>
-              <div className="col-md-6 mb-3">
-                <label htmlFor="lastName">Student ID</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="lastName"
-                  required
-                  onChange={(e) => setStudentID(e.target.value)}
-                />
-                <div className="invalid-feedback">
-                  Valid Student ID is required.
-                </div>
-              </div>
-            </div>
-            <div className="mb-3">
-              <label htmlFor="email">Email</label>
-              <div className="input-group">
-                <div className="input-group-prepend">
-                  <span className="input-group-text">@</span>
-                </div>
-                <input
-                  type="email"
-                  className="form-control"
-                  id="email"
-                  placeholder="you@example.com"
-                  required
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                {/* <div className="invalid-feedback">
-                Please enter a valid email address for shipping updates.
-              </div> */}
-              </div>
-            </div>
-            <div className="mb-3">
-              <label htmlFor="address">Address</label>
-              <input
-                type="text"
-                className="form-control"
-                id="address"
-                placeholder="1234 Main St"
-                required
-                onChange={(e) => setAddress(e.target.value)}
-              />
-              <div className="invalid-feedback">Please enter your address.</div>
-            </div>
-
-            <div className="row">
-              <div className="col-md-6 mb-3">
-                <label htmlFor="role">Role</label>
-                <select
-                  className="custom-select d-block w-100"
-                  id="role"
-                  required
-                  onChange={(e) => setRole(e.target.value)}
-                >
-                  <option value>Choose...</option>
-                  <option>Admin</option>
-                  <option>User</option>
-                </select>
-                <div className="invalid-feedback">
-                  Please select a valid role.
-                </div>
-              </div>
-
-              <div className="col-md-6 mb-3">
-                <label htmlFor="date">Date of Birth</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  id="date"
-                  placeholder="01/01/2000"
-                  required
-                  onChange={(e) => setDateOfBirth(e.target.value)}
-                />
-              </div>
-            </div>
-            <hr className="mb-4" />
-
-            <button
-              className="btn btn-primary btn-lg btn-block"
-              type="submit"
-              onClick={(event) => {
-                event.preventDefault();
-                registerFunction();
-              }}
-            >
-              Register
-            </button>
-          </form>
-        </div>
-
-        <footer className="my-5 pt-5 text-muted text-center text-small">
-          <p className="mb-1">© 2023-2024 ForUS</p>
-        </footer>
-      </div>
-      {/* Bootstrap core JavaScript
-      ================================================== */}
-      {/* Placed at the end of the document so the pages load faster */}
-    </div>
-  );
-};
 
 const UserTable = () => {
   const [selectAll, setSelectAll] = useState(false);
@@ -418,6 +252,10 @@ export default function Management() {
     setShowSignUp(true);
   };
 
+  const goToSignUp = () => {
+    window.location.href = "/signup";
+  };
+
   //Fake data for report tab
   const reportId = [1, 2, 3];
 
@@ -489,7 +327,7 @@ export default function Management() {
                           <button
                             className="btn btn-secondary custom-btn-yellow rounded"
                             id="newUserBtn"
-                            onClick={() => handleNewUserClick}
+                            onClick={() => goToSignUp()}
                           >
                             <i className="bi bi-person-plus"></i>
                             New user
@@ -503,12 +341,6 @@ export default function Management() {
                             <i className="bi bi-envelope"></i> Send notification
                           </button>
                           <span className="mx-2"></span>
-                          <button
-                            className="btn btn-secondary custom-btn-red rounded"
-                            id="deleteUserBtn"
-                          >
-                            <i className="bi bi-trash"></i> Delete user
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -544,8 +376,6 @@ export default function Management() {
                     </div> */}
                   </div>
                 </div>
-                {console.log("showSignUp:", showSignUp)}
-                {showSignUp && <SignUp />}
               </div>
               <div
                 className={`tab-pane fade ${

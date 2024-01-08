@@ -45,7 +45,7 @@ export default function Header() {
   };
 
   const goToManagement = () => {
-    window.location.href = "/management/user";
+    window.location.href = "/management";
   };
 
   const location = useLocation();

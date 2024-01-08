@@ -36,6 +36,11 @@ td {
   color: black;
   transition: background-color 0.3s;
 }
+.custom-btn-blue {
+  background-color: blue;
+  color: black;
+  transition: background-color 0.3s;
+}
 
 /* Hover effect */
 .custom-btn-yellow:hover {
