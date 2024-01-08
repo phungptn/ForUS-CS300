@@ -10,7 +10,8 @@ module.exports = {
   createBox: async (req, res) => {
     // res.status(400).json({ error: 'Test bugs' });
     let group_id = req.params.group_id;
-    let { name, description, autoApprove } = req.body;
+    let { name, description } = req.body;
+    console.log(group_id, name, description );
     if (group_id == null || name == null || description == null) {
       res.status(400).json({ error: ERROR.INVALID_REQUEST });
     } else {

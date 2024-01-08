@@ -11,8 +11,8 @@ try
 {
   if (boxName) {
     const response = await instance.post(`/group/${group_id}/box`, {
-      boxName,
-      boxDescription,
+      name: boxName,
+      description: boxDescription,
     });
     if (response.status === 200) {
       const updatedGroups = groups.map((group) => {
