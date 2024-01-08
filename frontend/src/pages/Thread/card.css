@@ -13,3 +13,13 @@
 .round-right {
     border-radius: 0 16px 16px 0;
 }
+
+.user-link {
+    color: var(--bs-white);
+    text-decoration: none;
+}
+
+.user-link:hover {
+    color: var(--bs-white);
+    text-decoration: underline;
+}

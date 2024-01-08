@@ -42,7 +42,7 @@ export default function ({ comment, onReplyClick }) {
                     <img className="rounded-circle centered-and-cropped bg-dark" width={100} height={100} src={
                         profilePicture ? profilePicture : 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png'
                     } alt="avatar"/>
-                    <a className="username mt-2" href={`/user/${comment.author && comment.author._id}`}>
+                    <a className="username mt-2 user-link" href={`/user/${comment.author && comment.author._id}`}>
                         {comment.author && comment.author.fullname}
                     </a>
                 </div>

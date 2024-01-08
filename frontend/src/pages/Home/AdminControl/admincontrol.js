@@ -1,6 +1,7 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { instance } from "../../../api/config";
 import { GroupsContext } from "../context";
+import { DeleteModal } from "../../Modal/modal";
 import "./admincontrol.css";
 
 async function askForBox(groups, setGroups, group_id) {
@@ -24,15 +25,10 @@ async function askForBox(groups, setGroups, group_id) {
 }
 
 async function deleteGroup(groups, setGroups, group_id) {
-  const confirm = window.confirm(
-    "Are you sure you want to delete this group?\nThis action cannot be undone."
-  );
-  if (confirm) {
-    const response = await instance.delete(`/group/${group_id}`);
-    if (response.status === 200) {
-      const updatedGroups = groups.filter((group) => group._id !== group_id);
-      setGroups(updatedGroups);
-    }
+  const response = await instance.delete(`/group/${group_id}`);
+  if (response.status === 200) {
+    const updatedGroups = groups.filter((group) => group._id !== group_id);
+    setGroups(updatedGroups);
   }
 }
 
@@ -66,32 +62,52 @@ async function createGroup(groups, setGroups) {
 }
 
 export function GroupControl({ group_id }) {
+  const [ isModalOpen, setIsModalOpen ] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
   let { groups, setGroups, adminStatus } = useContext(GroupsContext);
   if (!adminStatus) return null;
   return (
-    <div className="d-flex">
-      <button
-        className="btn btn-info text-white btn-sm mx-1"
-        type="submit"
-        onClick={() => askForBox(groups, setGroups, group_id)}
-      >
-        <i className="bi bi-plus-lg"></i> Tạo box mới
-      </button>
-      <button
-        className="btn btn-info text-white btn-sm mx-1"
-        type="submit"
-        onClick={() => renameGroup(groups, setGroups, group_id)}
-      >
-        <i className="bi bi-pencil"></i> Đổi tên
-      </button>
-      <button
-        className="btn btn-danger text-white btn-sm mx-1"
-        type="submit"
-        onClick={() => deleteGroup(groups, setGroups, group_id)}
-      >
-        <i className="bi bi-trash3"></i> Xóa group
-      </button>
-    </div>
+    <>
+      <div className="d-flex">
+        <button
+          className="btn btn-info text-white btn-sm mx-1"
+          type="submit"
+          onClick={() => askForBox(groups, setGroups, group_id)}
+        >
+          <i className="bi bi-plus-lg"></i> Tạo box mới
+        </button>
+        <button
+          className="btn btn-info text-white btn-sm mx-1"
+          type="submit"
+          onClick={() => renameGroup(groups, setGroups, group_id)}
+        >
+          <i className="bi bi-pencil"></i> Đổi tên
+        </button>
+        <button
+          className="btn btn-danger text-white btn-sm mx-1"
+          type="submit"
+          onClick={() => openModal()}
+        >
+          <i className="bi bi-trash3"></i> Xóa group
+        </button>
+      </div>
+
+      {/* Modal */}
+      <DeleteModal
+        isOpen={isModalOpen}
+        handleClose={() => closeModal()}
+        handleDelete={() => {deleteGroup(groups, setGroups, group_id); closeModal()}}
+        modalTitle="Xóa group"
+        modalContent="Bạn có chắc chắn muốn xóa group này không?"
+      />
+    </>
   );
 }
 

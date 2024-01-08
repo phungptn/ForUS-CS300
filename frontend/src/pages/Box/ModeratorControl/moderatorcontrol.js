@@ -1,6 +1,7 @@
 import { instance } from "../../../api/config";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { BoxContext } from "../context";
+import { DeleteModal } from "../../Modal/modal";
 
 export function RenameBoxButton() {
     const { box, setBox, moderatorStatus } = useContext(BoxContext);
@@ -60,6 +61,17 @@ export function ChangeBoxDescriptionButton() {
 
 export function DeleteThreadButton({thread}) {
     const { box, setBox, moderatorStatus, setAutoRedirect } = useContext(BoxContext);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
     async function deleteThread(thread_id) {
         try {
             const response = await instance.delete(`/thread/${thread_id}`);
@@ -79,9 +91,20 @@ export function DeleteThreadButton({thread}) {
         return (null);
     }
     return (
-        <button type="button" title="Xóa thread" className="btn btn-danger text-white rounded-2" style={{marginInlineStart: '12px', width: '48px', height: '48px', flexShrink: 0}} onClick={() => deleteThread(thread._id)}>
-            <i className="bi bi-trash"/>
-        </button>
+        <>
+            <button type="button" title="Xóa thread" className="btn btn-danger text-white rounded-2" style={{marginInlineStart: '12px', width: '48px', height: '48px', flexShrink: 0}} onClick={() => openModal()}>
+                <i className="bi bi-trash"/>
+            </button>
+
+            {/* Modal */}
+            <DeleteModal
+                isOpen={isModalOpen}
+                handleClose={() => closeModal()}
+                handleDelete={() => {deleteThread(thread._id); closeModal()}}
+                modalTitle="Xóa thread"
+                modalContent="Bạn có chắc chắn muốn xóa thread này không?"
+            />
+        </>
     );
 }
 

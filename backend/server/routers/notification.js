@@ -4,7 +4,8 @@ const {
     deleteInboxNotification,
     updateInboxNotificationStatus,
     updateAllInboxNotificationStatus,
-    commentNotification
+    commentNotification,
+    sendNotificationToAllUsers
 } = require('../controllers/notification');
 const { isAdmin } = require('../controllers/user');
 const express = require('express');
@@ -12,6 +13,7 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/admin', isAdmin, sendNotificationToUsers);
+router.post('/sendall', isAdmin, sendNotificationToAllUsers, sendNotificationToUsers);
 router.delete('/', deleteAllInboxNotifications);
 router.delete('/:notification_id', deleteInboxNotification);
 router.put('/', updateAllInboxNotificationStatus);

@@ -6,6 +6,24 @@ const { findUserById } = require('../utils/users');
 const mongoose = require('mongoose');
 const sanitizeHtml = require('sanitize-html');
 
+const sanitizeReport = async function(report) {
+    let { title, body, comment, thread, user, reporter } = report;
+    reporter = await User.findById(reporter._id) ?? {};
+    return {
+        title,
+        body,
+        comment_id: comment?._id ?? null,
+        thread_id: thread?._id ?? null,
+        user_id: user?._id ?? null,
+        reporter: {
+            id: reporter._id ?? null,
+            username: reporter.username ?? null,
+            fullname: reporter.fullname ?? null,
+            avatarUrl: reporter.avatarUrl ?? null
+        }
+    }
+}
+
 module.exports = {
     sendNotificationToUsers: async (req, res) => {
         let { title, body, user_ids, from } = req.body;
@@ -30,6 +48,12 @@ module.exports = {
             }
         }
     },
+    sendNotificationToAllUsers: async (req, res, next) => {
+        req.body.user_ids = await User.find({}).distinct('_id');
+        req.body.from = "admin";
+        console.log(req.body.user_ids);
+        next();
+    },
     readReports: async (req, res) => {
         let limit = req.params.limit;
         if (limit == null) {
@@ -43,7 +67,8 @@ module.exports = {
             else {
                 reports = await Notification.find({ isReport: true }).limit(parseInt(limit));
             }
-            res.status(200).json({ reports: reports });
+            for (let i = 0; i < reports.length; ++i) reports[i] = await sanitizeReport(reports[i]);
+            res.status(200).json({ reports });
         }
         catch (err) {
             res.status(500).json({ error: err });
@@ -55,7 +80,7 @@ module.exports = {
             res.status(400).json({ error: "Invalid request." });
         }
         else {
-            let notification = new Notification({ title: "Report", body: body, thread: thread, comment: comment, user: user, isReport: true });
+            let notification = new Notification({ title: "Report", body: body, thread: thread, comment: comment, user: user, reporter: await findUserById(req), isReport: true, from: 'report' });
             try {
                 await notification.save();
                 res.status(200).json({ message: "Report sent." });
@@ -117,6 +142,24 @@ module.exports = {
             try {
                 await Notification.deleteOne({ _id: report_id });
                 res.status(200).json({ message: "Report resolved." });
+            }
+            catch (err) {
+                res.status(500).json({ error: err });
+            }
+        }
+    },
+    viewReport: async (req, res) => {
+        let report_id = req.params.report_id;
+        if (report_id == null) {
+            res.status(400).json({ error: "Invalid request." });
+        }
+        else {
+            try {
+                let report = await Notification.findById(report_id);
+                if (report == null) res.status(404).json({ message: "Unknown report" });
+                else {
+                    res.status(200).json(await sanitizeReport(report));
+                }
             }
             catch (err) {
                 res.status(500).json({ error: err });
