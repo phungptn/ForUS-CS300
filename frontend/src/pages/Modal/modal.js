@@ -60,7 +60,7 @@ export function DeleteModal({
                                     className="btn btn-primary"
                                     onClick={handleClose}
                                 >
-                                    Đóng
+                                    Không
                                 </button>
                                 <button
                                     type="button"

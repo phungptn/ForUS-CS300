@@ -5,13 +5,11 @@ import { DeleteModal } from "../../Modal/modal";
 import { Modal } from "../../Modal/modal";
 import "./admincontrol.css";
 
-async function askForBox(groups, setGroups, group_id) {
-  const boxName = prompt("Enter box name and description (seperated by ','):");
+async function askForBox(groups, setGroups, group_id, boxName, boxDescription) {
   if (boxName) {
-    const [name, description] = boxName.split(",");
     const response = await instance.post(`/group/${group_id}/box`, {
-      name,
-      description,
+      boxName,
+      boxDescription,
     });
     if (response.status === 200) {
       const updatedGroups = groups.map((group) => {
@@ -62,15 +60,26 @@ async function createGroup(groups, setGroups, groupName) {
 }
 
 export function GroupControl({ group_id }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [boxName, setBoxName] = useState('');
+  const [boxDescription, setBoxDescription] = useState('');
 
-  const openModal = () => {
-    setIsModalOpen(true);
+  const [isCreateBoxModalOpen, setIsCreateBoxModalOpen] = useState(false);
+  const openCreateBoxModal = () => {
+    setIsCreateBoxModalOpen(true);
+  };
+  const closeCreateBoxModal = () => {
+    setBoxName(''); setBoxDescription('');
+    setIsCreateBoxModalOpen(false);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const [isDeleteGroupModalOpen, setIsDeleteGroupModalOpen] = useState(false);
+  const openDeleteGroupModal = () => {
+    setIsDeleteGroupModalOpen(true);
   };
+  const closeDeleteGroupModal = () => {
+    setIsDeleteGroupModalOpen(false);
+  };
+
   let { groups, setGroups, adminStatus } = useContext(GroupsContext);
   if (!adminStatus) return null;
   return (
@@ -79,7 +88,7 @@ export function GroupControl({ group_id }) {
         <button
           className="btn btn-info text-white btn-sm mx-1"
           type="submit"
-          onClick={() => askForBox(groups, setGroups, group_id)}
+          onClick={() => openCreateBoxModal()}
         >
           <i className="bi bi-plus-lg"></i> Tạo box mới
         </button>
@@ -93,19 +102,42 @@ export function GroupControl({ group_id }) {
         <button
           className="btn btn-danger text-white btn-sm mx-1"
           type="submit"
-          onClick={() => openModal()}
+          onClick={() => openDeleteGroupModal()}
         >
           <i className="bi bi-trash3"></i> Xóa group
         </button>
       </div>
 
+      <Modal
+        isOpen={isCreateBoxModalOpen}
+        onClose={() => closeCreateBoxModal()}
+      >
+        <Modal.Header><h5>Tạo box</h5></Modal.Header>
+        <Modal.Body>
+          <div class="form-group">
+            <label for="boxName">Tên box:</label>
+            <input type="text" class="form-control bg-white" id="boxName" placeholder="Tên box" spellCheck={false} value={boxName} onChange={(e) => setBoxName(e.target.value)}/>
+          </div>
+          <div class="form-group">
+            <label for="boxDescription">Mô tả của box:</label>
+            <textarea type="text" class="form-control bg-white" id="boxDescription" placeholder="(Ít nhất 32 ký tự)" rows="3" spellCheck={false} value={boxDescription} onChange={(e) => setBoxDescription(e.target.value)}/>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Modal.DismissButton className="btn btn-danger">Hủy</Modal.DismissButton>
+          <button className="btn btn-primary" onClick={() => {askForBox(groups, setGroups, group_id, boxName, boxDescription); closeCreateBoxModal()}}>
+            Tạo
+          </button>
+        </Modal.Footer>
+      </Modal>
+
       {/* Modal */}
       <DeleteModal
-        isOpen={isModalOpen}
-        handleClose={() => closeModal()}
+        isOpen={isDeleteGroupModalOpen}
+        handleClose={() => closeDeleteGroupModal()}
         handleDelete={() => {
           deleteGroup(groups, setGroups, group_id);
-          closeModal();
+          closeDeleteGroupModal();
         }}
         modalTitle="Xóa group"
         modalContent="Bạn có chắc chắn muốn xóa group này không?"
@@ -125,6 +157,7 @@ export function CreateNewGroup() {
   };
 
   const closeModal = () => {
+      setGroupName('');
       setIsModalOpen(false);
   };
   
@@ -144,20 +177,18 @@ export function CreateNewGroup() {
         isOpen={isModalOpen}
         onClose={() => closeModal()}
       >
-        <Modal.Header>Tạo group</Modal.Header>
+        <Modal.Header><h5>Tạo group</h5></Modal.Header>
         <Modal.Body>
-          <p> Tên group: </p>
-          <input
-            id="report-content-textarea"
-            style={{ width: "100%" }}
-            rows="1"
-            value={groupName}
-            onChange={(e) => setGroupName(e.target.value)}
-          />
+          <div class="form-group">
+            <label for="groupName">Tên group:</label>
+            <input type="text" class="form-control bg-white" id="groupName" placeholder="Tên group" spellCheck={false} value={groupName} onChange={(e) => setGroupName(e.target.value)}/>
+          </div>
         </Modal.Body>
         <Modal.Footer>
-          <Modal.DismissButton className="btn btn-danger">Đóng</Modal.DismissButton>
-          <button className="btn btn-primary" onClick={() => {createGroup(groups, setGroups, groupName); setGroupName(''); closeModal()}}>Tạo</button>
+          <Modal.DismissButton className="btn btn-danger">Hủy</Modal.DismissButton>
+          <button className="btn btn-primary" onClick={() => {createGroup(groups, setGroups, groupName);  closeModal()}}>
+            Tạo
+          </button>
         </Modal.Footer>
       </Modal>
     </>
