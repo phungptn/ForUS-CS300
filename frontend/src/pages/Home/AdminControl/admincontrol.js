@@ -31,16 +31,15 @@ async function deleteGroup(groups, setGroups, group_id) {
   }
 }
 
-async function renameGroup(groups, setGroups, group_id) {
-  const newName = prompt("Enter new name:");
-  if (newName) {
+async function renameGroup(groups, setGroups, group_id, groupName) {
+  if (groupName) {
     const response = await instance.put(`/group/${group_id}`, {
-      name: newName,
+      name: groupName,
     });
     if (response.status === 200) {
       const updatedGroups = groups.map((group) => {
         if (group._id === group_id) {
-          group.name = newName;
+          group.name = groupName;
         }
         return group;
       });
@@ -72,6 +71,16 @@ export function GroupControl({ group_id }) {
     setIsCreateBoxModalOpen(false);
   };
 
+  const [groupName, setGroupName] = useState('');
+  const [isChangeGroupNameModalOpen, setIsChangeGroupNameModalOpen] = useState(false);
+  const openChangeGroupNameModal = () => {
+    setIsChangeGroupNameModalOpen(true);
+  };
+  const closeChangeGroupNameModal = () => {
+    setGroupName('');
+    setIsChangeGroupNameModalOpen(false);
+  };
+
   const [isDeleteGroupModalOpen, setIsDeleteGroupModalOpen] = useState(false);
   const openDeleteGroupModal = () => {
     setIsDeleteGroupModalOpen(true);
@@ -95,7 +104,7 @@ export function GroupControl({ group_id }) {
         <button
           className="btn btn-info text-white btn-sm mx-1"
           type="submit"
-          onClick={() => renameGroup(groups, setGroups, group_id)}
+          onClick={() => openChangeGroupNameModal()}
         >
           <i className="bi bi-pencil"></i> Đổi tên
         </button>
@@ -127,6 +136,25 @@ export function GroupControl({ group_id }) {
           <Modal.DismissButton className="btn btn-danger">Hủy</Modal.DismissButton>
           <button className="btn btn-primary" onClick={() => {askForBox(groups, setGroups, group_id, boxName, boxDescription); closeCreateBoxModal()}}>
             Tạo
+          </button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        isOpen={isChangeGroupNameModalOpen}
+        onClose={() => closeChangeGroupNameModal()}
+      >
+        <Modal.Header><h5>Đổi tên group</h5></Modal.Header>
+        <Modal.Body>
+          <div class="form-group">
+            <label for="groupName">Tên mới:</label>
+            <input type="text" class="form-control bg-white" id="groupName" placeholder="Tên group" spellCheck={false} value={groupName} onChange={(e) => setGroupName(e.target.value)}/>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Modal.DismissButton className="btn btn-danger">Hủy</Modal.DismissButton>
+          <button className="btn btn-primary" onClick={() => {renameGroup(groups, setGroups, group_id, groupName); closeChangeGroupNameModal()}}>
+            Đổi
           </button>
         </Modal.Footer>
       </Modal>
