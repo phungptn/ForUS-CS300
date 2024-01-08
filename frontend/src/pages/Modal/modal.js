@@ -100,7 +100,7 @@ export function ReportModal({ isOpen, handleClose, handleDelete, modalTitle }) {
                         </div>
                         <div className="modal-body text-white">
                             <b>Nội dung báo cáo:</b>
-                            <textarea style= {{ width: "100%" }} rows="12"></textarea>
+                            <textarea id="report-content-textarea" style= {{ width: "100%" }} rows="12"></textarea>
                         </div>
                         <div class="modal-footer" style={{ borderTop: '1px solid #46A5FA'}}>
                             <button type="button" className="btn btn-primary" onClick={handleClose}>Đóng</button>

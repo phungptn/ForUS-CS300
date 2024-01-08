@@ -295,6 +295,7 @@ export function ReportThreadButton({ thread }) {
 
     const openModal = () => {
         setIsModalOpen(true);
+        document.querySelectorAll("#report-content-textarea").forEach(e => (e.value = ""));
     };
 
     const closeModal = () => {
@@ -304,7 +305,7 @@ export function ReportThreadButton({ thread }) {
     const report = async (thread_id) => {
         try {
             const response = await instance.post(`/report/`, {
-                body: "test",
+                body: document.querySelector(".modal.show #report-content-textarea").value,
                 thread: thread_id
             });
             if (response.status === 200) {
@@ -405,6 +406,7 @@ export function ReportCommentButton({ comment }) {
 
     const openModal = () => {
         setIsModalOpen(true);
+        document.querySelectorAll("#report-content-textarea").forEach(e => (e.value = ""));
     };
 
     const closeModal = () => {
@@ -414,7 +416,7 @@ export function ReportCommentButton({ comment }) {
     async function ReportComment(comment_id) {
         try {
             const response = await instance.post(`/report/`, {
-                body: "Test",
+                body: document.querySelector(".modal.show #report-content-textarea").value,
                 comment: comment_id
             });
             if (response.status === 200) {
