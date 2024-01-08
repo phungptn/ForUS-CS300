@@ -8,6 +8,7 @@ const THREADS_PER_PAGE = 10;
 
 module.exports = {
   createBox: async (req, res) => {
+    // res.status(400).json({ error: 'Test bugs' });
     let group_id = req.params.group_id;
     let { name, description, autoApprove } = req.body;
     if (group_id == null || name == null || description == null) {

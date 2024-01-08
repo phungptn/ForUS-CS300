@@ -3,9 +3,12 @@ import { instance } from "../../../api/config";
 import { GroupsContext } from "../context";
 import { DeleteModal } from "../../Modal/modal";
 import { Modal } from "../../Modal/modal";
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import "./admincontrol.css";
 
-async function askForBox(groups, setGroups, group_id, boxName, boxDescription) {
+async function askForBox(groups, setGroups, group_id, boxName, boxDescription, setError, closeCreateBoxModal) {
+try
+{
   if (boxName) {
     const response = await instance.post(`/group/${group_id}/box`, {
       boxName,
@@ -18,8 +21,17 @@ async function askForBox(groups, setGroups, group_id, boxName, boxDescription) {
         }
         return group;
       });
+
       setGroups(updatedGroups);
     }
+    closeCreateBoxModal();
+
+  }}
+  catch (error) {
+  
+    console.log(error.message);
+    setError({message: error.message});
+    
   }
 }
 
@@ -58,9 +70,28 @@ async function createGroup(groups, setGroups, groupName) {
   }
 }
 
+
+
 export function GroupControl({ group_id }) {
+
   const [boxName, setBoxName] = useState('');
   const [boxDescription, setBoxDescription] = useState('');
+  const [error, setError] = useState({});
+
+  const checkValidBox = (groups, setGroups, group_id, boxName, boxDescription) => {
+    if (boxName.length > 128 || boxName.length < 1) {
+      setError({message: "Tên box phải từ 1 đến 128 ký tự"});
+      console.log(error);
+      return;
+    }
+    if (boxDescription.length > 512 || boxDescription.length < 32) {
+      setError({message: "Mô tả box phải từ 32 đến 512 ký tự"});
+      return;
+    }
+    askForBox(groups, setGroups, group_id, boxName, boxDescription, setError, closeCreateBoxModal);
+    console.log(error);
+    // closeCreateBoxModal();
+  }
 
   const [isCreateBoxModalOpen, setIsCreateBoxModalOpen] = useState(false);
   const openCreateBoxModal = () => {
@@ -122,6 +153,14 @@ export function GroupControl({ group_id }) {
         onClose={() => closeCreateBoxModal()}
       >
         <Modal.Header><h5>Tạo box</h5></Modal.Header>
+        <div
+        className={`alert alert-danger mx-3 mt-3 d-flex align-items-center font-weight-bold mb-0 ${
+          error.message ? "d-block" : "d-none"
+        }`}
+      >
+        <PriorityHighIcon className="me-2"></PriorityHighIcon>
+        <div className="">{error.message}</div>
+      </div>
         <Modal.Body>
           <div class="form-group">
             <label for="boxName">Tên box:</label>
@@ -134,7 +173,7 @@ export function GroupControl({ group_id }) {
         </Modal.Body>
         <Modal.Footer>
           <Modal.DismissButton className="btn btn-danger">Hủy</Modal.DismissButton>
-          <button className="btn btn-primary" onClick={() => {askForBox(groups, setGroups, group_id, boxName, boxDescription); closeCreateBoxModal()}}>
+          <button className="btn btn-primary" onClick={() => { checkValidBox(groups, setGroups, group_id, boxName, boxDescription)}}>
             Tạo
           </button>
         </Modal.Footer>

@@ -7,33 +7,11 @@ import axios from "axios";
 import Logo from "../../components/icons/logo";
 import logo from "../../assets/icons/logo.png";
 
-
-// const initialStateDialog = {
-//   stateDialogUsername: true,
-//   stateDialogPassword: true,
-// };
-
-
-
-// const dialogReducer = (state, action) => {
-//   switch (action.type) {
-//     case "SET_STATE_DIALOG":
-//       return {
-//         ...state,
-//         [action.field]: action.value,
-//       };
-//     default:
-//       return state;
-//   }
-// };
-
 export default function Login() {
   // const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
 
   const [valid, setValid] = useState(true);
-
-
 
   const [formData, setFormData] = useState({
     username: "",
@@ -43,7 +21,6 @@ export default function Login() {
   const Login = async (event) => {
     try {
       event.preventDefault();
-
 
       if (
         formData.username.length >= 0 &&
@@ -63,12 +40,10 @@ export default function Login() {
           axios.defaults.headers.common["Authorization"] = response.data.token;
           // navigate("/");
           window.location.href = "/";
-        }
-        else{
+        } else {
           setValid(false);
         }
       }
-
 
       setLoading(false);
     } catch (error) {
@@ -84,17 +59,15 @@ export default function Login() {
   };
   return (
     <>
-    
       <h3 className="text-center mb-4">Please Sign in</h3>
       <div
-  className={`alert alert-danger my-2 d-flex align-items-center font-weight-bold ${!valid ? "d-block" : "d-none"
-    }`}
->
-  <PriorityHighIcon className="me-2"></PriorityHighIcon>
-  <div className="">
-    Invalid Username or Password
-  </div>
-</div>
+        className={`alert alert-danger my-2 d-flex align-items-center font-weight-bold ${
+          !valid ? "d-block" : "d-none"
+        }`}
+      >
+        <PriorityHighIcon className="me-2"></PriorityHighIcon>
+        <div className="">Invalid Username or Password</div>
+      </div>
       <div className="form-floating">
         <input
           type="text"
