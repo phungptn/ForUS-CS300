@@ -1,5 +1,6 @@
 import { React, useEffect, useContext, createContext } from "react";
 import "./modal.css";
+import { ThreadInformation } from "../Box/UserControl/usercontrol";
 
 export function DeleteModal({
   isOpen,
@@ -178,90 +179,6 @@ export function ReportModal({ isOpen, handleClose, handleDelete, modalTitle }) {
   );
 }
 
-export function ReportCardModal({ isOpen, handleClose, report }) {
-  const handleEscape = (e) => {
-    if (e.keyCode === 27) {
-      handleClose();
-    }
-  };
-
-  const handleDelete = async () => {};
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleEscape);
-
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, []);
-
-  return (
-    <>
-      <div
-        className="react-modal-overlay"
-        style={{ display: isOpen ? "block" : "none" }}
-        onClick={handleClose}
-      >
-        <div
-          className={`modal fade react-modal-stye ${isOpen ? "show" : ""}`}
-          tabIndex="-1"
-          role="dialog"
-          style={{ display: isOpen ? "block" : "none" }}
-        >
-          <div
-            className="modal-dialog modal-dialog-centered"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              class="modal-content"
-              style={{ background: "#1D76C6", border: "1px solid #46A5FA" }}
-            >
-              <div
-                class="modal-header"
-                style={{ borderBottom: "1px solid #46A5FA" }}
-              >
-                <h1
-                  className="modal-title fs-5 text-white"
-                  id="deleteModalLabel"
-                >
-                  Nội dung báo cáo
-                </h1>
-                <button
-                  type="button"
-                  className="btn text-white"
-                  onClick={handleClose}
-                >
-                  x
-                </button>
-              </div>
-              <div className="modal-body text-white">
-                <p>Something...</p>
-              </div>
-              <div
-                class="modal-footer"
-                style={{ borderTop: "1px solid #46A5FA" }}
-              >
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleClose}
-                >
-                  Đóng
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-success"
-                  onClick={handleDelete}
-                >
-                  Mark As Resolved
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
 export function CreateNotificationModal({
   isOpen,
   onCancel,
@@ -380,6 +297,141 @@ export function CreateNotificationModal({
     </>
   );
 }
+
+export function ReportCardModal({ isOpen, handleClose, handleDelete, report }) {
+  const handleEscape = (e) => {
+    if (e.keyCode === 27) {
+      handleClose();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleEscape);
+
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, []);
+
+  let info = ReportCardModal.generateLink(report);
+
+  return (
+    <>
+      <div
+        className="react-modal-overlay"
+        style={{ display: isOpen ? "block" : "none" }}
+        onClick={handleClose}
+      >
+        <div
+          className={`modal fade react-modal-stye ${isOpen ? "show" : ""}`}
+          tabIndex="-1"
+          role="dialog"
+          style={{ display: isOpen ? "block" : "none" }}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              class="modal-content"
+              style={{ background: "#1D76C6", border: "1px solid #46A5FA" }}
+            >
+              <div
+                class="modal-header"
+                style={{ borderBottom: "1px solid #46A5FA" }}
+              >
+                <h1
+                  className="modal-title fs-5 text-white"
+                  id="deleteModalLabel"
+                >
+                  Nội dung báo cáo
+                </h1>
+                <button
+                  type="button"
+                  className="btn text-white"
+                  onClick={handleClose}
+                >
+                  x
+                </button>
+              </div>
+              <div className="table-standard modal-body text-white">
+                <table>
+                  <tbody>
+                    <tr>
+                      <th>Report ID:</th>
+                      <td>{report._id}</td>
+                    </tr>
+                    <tr>
+                      <th>Report Content:</th>
+                      <td>
+                        <a style={{ color: "white" }} href={info.link}>
+                          {info.link.replace(/^([^]{20})[^]+$/, "$1...")}
+                        </a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Reported by: </th>
+                      <td>
+                        <ThreadInformation
+                          thread={{ author: report.reporter }}
+                          hideTime={true}
+                          target="_blank"
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Report content:</th>
+                      <td>
+                        <textarea
+                          contentEditable={false}
+                          value={report.body || ""}
+                        ></textarea>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div
+                class="modal-footer"
+                style={{ borderTop: "1px solid #46A5FA" }}
+              >
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleClose}
+                >
+                  Đóng
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  onClick={handleDelete}
+                >
+                  Mark As Resolved
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+ReportCardModal.generateLink = function (report) {
+  const start = ""; // window.location.protocol + "://" + window.location.host;
+  switch (true) {
+    case report.user_id != null:
+      return { type: "User", link: start + "/user/" + report.user_id };
+    case report.comment_id != null:
+      return {
+        type: "Comment",
+        link: start + `/thread/` + report.thread_id + "#" + report.comment_id,
+      };
+    case report.thread_id != null:
+      return { type: "Thread", link: start + `/thread/` + report.thread_id };
+    default:
+      return { type: "Unknown", link: start };
+  }
+};
 
 const ModalContext = createContext();
 
