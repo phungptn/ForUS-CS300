@@ -382,13 +382,19 @@ const getAllUsers = async (req, res, next) => {
     else {
       let result = await userModel.find({});
 
-      const getableFields = ["username", "fullname", "avatarUrl", "role"];
+      const getableFields = [
+        "_id",
+        "username",
+        "fullname",
+        "avatarUrl",
+        "role",
+      ];
 
-      // result = result.sort().map(e => {
-      //   let x = {};
-      //   for (let i of getableFields) x[i] = e[i];
-      //   return x;
-      // });
+      result = result.map((e) => {
+        let x = {};
+        for (let i of getableFields) x[i] = e[i];
+        return x;
+      });
 
       res.status(200).send({ message: "Fetched successfully", users: result });
     }

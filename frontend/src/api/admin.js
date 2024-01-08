@@ -10,7 +10,7 @@ const signup = async (data) => {
 
 const sendNotificationToUsers = async (data) => {
   try {
-    const response = await instance.post("management/sendsome", data);
+    const response = await instance.post("/notification/sendsome", data);
     return response;
   } catch (error) {
     console.error(error);
@@ -19,7 +19,7 @@ const sendNotificationToUsers = async (data) => {
 
 const sendNotificationToAllUsers = async (data) => {
   try {
-    const response = await instance.post("management/sendall", data);
+    const response = await instance.post("/notification/sendall", data);
     return response;
   } catch (error) {
     console.error(error);
