@@ -1,6 +1,7 @@
 import { React, useEffect, useContext, createContext } from "react";
 import "./modal.css";
 import { ThreadInformation } from "../Box/UserControl/usercontrol";
+import { getTimePassed } from "../../utils/getTimePassed";
 
 export function DeleteModal({
   isOpen,
@@ -360,9 +361,13 @@ export function ReportCardModal({ isOpen, handleClose, handleDelete, report }) {
                       <td>{report._id}</td>
                     </tr>
                     <tr>
+                      <th>Time created:</th>
+                      <td>{getTimePassed(Date.parse(report.createdAt))}</td>
+                    </tr>
+                    <tr>
                       <th>Report Content:</th>
                       <td>
-                        <a style={{ color: "white" }} href={info.link}>
+                        <a style={{ color: "white" }} target="_blank">
                           {info.link.replace(/^([^]{20})[^]+$/, "$1...")}
                         </a>
                       </td>
@@ -383,6 +388,8 @@ export function ReportCardModal({ isOpen, handleClose, handleDelete, report }) {
                         <textarea
                           contentEditable={false}
                           value={report.body || ""}
+                          rows="5"
+                          style={{ width: "100%" }}
                         ></textarea>
                       </td>
                     </tr>

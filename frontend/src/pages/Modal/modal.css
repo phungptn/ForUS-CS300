@@ -81,10 +81,11 @@
 
 .table-standard th {
   text-align: left;
+  width: 40%;
 }
 
 .table-standard td {
-  text-align: center;
+  text-align: left;
 }
 
 .table-standard * {
