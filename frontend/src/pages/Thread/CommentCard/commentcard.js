@@ -80,10 +80,15 @@ export default function ({ comment, onReplyClick }) {
                                             title={comment.reply._id}
                                             className='comment-link'
                                             style={{ color: '#FF944D', fontWeight: 'bold', borderBottom: '1px solid #46A5FA', padding: '8px 20px' }}
-                                            onClick={() => {
-                                                getCommentLocation(comment.reply._id).then((location) => {
+                                            onClick={async () => {
+                                                let commentCard = Array.from(document.getElementsByClassName('comment-card')).find((card) => card.id == comment.reply._id);
+                                                if (commentCard) {
+                                                    commentCard.scrollIntoView();
+                                                }
+                                                else {
+                                                    let location = await getCommentLocation(comment.reply._id);
                                                     window.location.href = `/thread/${location.thread._id}/${location.page}#${location._id}`;
-                                                });
+                                                }
                                             }} 
                                         >
                                             {comment.reply && comment.reply.author && comment.reply.author.fullname}
