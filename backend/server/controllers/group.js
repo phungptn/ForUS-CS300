@@ -1,5 +1,6 @@
 const Group = require('../models/group');
 const mongoose = require('mongoose');
+const ERROR = require('./error');
 
 module.exports = {
     readGroup: async (req, res) => {
@@ -48,13 +49,13 @@ module.exports = {
             res.status(200).json(groups);
         }
         catch (err) {
-            res.status(500).json({ error: err });
+            res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
         }
     },
     createGroup: async (req, res) => {
         let { name } = req.body;
         if (name == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         }
         else {
             let group = new Group({ name: name });
@@ -63,7 +64,7 @@ module.exports = {
                 res.status(201).json({ message: "Group created.", group: group });
             }
             catch (err) {
-                res.status(500).json({ error: err });
+                res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
             }
         }
     },
@@ -71,7 +72,7 @@ module.exports = {
         let group_id = req.params.group_id;
         let { name } = req.body;
         if (name == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         }
         else {
             try {
@@ -79,7 +80,7 @@ module.exports = {
                 res.status(200).json({ message: "Group updated." });
             }
             catch (err) {
-                res.status(500).json({ error: err });
+                res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
             }
         }
     },
@@ -87,7 +88,7 @@ module.exports = {
         let group_id = req.params.group_id;
         
         if (group_id == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         }
         else{
             const session = await mongoose.startSession();
@@ -98,7 +99,7 @@ module.exports = {
                 res.status(200).json({ message: "Group deleted." });
             }
             catch (err) {
-                res.status(500).json({ error: err });
+                res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
             }
             finally {
                 session.endSession();

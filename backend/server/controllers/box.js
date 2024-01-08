@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Box = require("../models/box");
 const Group = require("../models/group");
 const { findUserById } = require("../utils/users");
+const ERROR = require("../controllers/error");
 
 const THREADS_PER_PAGE = 10;
 
@@ -10,7 +11,7 @@ module.exports = {
     let group_id = req.params.group_id;
     let { name, description, autoApprove } = req.body;
     if (group_id == null || name == null || description == null) {
-      res.status(400).json({ error: "Invalid request." });
+      res.status(400).json({ error: ERROR.INVALID_REQUEST });
     } else {
       // let box = new Box({ name: name, description: description, autoApprove: !!(autoApprove ?? true) });
       const session = await mongoose.startSession();
@@ -27,7 +28,7 @@ module.exports = {
         jsonBox.threadCount = 0;
         res.status(200).json({ message: "Box created.", box: jsonBox });
       } catch (err) {
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
       } finally {
         session.endSession();
       }
@@ -36,7 +37,7 @@ module.exports = {
   updateBoxAutoApprove: async function (req, res) {
     let box_id = req.params.box_id;
     if (box_id == null) {
-      res.status(400).json({ error: "Invalid request." });
+      res.status(400).json({ error: ERROR.INVALID_REQUEST });
     } else {
       try {
         let box = await Box.findById(box_id);
@@ -57,7 +58,7 @@ module.exports = {
     let order = req.query.order;
     let direction = req.query.direction;
     if (box_id == null) {
-      res.status(400).json({ error: "Invalid request." });
+      res.status(400).json({ error: ERROR.INVALID_REQUEST });
     } else {
       if (page == null) {
         page = 1;
@@ -75,14 +76,14 @@ module.exports = {
         order !== "commentCount" &&
         order !== "title"
       ) {
-        res.status(400).json({ error: "Invalid request." });
+        res.status(400).json({ error: ERROR.INVALID_REQUEST });
         return;
       }
       if (!Boolean(direction)) {
         direction = "desc";
       }
       if (direction !== "asc" && direction !== "desc") {
-        res.status(400).json({ error: "Invalid request." });
+        res.status(400).json({ error: ERROR.INVALID_REQUEST });
         return;
       }
       if (direction === "asc") {
@@ -201,12 +202,12 @@ module.exports = {
         if (box[0].pageCount === 0) {
           res.status(200).json({ box: box[0] });
         } else if (box[0].pageCount < page) {
-          res.status(404).json({ error: "Page not found." });
+          res.status(404).json({ error: ERROR.PAGE_NOT_FOUND });
         } else {
           res.status(200).json({ box: box[0] });
         }
       } catch (err) {
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
       }
     }
   },
@@ -214,13 +215,13 @@ module.exports = {
     let box_id = req.params.box_id;
     let { name } = req.body;
     if (box_id == null || name == null) {
-      res.status(400).json({ error: "Invalid request." });
+      res.status(400).json({ error: ERROR.INVALID_REQUEST });
     } else {
       try {
         await Box.updateOne({ _id: box_id }, { name: name });
         res.status(200).json({ message: "Box renamed." });
       } catch (err) {
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
       }
     }
   },
@@ -228,20 +229,20 @@ module.exports = {
     let box_id = req.params.box_id;
     let { description } = req.body;
     if (box_id == null || description == null) {
-      res.status(400).json({ error: "Invalid request." });
+      res.status(400).json({ error: ERROR.INVALID_REQUEST });
     } else {
       try {
         await Box.updateOne({ _id: box_id }, { description: description });
         res.status(200).json({ message: "Box description updated." });
       } catch (err) {
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
       }
     }
   },
   deleteBox: async (req, res) => {
     let box_id = req.params.box_id;
     if (box_id == null) {
-      res.status(400).json({ error: "Invalid request." });
+      res.status(400).json({ error: ERROR.INVALID_REQUEST });
     } else {
       const session = await mongoose.startSession();
       try {
@@ -250,7 +251,7 @@ module.exports = {
         });
         res.status(200).json({ message: "Box deleted." });
       } catch (err) {
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
       } finally {
         session.endSession();
       }
@@ -269,12 +270,12 @@ module.exports = {
     async (req, res, next) => {
       let box_id = req.params.box_id;
       if (box_id == null) {
-        res.status(400).json({ error: "Invalid request." });
+        res.status(400).json({ error: ERROR.INVALID_REQUEST });
       } else {
         try {
           const user = await findUserById(req);
           if (user == null) {
-            res.status(403).json({ error: "Invalid session." });
+            res.status(403).json({ error: ERROR.INVALID_SESSION });
           } else if (user.role === "admin") {
             next();
           } else {
@@ -291,7 +292,7 @@ module.exports = {
             }
           }
         } catch (err) {
-          res.status(500).json({ error: err });
+          res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
         }
       }
     },
@@ -309,12 +310,12 @@ module.exports = {
     async (req, res) => {
       let box_id = req.params.box_id;
       if (box_id == null) {
-        res.status(400).json({ error: "Invalid request." });
+        res.status(400).json({ error: ERROR.INVALID_REQUEST });
       } else {
         try {
           const user = await findUserById(req);
           if (user == null) {
-            res.status(403).json({ error: "Invalid session." });
+            res.status(403).json({ error: ERROR.INVALID_SESSION });
           } else if (user.role === "admin") {
             res.status(200).json({ moderatorStatus: "admin" });
           } else {
@@ -329,7 +330,7 @@ module.exports = {
             }
           }
         } catch (err) {
-          res.status(500).json({ error: err });
+          res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
         }
       }
     },
@@ -337,7 +338,7 @@ module.exports = {
     let box_id = req.params.box_id;
     let { user_id } = req.body;
     if (box_id == null || user_id == null) {
-      res.status(400).json({ error: "Invalid request." });
+      res.status(400).json({ error: ERROR.INVALID_REQUEST });
     } else {
       try {
         await Box.updateOne(
@@ -346,7 +347,7 @@ module.exports = {
         );
         res.status(200).json({ message: "Moderator added." });
       } catch (err) {
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
       }
     }
   },
@@ -354,7 +355,7 @@ module.exports = {
     let box_id = req.params.box_id;
     let { user_id } = req.body;
     if (box_id == null || user_id == null) {
-      res.status(400).json({ error: "Invalid request." });
+      res.status(400).json({ error: ERROR.INVALID_REQUEST });
     } else {
       try {
         await Box.updateOne(
@@ -363,7 +364,7 @@ module.exports = {
         );
         res.status(200).json({ message: "Moderator removed." });
       } catch (err) {
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
       }
     }
   },
@@ -380,12 +381,12 @@ module.exports = {
   async (req, res, next) => {
     let box_id = req.params.box_id;
     if (box_id == null) {
-      res.status(400).json({ error: "Invalid request." });
+      res.status(400).json({ error: ERROR.INVALID_REQUEST });
     } else {
       try {
         const user = await findUserById(req);
         if (user == null) {
-          res.status(403).json({ error: "Invalid session." });
+          res.status(403).json({ error: ERROR.INVALID_SESSION });
         }
         else {
           const box = await Box.findOne({
@@ -396,11 +397,11 @@ module.exports = {
             next();
           } 
           else {
-            res.status(403).json({ banned: true, error: "You are banned from this box." });
+            res.status(403).json({ banned: true, error: ERROR.USER_BANNED });
           }
         }
       } catch (err) {
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
       }
     }
   }

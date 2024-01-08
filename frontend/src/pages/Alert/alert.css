@@ -1,0 +1,6 @@
+.btn-close {
+    --bs-btn-close-bg: none;
+}
+.bi-x-lg::before {
+    vertical-align: unset;
+}

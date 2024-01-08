@@ -1,12 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
 import ReactQuill, { Quill } from "react-quill";
-import { useParams } from "react-router-dom";
 import "react-quill/dist/quill.snow.css";
 import "./editor.scss";
 import { instance } from "../../api/config";
 import EditorContext from "./context";
 import getCommentLocation from "../../utils/getCommentLocation";
-
+import errorMessage from "../../utils/errorMessage";
+import { Alert } from "../Alert/alert";
 const TITLE_MAX_LENGTH = 128;
 
 function extractText(htmlString) {
@@ -15,7 +15,7 @@ function extractText(htmlString) {
   return tempDiv.textContent || tempDiv.innerText || "";
 }
 
-async function createThread(box_id, title, body) {
+async function createThread(box_id, title, body, setAlerts) {
   try {
     const response = await instance.post(`/box/${box_id}/thread`, {
       title: title,
@@ -25,16 +25,12 @@ async function createThread(box_id, title, body) {
     window.location.href = `/thread/${thread_id}`;
   }
   catch (error) {
-    if (error.response.status === 400) {
-      if (error.response.data.code === 1) {
-        alert('Chỉ được phép thêm tối đa 1 hình ảnh');
-      }
-    }
+    setAlerts((alerts) => [...alerts, { type: 'danger', message: errorMessage(error.response.data.error) }]);
     console.log(error);
   }
 }
 
-async function updateThread(thread, setThread, body) {
+async function updateThread(thread, setThread, body, setAlerts) {
   if (thread.body != body) {
     try {
       const response = await instance.put(`/thread/${thread._id}`, {
@@ -50,17 +46,13 @@ async function updateThread(thread, setThread, body) {
       }
     }
     catch (error) {
-      if (error.response.status === 400) {
-        if (error.response.data.code === 1) {
-          alert('Chỉ được phép thêm tối đa 1 hình ảnh');
-        }
-      }
+      setAlerts((alerts) => [...alerts, { type: 'danger', message: errorMessage(error.response.data.error) }]);
       console.log(error);
     }
   }
 }
 
-async function createComment(thread_id, box_id, body, replyTo, page) {
+async function createComment(thread_id, box_id, body, replyTo, setAlerts) {
   try {
     const bodyText = extractText(body);
     console.log(bodyText);
@@ -80,11 +72,12 @@ async function createComment(thread_id, box_id, body, replyTo, page) {
     window.location.href = `/thread/${thread_id}/${location.page}#${location._id}`;
   }
   catch (error) {
+    setAlerts((alerts) => [...alerts, { type: 'danger', message: errorMessage(error.response.data.error) }]);
     console.log(error);
   }
 }
 
-async function updateComment(thread, setThread, comment, body) {
+async function updateComment(thread, setThread, comment, body, setAlerts) {
   const recursivelyUpdateReplies = (comments) => {
     return comments.map((c) => {
       if (c._id === comment._id) {
@@ -111,6 +104,7 @@ async function updateComment(thread, setThread, comment, body) {
       }
     }
     catch (error) {
+      setAlerts((alerts) => [...alerts, { type: 'danger', message: errorMessage(error.response.data.error) }]);
       console.log(error);
     }
   }
@@ -147,17 +141,10 @@ function TitleInput({ title, setTitle }) {
 }
 
 export default function Editor() {
-  let page = useParams().page;
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [alerts, setAlerts] = useState([]);
   const { type, state, setState, replyTo, oldBody, update, comment } = useContext(EditorContext);
-
-  if (page == null) {
-    page = 1;
-  }
-  else {
-    page = parseInt(page);
-  }
 
   const handleChange = (html) => {
     setBody(html);
@@ -197,6 +184,7 @@ export default function Editor() {
 
   return (
     <>
+      <Alert alerts={alerts} setAlerts={setAlerts} />
       {type === 'createThread' && <TitleInput title={title} setTitle={setTitle} />}
       <div>
         <ReactQuill
@@ -213,16 +201,17 @@ export default function Editor() {
             style={{ fontWeight: "bold" }}
             onClick={() => {
               if (type === "createThread") {
-                createThread(state._id, title, body);
+                createThread(state._id, title, body, setAlerts);
               }
               else if (type === "updateThread") {
-                updateThread(state, setState, body); update();
+                updateThread(state, setState, body, setAlerts); update();
               }
               else if (type === "createComment") {
-                createComment(state._id, state.box, body, replyTo, page);
+                createComment(state._id, state.box, body, replyTo, setAlerts);
               }
               else if (type === "updateComment") {
-                updateComment(state, setState, comment, body); update();
+                updateComment(state, setState, comment, body, setAlerts); 
+                update();
               }
             }}
           >

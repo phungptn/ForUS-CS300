@@ -24,8 +24,7 @@ export default function ( { thread, search } ) {
             }
         }
         getThumbnail();
-    }, []);
-    console.log(thread);
+    }, [thread]);
     return (
         <div className="card rounded-4 card-style my-4">
             <div className="card-body p-4">

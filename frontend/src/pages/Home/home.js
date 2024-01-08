@@ -7,7 +7,6 @@ import News from "./News/news";
 import { checkAdmin } from "../../utils/checkAdmin";
 import "./home.css";
 import { CreateNewGroup, Management } from "./AdminControl/admincontrol";
-import { SearchBar } from "../Search/SearchBar/searchbar";
 
 export default function Home() {
   const [groups, setGroups] = useState([]);

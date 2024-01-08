@@ -5,6 +5,7 @@ const Thread = require('../models/thread');
 const Box = require('../models/box');
 const User = require('../models/user');
 const sanitizeHtml = require('sanitize-html');
+const ERROR = require('./error');
 const PAGE_SIZE = 10;
 
 module.exports = {
@@ -14,13 +15,13 @@ module.exports = {
         console.log('Submitting comment:', body);
         let thread_id = req.params.thread_id;
         if (body == null || thread_id == null ) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         } else {
             const session = await mongoose.startSession();
             try {
                 const user = await userUtil.findUserById(req);
                 if (user == null) {
-                    res.status(403).json({ error: "Invalid session." });
+                    res.status(403).json({ error: ERROR.INVALID_SESSION });
                 } else {
                     const comment = new Comment({
                         body: body,
@@ -43,7 +44,7 @@ module.exports = {
                     res.status(201).json({ message: "Comment created." , comment_id: comment._id});
                 }
             } catch (err) {
-                res.status(500).json({ error: err });
+                res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
             } finally {
                 session.endSession();
             }
@@ -52,7 +53,7 @@ module.exports = {
     readComment: async (req, res) => {
         let comment_id = req.params.comment_id;
         if (comment_id == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         } else {
             try {
                 const comment = await Comment.aggregate([
@@ -98,7 +99,7 @@ module.exports = {
                 res.status(200).json({ comment: comment[0] });
             }
             catch (err) {
-                res.status(500).json({ error: err });
+                res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
             }
         }
     },
@@ -106,16 +107,16 @@ module.exports = {
         let { body } = req.body;
         let comment_id = req.params.comment_id;
         if (body == null || comment_id == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         } else {
             try {
                 const user = await userUtil.findUserById(req);
                 if (user == null) {
-                    res.status(403).json({ error: "Invalid session." });
+                    res.status(403).json({ error: ERROR.INVALID_SESSION });
                 } else {
                     const comment = await Comment.findOne({ _id: comment_id });
                     if (comment == null) {
-                        res.status(404).json({ error: "Comment not found." });
+                        res.status(404).json({ error: ERROR.NOT_FOUND });
                     } else {
                         const isBanned = await Box.exists({ _id: comment.thread.box, banned: user._id });
                         if (comment.author.equals(user._id) && !isBanned) {
@@ -123,29 +124,29 @@ module.exports = {
                             await comment.save();
                             res.status(200).json({ message: "Comment updated." });
                         } else {
-                            res.status(405).json({ error: "Unauthorized." });
+                            res.status(403).json({ error: ERROR.UNAUTHORIZED });
                         }
                     }
                 }
             } catch (err) {
-                res.status(500).json({ error: err });
+                res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
             }
         }
     },
     deleteComment: async (req, res) => {
         const comment_id = req.params.comment_id;
         if (comment_id == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         } else {
             const session = await mongoose.startSession();
             try {
                 const user = await userUtil.findUserById(req);
                 if (user == null) {
-                    res.status(403).json({ error: "Invalid session." });
+                    res.status(403).json({ error: ERROR.INVALID_SESSION });
                 } else {
                     const comment = await Comment.findOne({ _id: comment_id });
                     if (comment == null) {
-                        res.status(404).json({ error: "Comment not found." });
+                        res.status(404).json({ error: ERROR.NOT_FOUND });
                     } else {
                         const isBanned = await Box.exists({ _id: comment.thread.box, banned: user._id });
                         console.log('isBanned:', isBanned);
@@ -159,12 +160,12 @@ module.exports = {
                             res.status(200).json({ message: "Comment deleted." });
                             
                         } else {
-                            res.status(403).json({ error: "Unauthorized." });
+                            res.status(403).json({ error: ERROR.UNAUTHORIZED });
                         }
                     }
                 }
             } catch (err) {
-                res.status(500).json({ error: err });
+                res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
             } finally {
                 session.endSession();
             }
@@ -173,7 +174,7 @@ module.exports = {
     upvoteComment: async (req, res) => {
         let comment_id = req.params.comment_id;
         if (comment_id == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         } else {
             const session = await mongoose.startSession();
             try {
@@ -190,7 +191,7 @@ module.exports = {
                 });
                 res.status(200).json({ message: "Comment upvoted.",  voteStatus: voteStatus });
             } catch (err) {
-                res.status(500).json({ error: err });
+                res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
             } finally {
                 session.endSession();
             }
@@ -199,7 +200,7 @@ module.exports = {
     downvoteComment: async (req, res) => {
         let comment_id = req.params.comment_id;
         if (comment_id == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         } else {
             const session = await mongoose.startSession();
             try {
@@ -216,7 +217,7 @@ module.exports = {
                 });
                 res.status(200).json({ message: "Comment downvoted.",  voteStatus: voteStatus });
             } catch (err) {
-                res.status(500).json({ error: err });
+                res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
             } finally {
                 session.endSession();
             }

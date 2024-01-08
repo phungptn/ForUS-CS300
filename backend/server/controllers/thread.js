@@ -9,6 +9,7 @@ const { ref, uploadString, deleteObject } = require('firebase/storage');
 const { v4 } = require('uuid');
 const { decode } = require('html-entities');
 const sanitizeHtml = require('sanitize-html');
+const ERROR = require('./error');
 
 const COMMENTS_PER_PAGE = 10;
 const THUMBNAIL_SIZE = 50;
@@ -64,76 +65,76 @@ module.exports = {
         let imgCount = body.split('&lt;img').length - 1;
         let box_id = req.params.box_id;
         if (box_id == null || !Boolean(title) || !Boolean(body)) {
-            res.status(400).json({ error: "Invalid request.", code: 0 });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         }
         else if (imgCount > 1) {
-            res.status(400).json({ error: "Invalid request.", code: 1 });
+            res.status(400).json({ error: ERROR.IMAGE_LIMIT_EXCEEDED });
         }
         else {
             const session = await mongoose.startSession();
             try {
                 const user = await userUtil.findUserById(req);
                 if (user == null) {
-                    res.status(403).json({ error: "Invalid session." });
+                    res.status(403).json({ error: ERROR.INVALID_SESSION });
                 }
                 else {
-                    const isBanned = await Box.exists({ _id: box_id, banned: user._id });
-                    if (isBanned) {
-                        res.status(403).json({ error: "You are banned." });
-                    }
-                    else {
-                        console.log("Creating thread...");
-                        let thread;
-                        if (imgCount === 1) {
-                            const image_data = body.match(/(?<=src=")([^"]+)(?=")/g)[0];
-                            if (!Boolean(image_data)) {
-                                res.status(400).json({ error: "Invalid request.", code: 2 });
-                                return;
-                            }
-                            else if (image_data.startsWith('http')) {
-                                thread = new Thread({
-                                    title: title,
-                                    body: body,
-                                    imageUrl: decode(image_data),
-                                    author: user._id,
-                                    box: box_id
-                                });
-                            }
-                            else if (image_data.includes('data:image')) {
-                                const image_id = v4();
-                                thread = new Thread({
-                                    title: title,
-                                    body: body,
-                                    imageUrl: image_id,
-                                    author: user._id,
-                                    box: box_id
-                                });
-                                await uploadImage(thread._id.toString(), image_data, image_id);
-                                thread.body = thread.body.replace(/(?<=src=")([^"]+)(?=")/g, image_id);
-                            }
+                    console.log("Creating thread...");
+                    let thread;
+                    if (imgCount === 1) {
+                        const image_data = body.match(/(?<=src=")([^"]+)(?=")/g)[0];
+                        if (!Boolean(image_data)) {
+                            res.status(400).json({ error: ERROR.IMAGE_VALIDATION_FAILED });
+                            return;
                         }
-                        else {
+                        else if (image_data.startsWith('http')) {
                             thread = new Thread({
                                 title: title,
                                 body: body,
+                                imageUrl: decode(image_data),
                                 author: user._id,
                                 box: box_id
                             });
                         }
-                        console.log("Saving thread...");
-                        await session.withTransaction(async () => {
-                            await thread.save();
-                            await Box.updateOne(
-                                { _id: box_id },
-                                { $push: { threads: thread._id } }
-                            );
-                            await User.updateOne(
-                                { _id: user._id },
-                                { $push: { threads: thread._id } }
-                            );
-                        });
-                        res.status(201).json({ message: "Thread created.", thread_id: thread._id });
+                        else if (image_data.includes('data:image')) {
+                            const image_id = v4();
+                            thread = new Thread({
+                                title: title,
+                                body: body,
+                                imageUrl: image_id,
+                                author: user._id,
+                                box: box_id
+                            });
+                            try {
+                                await uploadImage(thread._id, image_data, image_id);
+                            }
+                            catch (err) {
+                                res.status(500).json({ error: ERROR.IMAGE_UPLOAD_FAILED });
+                                return;
+                            }
+                            thread.body = thread.body.replace(/(?<=src=")([^"]+)(?=")/g, image_id);
+                        }
                     }
+                    else {
+                        thread = new Thread({
+                            title: title,
+                            body: body,
+                            author: user._id,
+                            box: box_id
+                        });
+                    }
+                    console.log("Saving thread...");
+                    await session.withTransaction(async () => {
+                        await thread.save();
+                        await Box.updateOne(
+                            { _id: box_id },
+                            { $push: { threads: thread._id } }
+                        );
+                        await User.updateOne(
+                            { _id: user._id },
+                            { $push: { threads: thread._id } }
+                        );
+                    });
+                    res.status(201).json({ message: "Thread created.", thread_id: thread._id });
                 }
             }
             catch (err) {
@@ -425,12 +426,12 @@ module.exports = {
             try {
                 const user = await userUtil.findUserById(req);
                 if (user == null) {
-                    res.status(403).json({ error: "Invalid session." });
+                    res.status(403).json({ error: ERROR.INVALID_SESSION });
                 }
                 else {
                     const thread = await Thread.findOneAndUpdate({ _id: thread_id }, { body: body });
                     if (thread == null) {
-                        res.status(404).json({ error: "Thread not found." });
+                        res.status(404).json({ error: ERROR.NOT_FOUND });
                     }
                     else {
                         res.status(200).json({ message: "Thread updated." });
@@ -502,7 +503,7 @@ module.exports = {
     downvoteThread: async (req, res) => {
         let thread_id = req.params.thread_id;
         if (thread_id == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         }
         else {
             const session = await mongoose.startSession();
@@ -543,13 +544,13 @@ module.exports = {
     async (req, res, next) => {    
         let thread_id = req.params.thread_id;
         if (thread_id == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         }
         else {
             try {
                 const user = await userUtil.findUserById(req);
                 if (user == null) {
-                    res.status(403).json({ error: "Invalid session." });
+                    res.status(403).json({ error: ERROR.INVALID_SESSION });
                 }
                 else if (user.role === 'admin') {
                     next();
@@ -558,7 +559,7 @@ module.exports = {
                     const thread = await Thread.findOne({ _id: thread_id }).populate('box', 'moderators bannedUsers');
                     console.log(thread);
                     if (thread == null) {
-                        res.status(404).json({ error: "Thread not found." });
+                        res.status(404).json({ error: ERROR.NOT_FOUND });
                     }
                     else {
                         if (thread.box.moderators.includes(user._id) || (thread.author.equals(user._id) && !thread.box.bannedUsers.includes(user._id))) {
@@ -571,7 +572,7 @@ module.exports = {
                 }
             }
             catch (err) {
-                res.status(500).json({ error: err });
+                res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
             }
         }
     },
@@ -587,13 +588,13 @@ module.exports = {
     async (req, res) => {
         let thread_id = req.params.thread_id;
         if (thread_id == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         }
         else {
             try {
                 const user = await userUtil.findUserById(req);
                 if (user == null) {
-                    res.status(403).json({ error: "Invalid session." });
+                    res.status(403).json({ error: ERROR.INVALID_SESSION });
                 }
                 else if (user.role === 'admin') {
                     res.status(200).json({ deleterStatus: 'admin' });
@@ -601,7 +602,7 @@ module.exports = {
                 else {
                     const thread = await Thread.findOne({ _id: thread_id }).populate('box', 'moderators');
                     if (thread == null) {
-                        res.status(404).json({ error: "Thread not found." });
+                        res.status(404).json({ error: ERROR.NOT_FOUND });
                     }
                     else {
                         if (thread.box.moderators.includes(user._id)) {
@@ -634,18 +635,18 @@ module.exports = {
     async (req, res, next) => {
         let thread_id = req.params.thread_id;
         if (thread_id == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         }
         else {
             try {
                 const user = await userUtil.findUserById(req);
                 if (user == null) {
-                    res.status(403).json({ error: "Invalid session." });
+                    res.status(403).json({ error: ERROR.INVALID_SESSION });
                 }
                 else {
                     const thread = await Thread.findOne({ _id: thread_id }).populate('box', 'bannedUsers');
                     if (thread == null) {
-                        res.status(404).json({ error: "Thread not found." });
+                        res.status(404).json({ error: ERROR.NOT_FOUND });
                     }
                     else {
                         if ((thread.author.equals(user._id) && !thread.box.bannedUsers.includes(user._id))) {
@@ -674,18 +675,18 @@ module.exports = {
     async (req, res) => {
         let thread_id = req.params.thread_id;
         if (thread_id == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         }
         else {
             try {
                 const user = await userUtil.findUserById(req);
                 if (user == null) {
-                    res.status(403).json({ error: "Invalid session." });
+                    res.status(403).json({ error: ERROR.INVALID_SESSION });
                 }
                 else {
                     const thread = await Thread.findOne({ _id: thread_id });
                     if (thread == null) {
-                        res.status(404).json({ error: "Thread not found." });
+                        res.status(404).json({ error: ERROR.NOT_FOUND });
                     }
                     else {
                         if (thread.author.equals(user._id)) {
@@ -715,18 +716,18 @@ module.exports = {
     async (req, res, next) => {
         let thread_id = req.params.thread_id;
         if (thread_id == null) {
-            res.status(400).json({ error: "Invalid request." });
+            res.status(400).json({ error: ERROR.INVALID_REQUEST });
         }
         else {
             try {
                 const user = await userUtil.findUserById(req);
                 if (user == null) {
-                    res.status(403).json({ error: "Invalid session." });
+                    res.status(403).json({ error: ERROR.INVALID_SESSION });
                 }
                 else {
                     const thread = await Thread.findOne({ _id: thread_id }).populate('box', 'banned');
                     if (thread == null) {
-                        res.status(404).json({ error: "Thread not found." });
+                        res.status(404).json({ error: ERROR.NOT_FOUND });
                     }
                     else {
                         if (thread.box.banned.includes(user._id)) {
