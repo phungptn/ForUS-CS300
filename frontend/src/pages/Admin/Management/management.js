@@ -2,13 +2,176 @@
 import React, { useState, useEffect } from "react";
 import { storage } from "../../../Firebase/config";
 import { downloadImage } from "../../../utils/loadImage";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { v4 } from "uuid";
 import "./management.css";
-import { updateProfile, updatePassword, infoUser } from "../../../api/user";
 import { ReportModal } from "../../Modal/modal";
 import { getAllUsers } from "../../../api/user";
 import { getTimePassed } from "../../../utils/getTimePassed";
+import { signup } from "../../../api/admin";
+import { Input, Ripple, initMDB } from "mdb-ui-kit";
+import "../SignUp/signup.css";
+initMDB({ Input, Ripple });
+
+const SignUp = () => {
+  const [fullName, setFullName] = useState("");
+  const [studentID, setStudentID] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [role, setRole] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+
+  const registerFunction = async () => {
+    try {
+      // convert dateofbirth to password
+
+      const data = {
+        fullname: fullName,
+        username: studentID,
+        email: email,
+        address: address,
+        role: role,
+        dateOfBirth: dateOfBirth,
+      };
+      console.log(data);
+      const response = await signup(data);
+      if (response.status === 200) {
+        alert("Registered successfully");
+        // window.location.href = "/login";
+      } else {
+        alert("Error");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  // if (!showSignUp) {
+  //   return null;
+  // }
+  return (
+    <div>
+      <meta charSet="utf-8" />
+      <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico" />
+      <title>Checkout example for Bootstrap</title>
+
+      <div className="py-5 container">
+        <div className="order-md-1 text-start">
+          <h1 className="mb-3 ">Register Form</h1>
+          <form className="needs-validation" noValidate>
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="firstName">Full name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="firstName"
+                  required
+                  onChange={(e) => setFullName(e.target.value)}
+                />
+                <div className="invalid-feedback">
+                  Valid first name is required.
+                </div>
+              </div>
+              <div className="col-md-6 mb-3">
+                <label htmlFor="lastName">Student ID</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="lastName"
+                  required
+                  onChange={(e) => setStudentID(e.target.value)}
+                />
+                <div className="invalid-feedback">
+                  Valid Student ID is required.
+                </div>
+              </div>
+            </div>
+            <div className="mb-3">
+              <label htmlFor="email">Email</label>
+              <div className="input-group">
+                <div className="input-group-prepend">
+                  <span className="input-group-text">@</span>
+                </div>
+                <input
+                  type="email"
+                  className="form-control"
+                  id="email"
+                  placeholder="you@example.com"
+                  required
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                {/* <div className="invalid-feedback">
+                Please enter a valid email address for shipping updates.
+              </div> */}
+              </div>
+            </div>
+            <div className="mb-3">
+              <label htmlFor="address">Address</label>
+              <input
+                type="text"
+                className="form-control"
+                id="address"
+                placeholder="1234 Main St"
+                required
+                onChange={(e) => setAddress(e.target.value)}
+              />
+              <div className="invalid-feedback">Please enter your address.</div>
+            </div>
+
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label htmlFor="role">Role</label>
+                <select
+                  className="custom-select d-block w-100"
+                  id="role"
+                  required
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  <option value>Choose...</option>
+                  <option>Admin</option>
+                  <option>User</option>
+                </select>
+                <div className="invalid-feedback">
+                  Please select a valid role.
+                </div>
+              </div>
+
+              <div className="col-md-6 mb-3">
+                <label htmlFor="date">Date of Birth</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  id="date"
+                  placeholder="01/01/2000"
+                  required
+                  onChange={(e) => setDateOfBirth(e.target.value)}
+                />
+              </div>
+            </div>
+            <hr className="mb-4" />
+
+            <button
+              className="btn btn-primary btn-lg btn-block"
+              type="submit"
+              onClick={(event) => {
+                event.preventDefault();
+                registerFunction();
+              }}
+            >
+              Register
+            </button>
+          </form>
+        </div>
+
+        <footer className="my-5 pt-5 text-muted text-center text-small">
+          <p className="mb-1">© 2023-2024 ForUS</p>
+        </footer>
+      </div>
+      {/* Bootstrap core JavaScript
+      ================================================== */}
+      {/* Placed at the end of the document so the pages load faster */}
+    </div>
+  );
+};
 
 const UserTable = () => {
   const [selectAll, setSelectAll] = useState(false);
@@ -113,64 +276,64 @@ const UserTable = () => {
   );
 };
 
-const ThreadTable = ({
-  threadId,
-  timeCreated,
-  subForum,
-  box,
-  author,
-  upDown,
-  replies,
-}) => {
-  const [checked, setChecked] = useState(false);
-  return (
-    <>
-      <table className="table mt-3 table-striped table-info justify-content-center">
-        <thead className="thead-dark">
-          <tr>
-            <td>Thread ID</td>
-            <td>Time created</td>
-            <td>Subforum</td>
-            <td>Box</td>
-            <td>Author</td>
-            <td>UpDown</td>
-            <td>Replies</td>
-            <td>Checkbox</td>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Render rows with data */}
-          {threadId.map((tId, index) => (
-            <tr key={index}>
-              <td>{tId}</td>
-              <td>{timeCreated[index]}</td>
-              <td>{box[index]}</td>
-              <td>{subForum[index]}</td>
-              <td>{author[index]}</td>
-              <td>
-                {upDown[index][0]}/{upDown[index][1]}
-              </td>
-              <td>{replies[index]}</td>
-              <td className="d-flex justify-content-center">
-                <div className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id={checked ? "flexCheckDefault" : "flexCheckChecked"}
-                    onClick={
-                      checked ? () => setChecked(false) : () => setChecked(true)
-                    }
-                  />
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
-  );
-};
+// const ThreadTable = ({
+//   threadId,
+//   timeCreated,
+//   subForum,
+//   box,
+//   author,
+//   upDown,
+//   replies,
+// }) => {
+//   const [checked, setChecked] = useState(false);
+//   return (
+//     <>
+//       <table className="table mt-3 table-striped table-info justify-content-center">
+//         <thead className="thead-dark">
+//           <tr>
+//             <td>Thread ID</td>
+//             <td>Time created</td>
+//             <td>Subforum</td>
+//             <td>Box</td>
+//             <td>Author</td>
+//             <td>UpDown</td>
+//             <td>Replies</td>
+//             <td>Checkbox</td>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {/* Render rows with data */}
+//           {threadId.map((tId, index) => (
+//             <tr key={index}>
+//               <td>{tId}</td>
+//               <td>{timeCreated[index]}</td>
+//               <td>{box[index]}</td>
+//               <td>{subForum[index]}</td>
+//               <td>{author[index]}</td>
+//               <td>
+//                 {upDown[index][0]}/{upDown[index][1]}
+//               </td>
+//               <td>{replies[index]}</td>
+//               <td className="d-flex justify-content-center">
+//                 <div className="form-check">
+//                   <input
+//                     className="form-check-input"
+//                     type="checkbox"
+//                     value=""
+//                     id={checked ? "flexCheckDefault" : "flexCheckChecked"}
+//                     onClick={
+//                       checked ? () => setChecked(false) : () => setChecked(true)
+//                     }
+//                   />
+//                 </div>
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </>
+//   );
+// };
 
 const ReportTable = ({ data }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -243,127 +406,20 @@ const ReportTable = ({ data }) => {
   );
 };
 
-export default function Profile() {
+export default function Management() {
   const [activeTab, setActiveTab] = useState("user");
-  const [bio, setBio] = useState("");
-  const [address, setAddress] = useState("");
-  const [fullname, setFullname] = useState("");
-  const [email, setEmail] = useState("");
-  const [studentId, setStudentId] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [avatarFile, setAvatarFile] = useState(null); // [file, setFile]
-  const [avatar, setAvatar] = useState("");
-
-  //Fake data test for thread tab
-  const threadId = [1, 2, 3];
-  const timeCreated = ["8:00", "16:00", "21:00"];
-  const subForum = ["Bla", "Ble", "Blo"];
-  const box = ["b1", "b2", "b3"];
-  const author = ["ntp", "nsm", "nxh"];
-  const upDown = [(1, 2), (45, 23), (100, 15)];
-  const replies = [13, 45, 67];
-
-  //Fake data test for user tab
-  const avatarImg = [
-    "https://png.pngtree.com/png-clipart/20230512/original/pngtree-isolated-cat-on-white-background-png-image_9158356.png",
-    "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*",
-    "https://i.natgeofe.com/k/6d301bfc-ff93-4f6f-9179-b1f66b19b9b3/pig-young-closeup_3x4.jpg",
-  ];
-  const studentID = [21125000, 21125001, 21125002];
-  const fullName = ["ntp", "nsm", "nxh"];
-  const gender = ["f", "m", "m"];
-  const status = [1, 2, 3];
-  const admitYear = [2021, 2022, 2023];
-
-  // //Fake data test for report tab
-  const reportid = 1;
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await infoUser();
-        console.log(response);
-        if (response.status === 200) {
-          setFullname(response.data.user.fullname);
-          setEmail(response.data.user.email);
-          setStudentId(response.data.user.username);
-          setAddress(response.data.user.address);
-          setBio(response.data.user.description);
-
-          const imageUrl = await downloadImage(
-            "images/avatar/" + response.data.user.avatarUrl
-          );
-          console.log(imageUrl);
-          setAvatar(imageUrl);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    fetchData();
-  }, []);
-
-  const uploadImage = async () => {
-    try {
-      if (avatarFile == null) return;
-      const imgRef = v4();
-
-      const imageRef = ref(storage, `images/avatar/${imgRef}`);
-      await uploadBytes(imageRef, avatarFile);
-      return imgRef;
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const updatePasswordFunction = async () => {
-    try {
-      const data = {
-        currentPassword,
-        newPassword,
-        confirmNewPassword,
-      };
-      const response = await updatePassword(data);
-      console.log(response);
-      if (response.status === 200) {
-        alert("Update password successfully");
-      }
-    } catch (e) {
-      alert("Update password failed");
-      console.log(e);
-    }
-  };
-
-  const updateProfileFunction = async () => {
-    try {
-      const avatarUrl = await uploadImage();
-      console.log(avatarUrl);
-
-      const data = {
-        fullname,
-        email,
-        studentId,
-        description: bio,
-        address,
-        avatarUrl,
-      };
-      const response = await updateProfile(data);
-      console.log(response);
-      alert("Update profile successfully");
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const handleUploadButtonClick = () => {
-    document.getElementById("uploadAvatar").click();
-  };
+  const [showSignUp, setShowSignUp] = useState(false);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
+
+  const handleNewUserClick = () => {
+    setShowSignUp(true);
+  };
+
+  //Fake data for report tab
+  const reportId = [1, 2, 3];
 
   return (
     <div className="container">
@@ -382,7 +438,7 @@ export default function Profile() {
                 >
                   Users
                 </button>
-
+                {/* 
                 <button
                   className={`nav-link ${
                     activeTab === "thread" ? "active" : ""
@@ -391,7 +447,7 @@ export default function Profile() {
                   onClick={() => handleTabClick("thread")}
                 >
                   Threads
-                </button>
+                </button> */}
 
                 <button
                   className={`nav-link ${
@@ -433,10 +489,13 @@ export default function Profile() {
                           <button
                             className="btn btn-secondary custom-btn-yellow rounded"
                             id="newUserBtn"
+                            onClick={() => handleNewUserClick}
                           >
-                            <i className="bi bi-person-plus"></i> New user
+                            <i className="bi bi-person-plus"></i>
+                            New user
                           </button>
                           <span className="mx-2"></span>
+
                           <button
                             className="btn btn-secondary custom-btn-blue rounded"
                             id="sendNotificationBtn"
@@ -485,83 +544,8 @@ export default function Profile() {
                     </div> */}
                   </div>
                 </div>
-              </div>
-              <div
-                className={`tab-pane fade ${
-                  activeTab === "thread" ? "show active" : ""
-                }`}
-                id="nav-password"
-                role="tabpanel"
-                aria-labelledby="nav-password-tab"
-              >
-                <div className="order-md-1 text-start ">
-                  <h1 className="mb-3 text-white">All threads</h1>
-
-                  <div className="d-flex flex-column align-items-start">
-                    {/* First Element: Search Bar and New User Button */}
-                    <div className="d-flex align-items-center">
-                      {/* <SearchBar />{" "} */}
-                      {/* Replace with your actual SearchBar component */}
-                      {/* <button className="btn btn-primary ms-3">New User</button> */}
-                    </div>
-
-                    {/* Second Element: Tools */}
-                    <div className="container-fluid mt-3">
-                      <div className="d-flex">
-                        <select className="form-select me-3 w-auto">
-                          <option>Sort by...</option>
-                          {/* Add sorting options here */}
-                        </select>
-                        <div className="btn-group ms-auto">
-                          <button className="btn btn-secondary">Tool 1</button>
-                          <button className="btn btn-secondary">Tool 2</button>
-                          <button className="btn btn-secondary">Tool 3</button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Third Element: ThreadTable */}
-                    <ThreadTable
-                      threadId={threadId}
-                      timeCreated={timeCreated}
-                      subForum={subForum}
-                      box={box}
-                      author={author}
-                      upDown={upDown}
-                      replies={replies}
-                    />
-
-                    {/* Fourth Element: Pagination Bar */}
-                    <div className="d-flex justify-content-center mt-3">
-                      {/* Render your pagination component here */}
-                      {/* Example: */}
-                      <nav aria-label="Page navigation example">
-                        <ul className="pagination">
-                          <li className="page-item">
-                            <a
-                              className="page-link"
-                              href="#"
-                              aria-label="Previous"
-                            >
-                              <span aria-hidden="true">&laquo;</span>
-                            </a>
-                          </li>
-                          <li className="page-item">
-                            <a className="page-link" href="#">
-                              1
-                            </a>
-                          </li>
-                          {/* Add more page items as needed */}
-                          <li className="page-item">
-                            <a className="page-link" href="#" aria-label="Next">
-                              <span aria-hidden="true">&raquo;</span>
-                            </a>
-                          </li>
-                        </ul>
-                      </nav>
-                    </div>
-                  </div>
-                </div>
+                {console.log("showSignUp:", showSignUp)}
+                {showSignUp && <SignUp />}
               </div>
               <div
                 className={`tab-pane fade ${
@@ -593,7 +577,7 @@ export default function Profile() {
                     </div>
 
                     {/* Third Element: Table */}
-                    <ReportTable data={threadId} />
+                    <ReportTable data={reportId} />
 
                     {/* Fourth Element: Pagination Bar */}
                     <div className="d-flex justify-content-center mt-3">
