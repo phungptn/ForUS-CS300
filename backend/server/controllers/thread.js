@@ -186,6 +186,17 @@ module.exports = {
                     },
                     {                    
                         $lookup: {
+                            from: 'boxes',
+                            localField: 'box',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $project: { _id: 1, name: 1 } }
+                            ],
+                            as: 'box'
+                        }
+                    },
+                    {                    
+                        $lookup: {
                             from: 'comments',
                             localField: '_id',
                             foreignField: 'thread',
@@ -264,6 +275,7 @@ module.exports = {
                             _id: '$_id',
                             currentUser: { $first: '$currentUser' },
                             title: { $first: '$title' },
+                            box: { $first: '$box' },
                             body: { $first: '$body' },
                             author: { $first: '$author' },
                             createdAt: { $first: '$createdAt' },
@@ -355,6 +367,7 @@ module.exports = {
                             title: 1,
                             author: { $arrayElemAt: ['$author', 0] },
                             body: 1,
+                            box: { $arrayElemAt: ['$box', 0] },
                             createdAt: 1,
                             updatedAt: 1,
                             score: 1,
