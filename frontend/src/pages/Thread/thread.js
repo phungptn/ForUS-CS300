@@ -114,7 +114,7 @@ export default function Thread() {
 
                         {/* Pagination */}
                         <div className="d-flex pt-2 pb-4">
-                            <Pagination thread={thread} page={page} />
+                            <Pagination thread={thread} page={page} placement="start"/>
                         </div>
 
                         {/* Thread body */}
@@ -133,7 +133,7 @@ export default function Thread() {
 
                         {/* Pagination */}
                         <div className="d-flex justify-content-end py-2">
-                            <Pagination thread={thread} page={page} />
+                            <Pagination thread={thread} page={page} placement="end" />
                         </div>
 
 

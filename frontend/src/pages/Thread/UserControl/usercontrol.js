@@ -71,7 +71,7 @@ function NearbyPages({ thread, page }) {
     )
 }
 
-function GoToPageForm({ thread, page, d }) {
+function GoToPageForm({ thread, page, d, s }) {
     if (Math.abs(d) < 3 || (Math.abs(d) === 3 && (page === 1 || page === parseInt(thread.pageCount)))) {
         return (null);
     }
@@ -96,13 +96,13 @@ function GoToPageForm({ thread, page, d }) {
             </button>
             <form className="dropdown-menu p-0" onSubmit={(e) => {
                 e.preventDefault();
-                let newPage = document.getElementById('pageInput').value;
+                let newPage = document.getElementById('pageInput' + s).value;
                 window.location.href = `/thread/${thread._id}/${newPage}`;
             }}>
                 <div className="card">
-                    <label htmlFor="pageInput" className="card-header form-label text-light bg-primary rounded-top-2">Đi đến</label>
+                    <label htmlFor={"pageInput" + s} className="card-header form-label text-light bg-primary rounded-top-2">Đi đến</label>
                     <div className="card-body bg-light d-flex rounded-bottom-2">
-                        <input type="number" className="form-control bg-light me-2" id="pageInput" style={{width: '80px'}} defaultValue={page}/>
+                        <input type="number" className="form-control bg-light me-2" id={"pageInput" + s} style={{width: '80px'}} defaultValue={page}/>
                         <button 
                             type="submit" 
                             className="btn btn-info ms-2 text-light"
@@ -114,7 +114,7 @@ function GoToPageForm({ thread, page, d }) {
     )
 }
 
-function GoToPage({ thread, page, place }) {
+function GoToPage({ thread, page, place, s }) {
     let d;
     if (place === 'start') {
         d = page - 1;
@@ -129,14 +129,14 @@ function GoToPage({ thread, page, place }) {
         return (
             <>
                 <a href={`/thread/${thread._id}/1`} className="rounded-0 btn btn-light">1</a>
-                <GoToPageForm thread={thread} page={page} d={d}/>
+                <GoToPageForm thread={thread} page={page} d={d} s={s}/>
             </>
         );
     }
     else if (place === 'end') {
         return (
             <>
-                <GoToPageForm thread={thread} page={page} d={d}/>
+                <GoToPageForm thread={thread} page={page} d={d} s={s}/>
                 <a href={`/thread/${thread._id}/${thread.pageCount}`} className="rounded-0 btn btn-light">{thread.pageCount}</a>
             </>
         );
@@ -144,24 +144,24 @@ function GoToPage({ thread, page, place }) {
     return (null);
 }
 
-export function Pagination ({ thread, page }) {
+export function Pagination ({ thread, page, placement }) {
     useEffect(() => {
-        let pagination = document.getElementById('pagination');
-        if (pagination) {
-            let children = pagination.children;
+        let pagination = document.getElementsByClassName('pagination');
+        if (pagination.length > 0) [...pagination].forEach(e => {
+            let children = e.children;
             children[0].classList.add('rounded-start-2');
             children[children.length - 1].classList.add('rounded-end-2');
-        }
+        });
     }, [thread]);
     if (thread.pageCount == null || thread.pageCount === 0) {
         return (null);
     }
     return (
-        <div className="d-inline-flex" id="pagination">
+        <div className="d-inline-flex" class="pagination">
             <PreviousPage thread={thread} page={page}/>
-            <GoToPage thread={thread} page={page} place='start'/>
+            <GoToPage thread={thread} page={page} place='start' s={placement}/>
             <NearbyPages thread={thread} page={page}/>
-            <GoToPage thread={thread} page={page} place='end'/>
+            <GoToPage thread={thread} page={page} place='end' s={placement}/>
             <NextPage thread={thread} page={page}/>
         </div>
     );
