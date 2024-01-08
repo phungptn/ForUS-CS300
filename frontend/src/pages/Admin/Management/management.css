@@ -1,3 +1,14 @@
 td {
   text-align: center;
 }
+
+.avatar-cell {
+  width: 1%; /* Set a small width to allow the content to determine the width */
+  white-space: nowrap; /* Prevent the cell from expanding */
+}
+
+.avatar-img {
+  height: 100%;
+  width: auto; /* or set a specific height */
+  max-height: 33px; /* Adjust the maximum width as needed */
+}

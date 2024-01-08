@@ -11,7 +11,6 @@ const UserTable = ({
   avatarImg,
   studentId,
   fullName,
-  faculty,
   gender,
   status,
   admitYear,
@@ -25,7 +24,6 @@ const UserTable = ({
           <th>Avatar</th>
           <th>Student ID</th>
           <th>Fullname</th>
-          <th>Faculty</th>
           <th>Gender</th>
           <th>Status</th>
           <th>Year</th>
@@ -46,29 +44,26 @@ const UserTable = ({
       </thead>
       <tbody>
         {/* Render 20 rows with user data */}
-        {Array.from({ length: 20 }, (_, index) => (
+        {studentId.map((sId, index) => (
           <tr key={index}>
-            <td>
+            <td colSpan="1">
               <img
                 src={
-                  avatarImg
-                    ? avatarImg
+                  avatarImg[index]
+                    ? avatarImg[index]
                     : "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
                 }
-                className="rounded-5 text-center centered-and-cropped "
+                className="avatar-img rounded-5 text-center centered-and-cropped "
                 id="avatarImage"
                 alt="avatar"
-                width="30"
-                height="3 0"
               />
             </td>
-            <td>Student ID</td>
-            <td>Fullname</td>
-            <td>Faculty</td>
-            <td>Gender</td>
-            <td>Status</td>
-            <td>Year</td>
-            <td className="d-flex justify-content-center">
+            <td>{sId}</td>
+            <td>{fullName[index]}</td>
+            <td>{gender[index]}</td>
+            <td>{status[index]}</td>
+            <td>{admitYear[index]}</td>
+            <td className="d-flex justify-content-center" height="50px">
               <div className="form-check">
                 <input
                   className="form-check-input"
@@ -203,6 +198,18 @@ export default function Profile() {
   const author = ["ntp", "nsm", "nxh"];
   const upDown = [(1, 2), (45, 23), (100, 15)];
   const replies = [13, 45, 67];
+
+  //Fake data test for user tab
+  const avatarImg = [
+    "https://png.pngtree.com/png-clipart/20230512/original/pngtree-isolated-cat-on-white-background-png-image_9158356.png",
+    "https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*",
+    "https://i.natgeofe.com/k/6d301bfc-ff93-4f6f-9179-b1f66b19b9b3/pig-young-closeup_3x4.jpg",
+  ];
+  const studentID = [21125000, 21125001, 21125002];
+  const fullName = ["ntp", "nsm", "nxh"];
+  const gender = ["f", "m", "m"];
+  const status = [1, 2, 3];
+  const admitYear = [2021, 2022, 2023];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -363,7 +370,14 @@ export default function Profile() {
                     </div>
 
                     {/* Third Element: Table */}
-                    <UserTable />
+                    <UserTable
+                      avatarImg={avatarImg}
+                      studentId={studentID}
+                      fullName={fullName}
+                      gender={gender}
+                      status={status}
+                      admitYear={admitYear}
+                    />
 
                     {/* Fourth Element: Pagination Bar */}
                     <div className="d-flex justify-content-center mt-3">
