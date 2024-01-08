@@ -4,7 +4,7 @@ import { ThreadContext } from "../context";
 import './usercontrol.scss';
 import { getTimePassed } from "../../../utils/getTimePassed";
 import { useNavigate } from "react-router-dom";
-import { UpdateModal, DeleteModal, ReportModal } from "../../Modal/modal";
+import { DeleteModal, ReportModal } from "../../Modal/modal";
 import EditorContext from "../../Editor/context";
 import Editor from "../../Editor/editor";
 

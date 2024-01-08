@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { instance } from "../../../api/config";
 import { GroupsContext } from "../context";
 import { DeleteModal } from "../../Modal/modal";
+import { Modal } from "../../Modal/modal";
 import "./admincontrol.css";
 
 async function askForBox(groups, setGroups, group_id) {
@@ -50,8 +51,7 @@ async function renameGroup(groups, setGroups, group_id) {
   }
 }
 
-async function createGroup(groups, setGroups) {
-  const groupName = prompt("Enter group name:");
+async function createGroup(groups, setGroups, groupName) {
   if (groupName) {
     const response = await instance.post(`/group`, { name: groupName });
     if (response.status === 201) {
@@ -115,16 +115,51 @@ export function GroupControl({ group_id }) {
 }
 
 export function CreateNewGroup() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [groupName, setGroupName] = useState('');
   let { groups, setGroups, adminStatus } = useContext(GroupsContext);
+
+  const openModal = () => {
+      setIsModalOpen(true);
+      document.querySelectorAll("#report-content-textarea").forEach(e => (e.value = ""));
+  };
+
+  const closeModal = () => {
+      setIsModalOpen(false);
+  };
+  
   if (!adminStatus) return null;
   return (
-    <div
-      className="card mb-4 rounded-3 shadow-sm btn-newgroup py-3 text-white"
-      onClick={() => createGroup(groups, setGroups)}
-    >
-      <h4 className="user-select-none">
-        <i className="bi bi-plus-lg"></i> Tạo group mới
-      </h4>
-    </div>
+    <>
+      <div
+        className="card mb-4 rounded-3 shadow-sm btn-newgroup py-3 text-white"
+        onClick={() => openModal()}
+      >
+        <h4 className="user-select-none">
+          <i className="bi bi-plus-lg"></i> Tạo group mới
+        </h4>
+      </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => closeModal()}
+      >
+        <Modal.Header>Tạo group</Modal.Header>
+        <Modal.Body>
+          <p> Tên group: </p>
+          <input
+            id="report-content-textarea"
+            style={{ width: "100%" }}
+            rows="1"
+            value={groupName}
+            onChange={(e) => setGroupName(e.target.value)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Modal.DismissButton className="btn btn-danger">Đóng</Modal.DismissButton>
+          <button className="btn btn-primary" onClick={() => {createGroup(groups, setGroups, groupName); setGroupName(''); closeModal()}}>Tạo</button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 }
