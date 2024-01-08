@@ -56,7 +56,7 @@ export default function ({ thread }) {
             alt="avatar"
           />
           <div className="username mt-2">
-            {thread.author && thread.author.fullname}
+            <a className="text-start user-link" href={`/user/${thread.author._id}`}>{thread.author && thread.author.fullname}</a>
           </div>
         </div>
         <div className="col-lg-10 bg-card-primary round-right d-flex flex-column justify-content-between">
