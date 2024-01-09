@@ -39,6 +39,7 @@ export default function Profile() {
           setAddress(response.data.user.address);
           setBio(response.data.user.description);
           setUserId(response.data.user._id);
+          setAvatarUrl(response.data.user.avatarUrl);
 
           const imageUrl =
             response.data.user.avatarUrl == null
@@ -137,7 +138,7 @@ export default function Profile() {
                   id="nav-home-tab"
                   onClick={() => handleTabClick("profile")}
                 >
-                  Profile
+                  Hồ sơ
                 </button>
 
                 <button
@@ -147,7 +148,7 @@ export default function Profile() {
                   id="nav-password-tab"
                   onClick={() => handleTabClick("password")}
                 >
-                  Manage Password
+                  Quản lý mật khẩu
                 </button>
 
                 <button
@@ -157,7 +158,7 @@ export default function Profile() {
                   id="nav-threadHist-tab"
                   onClick={() => handleTabClick("threadHistory")}
                 >
-                  Thread History
+                  Lịch sử bài đăng
                 </button>
 
                 <button
@@ -167,7 +168,7 @@ export default function Profile() {
                   id="nav-commentHist-tab"
                   onClick={() => handleTabClick("commentHistory")}
                 >
-                  Comment History
+                  Lịch sử bình luận
                 </button>
               </div>
             </nav>
@@ -195,10 +196,9 @@ export default function Profile() {
                 aria-labelledby="nav-profile-tab"
               >
                 <div className="order-md-1 text-start">
-                  <h1 className="mb-3 text-white">Profile</h1>
+                  <h1 className="mb-3 text-white">Hồ sơ</h1>
                   <p className="lead text-white">
-                    Please update your profile information to make sure that it
-                    is up to date.
+                    Cập nhật thông tin cá nhân của bạn tại đây.
                   </p>
                   <div className="row">
                     <div className="col-md-3 mb-3">
@@ -226,7 +226,7 @@ export default function Profile() {
                             className="btn btn-warning btn-sm"
                             onClick={handleUploadButtonClick}
                           >
-                            Change Avatar
+                            Đổi Avatar
                           </button>
                           <input
                             className="form-control"
@@ -271,7 +271,7 @@ export default function Profile() {
                     <div className="row">
                       <div className="col-md-6 mb-3">
                         <label htmlFor="firstName " className="text-white">
-                          Full name
+                          Họ và tên
                         </label>
                         <input
                           type="text"
@@ -326,7 +326,7 @@ export default function Profile() {
                     </div>
                     <div className="mb-3">
                       <label htmlFor="address" className="text-white">
-                        Address
+                        Địa chỉ
                       </label>
                       <input
                         type="text"
@@ -386,7 +386,7 @@ export default function Profile() {
                           updateProfileFunction();
                         }}
                       >
-                        Update
+                        Cập nhật
                       </button>
 
                       {/* <button
@@ -409,19 +409,19 @@ export default function Profile() {
                 aria-labelledby="nav-password-tab"
               >
                 <div className="order-md-1 text-start ">
-                  <h1 className="mb-3 text-white">Manage Password</h1>
+                  <h1 className="mb-3 text-white">Quản lý mật khẩu</h1>
 
                   <p>
-                    In order to change your password, you will need to provide
-                    your current password, as well as your new password and a
-                    confirmation of your new password.
+                    Để đảm bảo an toàn cho tài khoản của bạn, vui lòng thay đổi
+                    mật khẩu thường xuyên.
+                  
                   </p>
 
                   <div className="   ">
                     <div className="mb-3 row ">
                       <div className="mb-3 col-md-4 "></div>
                       <div className="mb-3 col-md-4  ">
-                        <label htmlFor="address">Current Password</label>
+                        <label htmlFor="address">Mật khẩu hiện tại</label>
                         <input
                           type="password"
                           className="form-control text-white "
@@ -439,7 +439,7 @@ export default function Profile() {
                     <div className="mb-3 row ">
                       <div className="mb-3 col-md-4 "></div>
                       <div className="mb-3 col-md-4">
-                        <label htmlFor="address">New Password</label>
+                        <label htmlFor="address">Mật khẩu mới</label>
                         <input
                           type="password"
                           className="form-control text-white"
@@ -458,7 +458,7 @@ export default function Profile() {
                       <div className="mb-3 col-md-4 "></div>
 
                       <div className="mb-3 col-md-4">
-                        <label htmlFor="address">Confirm New Password</label>
+                        <label htmlFor="address">Xác nhận mật khẩu</label>
                         <input
                           type="password"
                           className="form-control text-white"
@@ -483,7 +483,7 @@ export default function Profile() {
                         updatePasswordFunction();
                       }}
                     >
-                      Update
+                      Cập Nhật
                     </button>
                   </div>
                 </div>
