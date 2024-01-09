@@ -499,7 +499,8 @@ const getThreadHistory = async (req, res) => {
     try {
       let data = [];
       for (let thread of _user.threads) {
-        data.push(await Thread.findById(thread));
+        let t = await Thread.findById(thread);
+        if (t) data.push(t);
       }
       res.status(200).json({ threadHistory: data });
     } catch (err) {
