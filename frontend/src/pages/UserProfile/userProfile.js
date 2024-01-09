@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 
 export default function UserProfile({ user }) {
   const [avatar, setAvatar] = useState("");
-  const [avatarFile, setAvatarFile] = useState(null);
+  const [role, setRole] = useState("user");
   const [fullname, setFullname] = useState("");
   const [studentId, setStudentId] = useState("");
   const [email, setEmail] = useState("");
@@ -35,6 +35,7 @@ export default function UserProfile({ user }) {
         setAddress(user.address);
         setBio(user.description);
         setBanned(response.data.user.isBanned);
+        setRole(response.data.user.role);
         console.log(user);
       }
     }
@@ -173,7 +174,7 @@ export default function UserProfile({ user }) {
             </div>
             <hr className="mb-4" />
           </form>
-          {user.role == "admin" && user._id != user_id ? <div className="d-flex justify-content-end w-100">
+          {user.role == "admin" && role != "admin" && user._id != user_id ? <div className="d-flex justify-content-end w-100">
             <button
               className="btn btn-danger btn-lg"
               type="submit"
