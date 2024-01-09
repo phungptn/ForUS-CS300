@@ -103,6 +103,17 @@ const getAllUsers = async () => {
   return null;
 };
 
+const getThreadHistory = async () => {
+  try {
+    const response = await instance.get("/users/thread-history");
+    return response;
+  } catch (error) {
+    console.error("Error fetching users:", error.response);
+  }
+
+  return null;
+};
+
 export {
   logout,
   infoUser,
@@ -114,4 +125,5 @@ export {
   getNotification,
   updateAllNotificationIsRead,
   getAllUsers,
+  getThreadHistory,
 };

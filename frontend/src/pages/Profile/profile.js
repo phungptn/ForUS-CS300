@@ -8,6 +8,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
 import "./profile.css";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
+import ThreadHistory from "./history";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -76,12 +77,11 @@ export default function Profile() {
       console.log(response);
       if (response.status === 200) {
         alert("Update password successfully");
-      }
-      else{
+      } else {
         setError({ message: "Invalid Password" });
       }
     } catch (e) {
-      setError({ message: e.message});
+      setError({ message: e.message });
       console.log(e);
     }
   };
@@ -103,7 +103,7 @@ export default function Profile() {
       console.log(response);
       alert("Update profile successfully");
     } catch (e) {
-      setError({ message: e.message});
+      setError({ message: e.message });
       console.log(e);
     }
   };
@@ -142,6 +142,26 @@ export default function Profile() {
                   onClick={() => handleTabClick("password")}
                 >
                   Manage Password
+                </button>
+
+                <button
+                  className={`nav-link ${
+                    activeTab === "threadHistory" ? "active" : ""
+                  } + text-white`}
+                  id="nav-threadHist-tab"
+                  onClick={() => handleTabClick("threadHistory")}
+                >
+                  Thread History
+                </button>
+
+                <button
+                  className={`nav-link ${
+                    activeTab === "commentHistory" ? "active" : ""
+                  } + text-white`}
+                  id="nav-commentHist-tab"
+                  onClick={() => handleTabClick("commentHistory")}
+                >
+                  Comment History
                 </button>
               </div>
             </nav>
@@ -451,6 +471,16 @@ export default function Profile() {
                     </button>
                   </div>
                 </div>
+              </div>
+              <div
+                className={`tab-pane fade ${
+                  activeTab === "threadHistory" ? "show active" : ""
+                }`}
+                id="nav-threadHist"
+                role="tabpanel"
+                aria-labelledby="nav-threadHist-tab"
+              >
+                <ThreadHistory />
               </div>
             </div>
           </div>

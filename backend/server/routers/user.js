@@ -15,6 +15,8 @@ const {
   userProfile,
   updateAllNotificationIsRead,
   updateNotificationStatus,
+  getThreadHistory,
+  // getCommentHistory,
 } = require("../controllers/user");
 
 const router = express.Router();
@@ -34,5 +36,7 @@ router.get("/notification", getNotification);
 router.get("/:id", userProfile);
 router.put("/notification", updateAllNotificationIsRead);
 router.put("/notification/:notification_id", updateNotificationStatus);
+router.put("/thread-history", getThreadHistory);
+// router.put("/comment-history", getCommentHistory);
 
 module.exports = router;

@@ -18,6 +18,12 @@ export default function errorMessage(error) {
             return 'Người dùng đã bị ban.';
         case 'PAGE_NOT_FOUND':
             return 'Không tìm thấy trang.';
+        case 'THREAD_BODY_TOO_LONG':
+            return 'Nội dung quá dài.';
+        case 'THREAD_BODY_TOO_SHORT':
+            return 'Nội dung không được để trống.';
+        case 'THREAD_TITLE_INVALID':
+            return 'Tiêu đề tối thiểu 1 ký tự, tối đa 128 ký tự.';
         default:
             return 'Lỗi không xác định.';
     }
