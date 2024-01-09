@@ -4,7 +4,7 @@ import { HorizontalVoteBar, CommentsCounter, ThreadInformation, ReportThreadButt
 import { DeleteThreadButton } from '../ModeratorControl/moderatorcontrol';
 import { downloadImage } from '../../../utils/loadImage';
 
-export default function ( { thread, search } ) {
+export default function ( { thread, search = false, hideSection = false } ) {
     const [thumbnail, setThumbnail] = useState(null);
     useEffect(() => {
         async function getThumbnail() {
@@ -39,16 +39,16 @@ export default function ( { thread, search } ) {
                             </a>
                             <div>
                                 <ReportThreadButton thread={thread} />
-                                {!search && <DeleteThreadButton thread={thread} />}
+                                {search ? null : <DeleteThreadButton thread={thread} />}
                             </div>
                         </div>
-                        <div className="d-flex justify-content-between flex-wrap">
+                        {hideSection ? null : <div className="d-flex justify-content-between flex-wrap">
                             <ThreadInformation thread={thread} />
                             <div className="py-2 ms-2 d-flex flex-row justify-content-stretch gap-5">
                                 <CommentsCounter thread={thread} />
                                 <HorizontalVoteBar thread={thread} />
                             </div>
-                        </div>
+                        </div>}
                         
                     </div>
                 </div>

@@ -33,10 +33,10 @@ router.get("/is-admin", isAdmin, privilegeConfirmation);
 router.put("/update-password", updatePassword);
 router.get("/allUser", getAllUsers);
 router.get("/notification", getNotification);
+router.get("/thread-history", getThreadHistory);
 router.get("/:id", userProfile);
 router.put("/notification", updateAllNotificationIsRead);
 router.put("/notification/:notification_id", updateNotificationStatus);
-router.put("/thread-history", getThreadHistory);
 // router.put("/comment-history", getCommentHistory);
 
 module.exports = router;

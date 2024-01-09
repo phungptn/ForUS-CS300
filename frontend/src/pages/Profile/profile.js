@@ -24,6 +24,7 @@ export default function Profile() {
   const [avatar, setAvatar] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [error, setError] = useState({});
+  const [userId, setUserId] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -35,16 +36,16 @@ export default function Profile() {
           setStudentId(response.data.user.username);
           setAddress(response.data.user.address);
           setBio(response.data.user.description);
-          setAvatarUrl(response.data.user.avatarUrl);
+          setUserId(response.data.user._id);
 
-          const imageUrl = await downloadImage(
+          const imageUrl = response.data.user.avatarUrl == null ? null : await downloadImage(
             "images/avatar/" + response.data.user.avatarUrl
           );
           console.log(imageUrl);
           setAvatar(imageUrl);
         }
       } catch (e) {
-        error(e);
+        setError(e);
         console.log(e);
       }
     };
@@ -480,7 +481,7 @@ export default function Profile() {
                 role="tabpanel"
                 aria-labelledby="nav-threadHist-tab"
               >
-                <ThreadHistory />
+                <ThreadHistory user_id={userId} />
               </div>
             </div>
           </div>
