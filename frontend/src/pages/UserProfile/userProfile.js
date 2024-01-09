@@ -10,7 +10,7 @@ import { downloadImage } from "../../utils/loadImage";
 import { instance } from "../../api/config";
 import { useEffect, useState } from "react";
 
-export default function UserProfile() {
+export default function UserProfile({ user }) {
   const [avatar, setAvatar] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
   const [fullname, setFullname] = useState("");
@@ -42,11 +42,14 @@ export default function UserProfile() {
   }, [user_id]);
 
   const handleBanButtonClick = async (user_id) => {
+    let phrase = banned ? "unban" : "ban";
+    if (!window.confirm(`Do you want to ${phrase} this user?`)) return;
     try {
-      let response = await instance.post(`/users/${banned ? "unban" : "ban"}`, {
+      let response = await instance.post(`/users/${phrase}`, {
         user_id,
       });
       setBanned(response.data.status);
+      alert("Action completed.");
     } catch (e) {
       console.log("Errors", e);
     }
@@ -170,7 +173,7 @@ export default function UserProfile() {
             </div>
             <hr className="mb-4" />
           </form>
-          <div className="d-flex justify-content-end w-100">
+          {user.role == "admin" && user._id != user_id ? <div className="d-flex justify-content-end w-100">
             <button
               className="btn btn-danger btn-lg"
               type="submit"
@@ -178,7 +181,7 @@ export default function UserProfile() {
             >
               {!banned ? "Ban" : "Unban"} this user
             </button>
-          </div>
+          </div> : null}
         </div>
       </div>
     </div>
