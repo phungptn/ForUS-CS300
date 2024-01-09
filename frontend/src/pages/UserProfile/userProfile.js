@@ -23,9 +23,9 @@ export default function UserProfile({ user }) {
 
   useEffect(() => {
     async function getUser() {
+      if (user_id == null) return;
       const response = await instance.get(`/users/${user_id}`);
       if (response.status === 200) {
-        console.log(response.data);
         const user = response.data.user;
         const avatar = await downloadImage("images/avatar/" + user.avatarUrl);
         setAvatar(avatar);
@@ -34,23 +34,22 @@ export default function UserProfile({ user }) {
         setEmail(user.email);
         setAddress(user.address);
         setBio(user.description);
-        setBanned(response.data.user.isBanned);
-        setRole(response.data.user.role);
-        console.log(user);
+        setBanned(user.isBanned);
+        setRole(user.role);
       }
     }
     getUser();
   }, [user_id]);
 
   const handleBanButtonClick = async (user_id) => {
-    let phrase = banned ? "unban" : "ban";
-    if (!window.confirm(`Do you want to ${phrase} this user?`)) return;
+    if (user.role != "admin" || role == "admin" || user_id == null) return;
+    if (!window.confirm(`Bạn muốn ${banned ? "bỏ chặn" : "chặn"} người dùng này?`)) return;
     try {
-      let response = await instance.post(`/users/${phrase}`, {
+      let response = await instance.post(`/users/${banned ? "unban" : "ban"}`, {
         user_id,
       });
       setBanned(response.data.status);
-      alert("Action completed.");
+      alert("Tác vụ hoàn tất.");
     } catch (e) {
       console.log("Errors", e);
     }
@@ -115,7 +114,7 @@ export default function UserProfile({ user }) {
                   required
                 />
                 <div className="invalid-feedback text-white">
-                  Valid first name is required.
+                  Họ và tên là bắt buộc
                 </div>
               </div>
               <div className="col-md-6 mb-3 text-white">
@@ -130,7 +129,7 @@ export default function UserProfile({ user }) {
                   required
                 />
                 <div className="invalid-feedback text-white">
-                  Valid StudentID is required.
+                  Mục MSSV là bắt buộc
                 </div>
               </div>
             </div>
@@ -170,17 +169,17 @@ export default function UserProfile({ user }) {
                 required
                 readOnly
               />
-              <div className="invalid-feedback">Please enter your address.</div>
+              <div className="invalid-feedback">Nhập địa chỉ</div>
             </div>
             <hr className="mb-4" />
           </form>
-          {user.role == "admin" && role != "admin" && user._id != user_id ? <div className="d-flex justify-content-end w-100">
+          {user.role == "admin" && role != "admin" ? <div className="d-flex justify-content-end w-100">
             <button
               className="btn btn-danger btn-lg"
               type="submit"
               onClick={() => handleBanButtonClick(user_id)}
             >
-              {!banned ? "Ban" : "Unban"} this user
+              {!banned ? "Chặn" : "Bỏ chặn"} người dùng này
             </button>
           </div> : null}
         </div>

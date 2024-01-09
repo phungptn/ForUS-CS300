@@ -61,13 +61,13 @@ const UserTable = ({ onSelectedUsersChange }) => {
     <table className="table mt-3 table-bordered table-striped table-info justify-content-center">
       <thead className="thead-dark">
         <tr style={{ textAlign: "center" }}>
-          <th>UserId</th>
-          <th>User</th>
+          <th>ID</th>
+          <th>Người dùng</th>
           <th>Username</th>
           <th>Email</th>
-          <th>Role</th>
-          <th>Last Accessed</th>
-          <th>Status</th>
+          <th>Vai trò</th>
+          <th>Truy cập lần cuối</th>
+          <th>Trạng thái</th>
           <th>
             <div className="form-check">
               <input
@@ -103,7 +103,7 @@ const UserTable = ({ onSelectedUsersChange }) => {
                 user.isBanned ? "banned" : "available"
               }`}
             >
-              {user.isBanned ? "Banned" : "Available"}
+              {user.isBanned ? "Bị chặn" : "Bình thường"}
             </td>
             <td className="align-middle">
               <div className="form-check">
@@ -141,7 +141,7 @@ const ViewDetailsButton = ({ report, onFinish }) => {
         className="btn btn-secondary custom-btn-yellow rounded"
         onClick={() => openModal()}
       >
-        <i className="bi bi-info-circle"></i> View details
+        <i className="bi bi-info-circle"></i> Chi tiết
       </button>
       {/* Modal */}
       <ReportCardModal
@@ -176,12 +176,12 @@ const ReportTable = () => {
       <table className="table mt-3 table-striped table-info justify-content-center">
         <thead className="thead-dark">
           <tr style={{ textAlign: "center" }}>
-            <th>Time created</th>
-            <th>Target</th>
-            <th>Path</th>
-            <th>Content</th>
-            <th>Reported by</th>
-            <th>Tools</th>
+            <th>Thời gian</th>
+            <th>Loại</th>
+            <th>Đường dẫn</th>
+            <th>Nội dung</th>
+            <th>Báo cáo bởi</th>
+            <th>Công cụ</th>
           </tr>
         </thead>
         <tbody>
@@ -191,7 +191,7 @@ const ReportTable = () => {
                 return;
               try {
                 await instance.put("/report/" + report._id);
-                alert("Resolved report successfully.");
+                alert("Đã xoá báo cáo");
                 window.location.search = "?tab=report";
               } catch (e) {
                 console.log(e);
@@ -228,7 +228,7 @@ const ReportTable = () => {
                       className="btn btn-secondary custom-btn-green rounded"
                       onClick={resolveReport}
                     >
-                      <i className="bi bi-check-circle"></i> Resolve
+                      <i className="bi bi-check-circle"></i> Xoá
                     </button>
                     <span className="mx-2"></span>
                   </div>
@@ -298,10 +298,10 @@ export default function Management() {
         ? sendNotificationToAllUsers
         : sendNotificationToUsers)(notificationData);
       if (response && response.status === 200) {
-        alert("Notification sent successfully");
+        alert("Đã gửi thông báo");
         return response;
       } else {
-        alert("Notification sent failed");
+        alert("Gửi thông báo thất bại");
       }
     } catch (error) {
       console.error("Error sending notification:", error.response);
@@ -331,7 +331,7 @@ export default function Management() {
                   id="nav-home-tab"
                   onClick={() => handleTabClick("user")}
                 >
-                  Users
+                  Người dùng
                 </button>
                 {/* 
                 <button
@@ -351,7 +351,7 @@ export default function Management() {
                   id="nav-home-tab"
                   onClick={() => handleTabClick("report")}
                 >
-                  Reports
+                  Báo cáo
                 </button>
               </div>
             </nav>
@@ -365,7 +365,7 @@ export default function Management() {
                 aria-labelledby="nav-user-tab"
               >
                 <div className="order-md-1 text-start ">
-                  <h1 className="mb-3 text-white">All users</h1>
+                  <h1 className="mb-3 text-white">Tất cả người dùng</h1>
                   <div className="d-flex flex-column align-items-start">
                     {/* First Element: Search Bar and New User Button */}
                     <div className="d-flex align-items-center">
@@ -386,7 +386,7 @@ export default function Management() {
                             onClick={() => goToSignUp()}
                           >
                             <i className="bi bi-person-plus"></i>
-                            New user
+                            Thêm mới
                           </button>
                           <span className="mx-2"></span>
 
@@ -395,7 +395,7 @@ export default function Management() {
                             id="sendNotificationBtn"
                             onClick={() => handleSendNotification()}
                           >
-                            <i className="bi bi-envelope"></i> Send notification
+                            <i className="bi bi-envelope"></i> Gửi Thông báo
                           </button>
                           {/* CreateNotificationModal */}
                           <CreateNotificationModal
@@ -462,7 +462,7 @@ export default function Management() {
                 aria-labelledby="nav-password-tab"
               >
                 <div className="order-md-1 text-start ">
-                  <h1 className="mb-3 text-white">All reports</h1>
+                  <h1 className="mb-3 text-white">Tất cả báo cáo</h1>
 
                   <div className="d-flex flex-column align-items-start">
                     {/* First Element: Search Bar and New User Button */}
