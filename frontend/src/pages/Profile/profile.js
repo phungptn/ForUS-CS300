@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { infoUser } from "../../api/user";
 import { storage } from "../../Firebase/config";
-import {downloadImage, deleteImage} from "../../utils/loadImage";
+import { downloadImage, deleteImage } from "../../utils/loadImage";
 import { updateProfile, updatePassword } from "../../api/user";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
 import "./profile.css";
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -20,8 +21,8 @@ export default function Profile() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [avatarFile, setAvatarFile] = useState(null); // [file, setFile]
   const [avatar, setAvatar] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("")
-  const [error, setError] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [error, setError] = useState({});
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,32 +34,32 @@ export default function Profile() {
           setStudentId(response.data.user.username);
           setAddress(response.data.user.address);
           setBio(response.data.user.description);
-          setAvatarUrl(response.data.user.avatarUrl)
+          setAvatarUrl(response.data.user.avatarUrl);
 
-          const imageUrl = await downloadImage('images/avatar/' + response.data.user.avatarUrl);
+          const imageUrl = await downloadImage(
+            "images/avatar/" + response.data.user.avatarUrl
+          );
           console.log(imageUrl);
           setAvatar(imageUrl);
         }
       } catch (e) {
+        error(e);
         console.log(e);
       }
     };
     fetchData();
   }, []);
 
-  
-
   const uploadImage = async () => {
     try {
       if (avatarFile == null) return;
       const imgRef = v4();
-      deleteImage(`images/avatar/${avatarUrl}`)
-      setAvatarUrl(imgRef)
-      
+      deleteImage(`images/avatar/${avatarUrl}`);
+      setAvatarUrl(imgRef);
 
       const imageRef = ref(storage, `images/avatar/${imgRef}`);
       await uploadBytes(imageRef, avatarFile);
-      return imgRef
+      return imgRef;
     } catch (e) {
       console.log(e);
     }
@@ -76,8 +77,11 @@ export default function Profile() {
       if (response.status === 200) {
         alert("Update password successfully");
       }
+      else{
+        setError({ message: "Invalid Password" });
+      }
     } catch (e) {
-      alert("Update password failed");
+      setError({ message: e.message});
       console.log(e);
     }
   };
@@ -86,7 +90,7 @@ export default function Profile() {
     try {
       const avatarUrl = await uploadImage();
       console.log(avatarUrl);
-      
+
       const data = {
         fullname,
         email,
@@ -99,6 +103,7 @@ export default function Profile() {
       console.log(response);
       alert("Update profile successfully");
     } catch (e) {
+      setError({ message: e.message});
       console.log(e);
     }
   };
@@ -113,8 +118,6 @@ export default function Profile() {
 
   return (
     <div className="container">
-      
-
       <link href="form-validation.css" rel="stylesheet" />
       <div className="py-5 container bg-info rounded-3 shadow-sm">
         <div className="bd-example-snippet bd-code-snippet">
@@ -144,6 +147,20 @@ export default function Profile() {
             </nav>
             <div className="tab-content" id="nav-tabContent">
               <div
+                className={`alert alert-danger alert-dismissible fade show ${
+                  !!error.message ? "d-block" : "d-none"
+                }`}
+                role="alert"
+              >
+                {error.message}
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div
                 className={`tab-pane fade ${
                   activeTab === "profile" ? "show active" : ""
                 }`}
@@ -154,8 +171,8 @@ export default function Profile() {
                 <div className="order-md-1 text-start">
                   <h1 className="mb-3 text-white">Profile</h1>
                   <p className="lead text-white">
-                    Please update your profile
-                    information to make sure that it is up to date.
+                    Please update your profile information to make sure that it
+                    is up to date.
                   </p>
                   <div className="row">
                     <div className="col-md-3 mb-3">
@@ -191,11 +208,17 @@ export default function Profile() {
                             accept="image/*"
                             id="uploadAvatar"
                             onChange={(e) => {
-                              if (e.target.files[0].type.startsWith("image")){
+                              if (
+                                !!e.target.files[0] &&
+                                e.target.files[0].type.startsWith("image")
+                              ) {
                                 setAvatarFile(e.target.files[0]);
-                                setAvatar(URL.createObjectURL(e.target.files[0]));
+                                setAvatar(
+                                  URL.createObjectURL(e.target.files[0])
+                                );
+                              } else {
+                                setError({ message: "Invalid file type" });
                               }
-
                             }}
                             hidden
                           ></input>
@@ -365,7 +388,7 @@ export default function Profile() {
                         <label htmlFor="address">Current Password</label>
                         <input
                           type="password"
-                          className="form-control "
+                          className="form-control text-white "
                           id="currentPassword"
                           placeholder="***********"
                           onChange={(e) => setCurrentPassword(e.target.value)}
@@ -383,7 +406,7 @@ export default function Profile() {
                         <label htmlFor="address">New Password</label>
                         <input
                           type="password"
-                          className="form-control"
+                          className="form-control text-white"
                           id="newPassword"
                           placeholder="***********"
                           onChange={(e) => setNewPassword(e.target.value)}
@@ -402,7 +425,7 @@ export default function Profile() {
                         <label htmlFor="address">Confirm New Password</label>
                         <input
                           type="password"
-                          className="form-control"
+                          className="form-control text-white"
                           id="confirmNewPassword"
                           onChange={(e) =>
                             setConfirmNewPassword(e.target.value)
