@@ -529,6 +529,7 @@ const setBanStatus = async function (req, res, next) {
       )
         return res.status(403).json({ message: ERROR.USER_NOT_FOUND });
       if (target._id == user._id) return res.status(403).json({ message: "You wanna ban yourself??" });
+      if (target.role == "admin") return res.status(403).json({ message: "Cannot ban admins."});
       target.isBanned = ban;
       await target.save();
       res.status(200).json({ message: "Action completed.", status: ban });
