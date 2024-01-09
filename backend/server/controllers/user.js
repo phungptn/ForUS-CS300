@@ -7,6 +7,7 @@ const Thread = require("../models/thread");
 const Comment = require("../models/comment");
 const user = require("../models/user");
 const mongoose = require("mongoose");
+const ERROR = require("./error");
 
 const loginUser = async (req, res, next) => {
   try {
@@ -454,145 +455,55 @@ const updateNotificationStatus = async (req, res, next) => {
 };
 
 const getThreadHistory = async (req, res) => {
-  let user_id = req.params.user_id;
-  let page = req.params.page;
-  let order = req.query.order;
-  let direction = req.query.direction;
+  let user_id = req.query.user_id;
+  console.log(user_id);
+  // let page = req.query.page;
+  // let order = req.query.order;
+  // let direction = req.query.direction;
   if (user_id == null) {
     res.status(400).json({ error: ERROR.INVALID_REQUEST });
   } else {
-    if (page == null) {
-      page = 1;
-    } else {
-      page = parseInt(page);
-    }
-    console.log(order, direction);
-    if (!Boolean(order)) {
-      order = "updatedAt";
-    }
-    if (
-      order !== "createdAt" &&
-      order !== "updatedAt" &&
-      order !== "score" &&
-      order !== "commentCount" &&
-      order !== "title"
-    ) {
-      res.status(400).json({ error: ERROR.INVALID_REQUEST });
-      return;
-    }
-    if (!Boolean(direction)) {
-      direction = "desc";
-    }
-    if (direction !== "asc" && direction !== "desc") {
-      res.status(400).json({ error: ERROR.INVALID_REQUEST });
-      return;
-    }
-    if (direction === "asc") {
-      direction = 1;
-    } else if (direction === "desc") {
-      direction = -1;
-    }
+    const _user = await user.findById(user_id);
+    if (_user == null) return res.status(404).json({ error: ERROR.NOT_FOUND });
+    // if (page == null) {
+    //   page = 1;
+    // } else {
+    //   page = parseInt(page);
+    // }
+    // console.log(order, direction);
+    // if (!Boolean(order)) {
+    //   order = "updatedAt";
+    // }
+    // if (
+    //   order !== "createdAt" &&
+    //   order !== "updatedAt" &&
+    //   order !== "score" &&
+    //   order !== "commentCount" &&
+    //   order !== "title"
+    // ) {
+    //   res.status(400).json({ error: ERROR.INVALID_REQUEST });
+    //   return;
+    // }
+    // if (!Boolean(direction)) {
+    //   direction = "desc";
+    // }
+    // if (direction !== "asc" && direction !== "desc") {
+    //   res.status(400).json({ error: ERROR.INVALID_REQUEST });
+    //   return;
+    // }
+    // if (direction === "asc") {
+    //   direction = 1;
+    // } else if (direction === "desc") {
+    //   direction = -1;
+    // }
     try {
-      const _user = await user
-        .aggregate([
-          { $match: { _id: new mongoose.Types.ObjectId(user_id) } },
-          {
-            $lookup: {
-              from: "threads",
-              localField: "threads",
-              foreignField: "_id",
-              as: "threads",
-            },
-          },
-          {
-            $unwind: {
-              path: "$threads",
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-          {
-            $group: {
-              _id: "$_id",
-              name: { $first: "$name" },
-              description: { $first: "$description" },
-              threads: {
-                $push: {
-                  $cond: {
-                    if: { $ne: ["$threads", {}] },
-                    then: {
-                      _id: "$threads._id",
-                      title: "$threads.title",
-                      imageUrl: "$threads.imageUrl",
-                      author: "$threads.author",
-                      score: {
-                        $subtract: [
-                          { $size: "$threads.upvoted" },
-                          { $size: "$threads.downvoted" },
-                        ],
-                      },
-                      commentCount: { $size: "$threads.comments" },
-                      voteStatus: {
-                        $cond: {
-                          if: { $in: [user._id, "$threads.upvoted"] },
-                          then: 1,
-                          else: {
-                            $cond: {
-                              if: { $in: [user._id, "$threads.downvoted"] },
-                              then: -1,
-                              else: 0,
-                            },
-                          },
-                        },
-                      },
-                      createdAt: "$threads.createdAt",
-                      updatedAt: "$threads.updatedAt",
-                    },
-                    else: "$$REMOVE",
-                  },
-                },
-              },
-            },
-          },
-          {
-            $addFields: {
-              pageCount: {
-                $ceil: {
-                  $divide: [{ $size: "$threads" }, THREADS_PER_PAGE],
-                },
-              },
-            },
-          },
-          {
-            $project: {
-              _id: 1,
-              name: 1,
-              description: 1,
-              pageCount: 1,
-              threads: {
-                $slice: [
-                  {
-                    $sortArray: {
-                      input: "$threads",
-                      sortBy: { [order]: direction },
-                    },
-                  },
-                  (page - 1) * THREADS_PER_PAGE,
-                  THREADS_PER_PAGE,
-                ],
-              },
-            },
-          },
-        ])
-        .exec();
-      if (box[0].pageCount === 0) {
-        res.status(200).json({ box: box[0] });
-      } else if (box[0].pageCount < page) {
-        res.status(404).json({ error: ERROR.PAGE_NOT_FOUND });
-      } else {
-        res.status(200).json({ box: box[0] });
+      let data = [];
+      for (let thread of _user.threads) {
+        data.push(await Thread.findById(thread));
       }
+      res.status(200).json({ threadHistory: data });
     } catch (err) {
-      res.status(500).json({ error: ERROR.INTERNAL_SERVER_ERROR });
+      res.status(500).json({ a: err.message, error: ERROR.INTERNAL_SERVER_ERROR });
     }
   }
 };
