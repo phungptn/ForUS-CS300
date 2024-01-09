@@ -76,7 +76,7 @@ export default function Box() {
                 <div className="row">
                     <div className="col-md-8">
                         <div className="d-flex justify-content-between mb-4">
-                            <h3 className="text-white">{box.name}</h3>
+                            <h3 className="text-white"><a href="/">Trang chủ</a> / {box.name}</h3>
                             <CreateThreadButton box={box} target="#threadCreateMenu"/>
                         </div>
                         <div className="collapse" id="threadCreateMenu">

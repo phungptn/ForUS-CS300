@@ -94,7 +94,7 @@ export default function Thread() {
                     <div className="col-lg-8">
                         {/* Thread title */}
                         <div className="d-flex justify-content-between pb-2 pt-4">
-                            <h3 className="text-white">{thread.title}</h3>
+                            <h3 className="text-white"><a href="/">Trang chủ</a> / <a href={"/box/" + thread.box?._id ?? ""}>{thread.box?.name ?? ""}</a> / {thread.title}</h3>
                         </div>
                         
                         {/* Author and date */}
