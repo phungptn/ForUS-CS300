@@ -530,7 +530,7 @@ const setBanStatus = async function (req, res, next) {
         return res.status(403).json({ message: ERROR.USER_NOT_FOUND });
       target.isBanned = ban;
       await target.save();
-      res.status(200).json({ message: "Action completed." });
+      res.status(200).json({ message: "Action completed.", status: ban });
     }
   } catch (e) {
     res.status(500).json({ message: ERROR.INTERNAL_SERVER_ERROR });

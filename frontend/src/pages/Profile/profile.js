@@ -9,6 +9,7 @@ import { v4 } from "uuid";
 import "./profile.css";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import ThreadHistory from "./history";
+import { instance } from "../../api/config";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -25,6 +26,7 @@ export default function Profile() {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [error, setError] = useState({});
   const [userId, setUserId] = useState("");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -38,9 +40,12 @@ export default function Profile() {
           setBio(response.data.user.description);
           setUserId(response.data.user._id);
 
-          const imageUrl = response.data.user.avatarUrl == null ? null : await downloadImage(
-            "images/avatar/" + response.data.user.avatarUrl
-          );
+          const imageUrl =
+            response.data.user.avatarUrl == null
+              ? null
+              : await downloadImage(
+                  "images/avatar/" + response.data.user.avatarUrl
+                );
           console.log(imageUrl);
           setAvatar(imageUrl);
         }
@@ -372,16 +377,26 @@ export default function Profile() {
                       </div>
                     </div> */}
                     <hr className="mb-4" />
-                    <button
-                      className="btn btn-warning btn-lg  "
-                      type="submit"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        updateProfileFunction();
-                      }}
-                    >
-                      Update
-                    </button>
+                    <div className="d-flex justify-content-between w-100">
+                      <button
+                        className="btn btn-warning btn-lg"
+                        type="submit"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          updateProfileFunction();
+                        }}
+                      >
+                        Update
+                      </button>
+
+                      {/* <button
+                        className="btn btn-danger btn-lg"
+                        type="submit"
+                        onClick={handleBanButtonClick}
+                      >
+                        {!banned ? "Ban" : "Unban"} this user
+                      </button> */}
+                    </div>
                   </form>
                 </div>
               </div>

@@ -10,7 +10,6 @@ import { downloadImage } from "../../utils/loadImage";
 import { instance } from "../../api/config";
 import { useEffect, useState } from "react";
 
-
 export default function UserProfile() {
   const [avatar, setAvatar] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
@@ -19,10 +18,9 @@ export default function UserProfile() {
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [bio, setBio] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
   const user_id = useParams().user_id;
+  const [banned, setBanned] = useState(false);
+
   useEffect(() => {
     async function getUser() {
       const response = await instance.get(`/users/${user_id}`);
@@ -36,13 +34,23 @@ export default function UserProfile() {
         setEmail(user.email);
         setAddress(user.address);
         setBio(user.description);
+        setBanned(response.data.user.isBanned);
         console.log(user);
       }
     }
     getUser();
   }, [user_id]);
 
-
+  const handleBanButtonClick = async (user_id) => {
+    try {
+      let response = await instance.post(`/users/${banned ? "unban" : "ban"}`, {
+        user_id,
+      });
+      setBanned(response.data.status);
+    } catch (e) {
+      console.log("Errors", e);
+    }
+  };
 
   return (
     <div className="container ">
@@ -100,7 +108,6 @@ export default function UserProfile() {
                   id="firstName"
                   value={fullname}
                   readOnly
-
                   required
                 />
                 <div className="invalid-feedback text-white">
@@ -116,7 +123,6 @@ export default function UserProfile() {
                   value={studentId}
                   // placeholder
                   readOnly
-
                   required
                 />
                 <div className="invalid-feedback text-white">
@@ -140,7 +146,6 @@ export default function UserProfile() {
                   value={email}
                   placeholder="you@example.com"
                   readOnly
-
                   required
                 />
                 {/* <div className="invalid-feedback">
@@ -160,13 +165,20 @@ export default function UserProfile() {
                 placeholder="1234 Main St"
                 required
                 readOnly
-
               />
               <div className="invalid-feedback">Please enter your address.</div>
             </div>
-
             <hr className="mb-4" />
           </form>
+          <div className="d-flex justify-content-end w-100">
+            <button
+              className="btn btn-danger btn-lg"
+              type="submit"
+              onClick={() => handleBanButtonClick(user_id)}
+            >
+              {!banned ? "Ban" : "Unban"} this user
+            </button>
+          </div>
         </div>
       </div>
     </div>
