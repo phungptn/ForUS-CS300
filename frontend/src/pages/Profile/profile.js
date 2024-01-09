@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { infoUser } from "../../api/user";
 import { storage } from "../../Firebase/config";
-import {downloadImage} from "../../utils/loadImage";
+import {downloadImage, deleteImage} from "../../utils/loadImage";
 import { updateProfile, updatePassword } from "../../api/user";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
@@ -20,7 +20,8 @@ export default function Profile() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [avatarFile, setAvatarFile] = useState(null); // [file, setFile]
   const [avatar, setAvatar] = useState("");
-
+  const [avatarUrl, setAvatarUrl] = useState("")
+  const [error, setError] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,6 +33,7 @@ export default function Profile() {
           setStudentId(response.data.user.username);
           setAddress(response.data.user.address);
           setBio(response.data.user.description);
+          setAvatarUrl(response.data.user.avatarUrl)
 
           const imageUrl = await downloadImage('images/avatar/' + response.data.user.avatarUrl);
           console.log(imageUrl);
@@ -50,6 +52,9 @@ export default function Profile() {
     try {
       if (avatarFile == null) return;
       const imgRef = v4();
+      deleteImage(`images/avatar/${avatarUrl}`)
+      setAvatarUrl(imgRef)
+      
 
       const imageRef = ref(storage, `images/avatar/${imgRef}`);
       await uploadBytes(imageRef, avatarFile);
@@ -186,8 +191,11 @@ export default function Profile() {
                             accept="image/*"
                             id="uploadAvatar"
                             onChange={(e) => {
-                              setAvatarFile(e.target.files[0]);
-                              setAvatar(URL.createObjectURL(e.target.files[0]));
+                              if (e.target.files[0].type.startsWith("image")){
+                                setAvatarFile(e.target.files[0]);
+                                setAvatar(URL.createObjectURL(e.target.files[0]));
+                              }
+
                             }}
                             hidden
                           ></input>

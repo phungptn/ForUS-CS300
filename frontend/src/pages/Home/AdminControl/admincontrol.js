@@ -77,6 +77,7 @@ export function GroupControl({ group_id }) {
   const [boxName, setBoxName] = useState('');
   const [boxDescription, setBoxDescription] = useState('');
   const [error, setError] = useState({});
+  
 
   const checkValidBox = (groups, setGroups, group_id, boxName, boxDescription) => {
     if (boxName.length > 128 || boxName.length < 1) {

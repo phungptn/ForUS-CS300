@@ -1,6 +1,6 @@
 import { storage } from "../Firebase/config";
 
-import { getDownloadURL, ref, getStorage, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, getStorage, uploadBytes, deleteObject } from "firebase/storage";
 
 async function downloadImage(url) {
     try {
@@ -30,7 +30,21 @@ async function uploadImage(file, url){
         return null;
     }
 }
+
+async function deleteImage(url){
+    try {
+        const storage = storage;
+        const fileRef = url ;
+        const imageReference = ref(storage, fileRef);
+        await deleteObject(imageReference);
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+}
 export {
     downloadImage,
-    uploadImage
+    uploadImage,
+    deleteImage
 }
