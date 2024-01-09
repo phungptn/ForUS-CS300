@@ -58,7 +58,7 @@ const UserTable = ({ onSelectedUsersChange }) => {
   };
 
   return (
-    <table className="table mt-3 table-striped table-info justify-content-center">
+    <table className="table mt-3 table-bordered table-striped table-info justify-content-center">
       <thead className="thead-dark">
         <tr style={{ textAlign: "center" }}>
           <th>UserId</th>
@@ -67,6 +67,7 @@ const UserTable = ({ onSelectedUsersChange }) => {
           <th>Email</th>
           <th>Role</th>
           <th>Last Accessed</th>
+          <th>Status</th>
           <th>
             <div className="form-check">
               <input
@@ -85,11 +86,25 @@ const UserTable = ({ onSelectedUsersChange }) => {
         {users.map((user, index) => (
           <tr key={index}>
             <td>{user._id}</td>
-            <td><ThreadInformation thread={{ author: user }} hideTime={true} customColor="black" target="_blank"/></td>
+            <td>
+              <ThreadInformation
+                thread={{ author: user }}
+                hideTime={true}
+                customColor="black"
+                target="_blank"
+              />
+            </td>
             <td>{user.username}</td>
             <td>{user.email}</td>
             <td>{user.role}</td>
             <td>{getTimePassed(user.lastAccessed)}</td>
+            <td
+              className={`align-middle ${
+                user.isBanned ? "banned" : "available"
+              }`}
+            >
+              {user.isBanned ? "Banned" : "Available"}
+            </td>
             <td className="align-middle">
               <div className="form-check">
                 <input
@@ -228,7 +243,11 @@ const ReportTable = () => {
 };
 
 export default function Management() {
-  const [activeTab, setActiveTab] = useState(new URLSearchParams(window.location.search).get("tab") == "report" ? "report" : "user");
+  const [activeTab, setActiveTab] = useState(
+    new URLSearchParams(window.location.search).get("tab") == "report"
+      ? "report"
+      : "user"
+  );
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [isSendNotificationModalOpen, setIsSendNotificationModalOpen] =
     useState(false);
@@ -239,8 +258,14 @@ export default function Management() {
   const handleTabClick = (tab) => {
     setActiveTab(tab);
     if (window.history.pushState) {
-      var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?tab=' + tab;
-      window.history.pushState({path:newurl},'',newurl);
+      var newurl =
+        window.location.protocol +
+        "//" +
+        window.location.host +
+        window.location.pathname +
+        "?tab=" +
+        tab;
+      window.history.pushState({ path: newurl }, "", newurl);
     }
   };
 
@@ -269,7 +294,9 @@ export default function Management() {
 
     // Call the API function to send notifications
     try {
-      const response = await (recipient == "all" ? sendNotificationToAllUsers : sendNotificationToUsers)(notificationData);
+      const response = await (recipient == "all"
+        ? sendNotificationToAllUsers
+        : sendNotificationToUsers)(notificationData);
       if (response && response.status === 200) {
         alert("Notification sent successfully");
         return response;

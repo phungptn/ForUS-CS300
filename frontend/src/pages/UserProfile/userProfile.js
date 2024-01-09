@@ -10,19 +10,17 @@ import { downloadImage } from "../../utils/loadImage";
 import { instance } from "../../api/config";
 import { useEffect, useState } from "react";
 
-
-export default function UserProfile() {
+export default function UserProfile({ user }) {
   const [avatar, setAvatar] = useState("");
-  const [avatarFile, setAvatarFile] = useState(null);
+  const [role, setRole] = useState("user");
   const [fullname, setFullname] = useState("");
   const [studentId, setStudentId] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [bio, setBio] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
   const user_id = useParams().user_id;
+  const [banned, setBanned] = useState(false);
+
   useEffect(() => {
     async function getUser() {
       const response = await instance.get(`/users/${user_id}`);
@@ -36,13 +34,27 @@ export default function UserProfile() {
         setEmail(user.email);
         setAddress(user.address);
         setBio(user.description);
+        setBanned(response.data.user.isBanned);
+        setRole(response.data.user.role);
         console.log(user);
       }
     }
     getUser();
   }, [user_id]);
 
-
+  const handleBanButtonClick = async (user_id) => {
+    let phrase = banned ? "unban" : "ban";
+    if (!window.confirm(`Do you want to ${phrase} this user?`)) return;
+    try {
+      let response = await instance.post(`/users/${phrase}`, {
+        user_id,
+      });
+      setBanned(response.data.status);
+      alert("Action completed.");
+    } catch (e) {
+      console.log("Errors", e);
+    }
+  };
 
   return (
     <div className="container ">
@@ -100,7 +112,6 @@ export default function UserProfile() {
                   id="firstName"
                   value={fullname}
                   readOnly
-
                   required
                 />
                 <div className="invalid-feedback text-white">
@@ -116,7 +127,6 @@ export default function UserProfile() {
                   value={studentId}
                   // placeholder
                   readOnly
-
                   required
                 />
                 <div className="invalid-feedback text-white">
@@ -140,7 +150,6 @@ export default function UserProfile() {
                   value={email}
                   placeholder="you@example.com"
                   readOnly
-
                   required
                 />
                 {/* <div className="invalid-feedback">
@@ -160,13 +169,20 @@ export default function UserProfile() {
                 placeholder="1234 Main St"
                 required
                 readOnly
-
               />
               <div className="invalid-feedback">Please enter your address.</div>
             </div>
-
             <hr className="mb-4" />
           </form>
+          {user.role == "admin" && role != "admin" && user._id != user_id ? <div className="d-flex justify-content-end w-100">
+            <button
+              className="btn btn-danger btn-lg"
+              type="submit"
+              onClick={() => handleBanButtonClick(user_id)}
+            >
+              {!banned ? "Ban" : "Unban"} this user
+            </button>
+          </div> : null}
         </div>
       </div>
     </div>
