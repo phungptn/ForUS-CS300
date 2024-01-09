@@ -9,6 +9,7 @@ const { ref, uploadString, deleteObject, getDownloadURL } = require('firebase/st
 const { v4 } = require('uuid');
 const { decode } = require('html-entities');
 const sanitizeHtml = require('sanitize-html');
+const stripTags = require('striptags');
 const ERROR = require('./error');
 
 const COMMENTS_PER_PAGE = 10;
@@ -63,11 +64,23 @@ const deleteImage = async (thread_id, image_id) => {
 module.exports = {
     createThread: async (req, res) => {
         let { title, body } = req.body;
+        let box_id = req.params.box_id;
         body = sanitizeHtml(body, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
         let imgCount = body.split('&lt;img').length - 1;
-        let box_id = req.params.box_id;
-        if (box_id == null || !Boolean(title) || !Boolean(body)) {
+        let rawText = stripTags(decode(body));
+        console.log('body', rawText);
+        if (box_id == null) {
             res.status(400).json({ error: ERROR.INVALID_REQUEST });
+        }
+        else if (!Boolean(title) || title.length > 128) {
+            res.status(400).json({ error: ERROR.THREAD_TITLE_INVALID });
+        }
+        else if (rawText.length === 0) {
+            console.log(rawText.length);
+            res.status(400).json({ error: ERROR.THREAD_BODY_TOO_SHORT });
+        }
+        else if (rawText.length > 40000) {
+            res.status(400).json({ error: ERROR.THREAD_BODY_TOO_LONG });
         }
         else if (imgCount > 1) {
             res.status(400).json({ error: ERROR.IMAGE_LIMIT_EXCEEDED });
@@ -123,6 +136,10 @@ module.exports = {
                                 return;
                             }
                             thread.body = thread.body.replace(REGEX_SRC, image_id);
+                        }
+                        else {
+                            res.status(500).json({ error: ERROR.IMAGE_UPLOAD_FAILED });
+                            return;
                         }
                     }
                     else {
@@ -450,6 +467,7 @@ module.exports = {
             body = sanitizeHtml(body, { allowedTags: sanitizeHtml.defaults.allowedTags.concat([ 'img' ]) });
             console.log(body);
             let imgCount = body.split('&lt;img').length - 1;
+            let rawText = decode(body);
             try {
                 const user = await userUtil.findUserById(req);
                 if (user == null) {
@@ -459,6 +477,12 @@ module.exports = {
                     let thread = await Thread.findOne({ _id: thread_id });
                     if (thread == null) {
                         res.status(404).json({ error: ERROR.NOT_FOUND });
+                    }
+                    else if (rawText.length === 0) {
+                        res.status(400).json({ error: ERROR.THREAD_BODY_TOO_SHORT });
+                    }
+                    else if (rawText.length > 10000) {
+                        res.status(400).json({ error: ERROR.THREAD_BODY_TOO_LONG });
                     }
                     else {
                         if (imgCount === 1) {
@@ -499,7 +523,7 @@ module.exports = {
                                     await uploadImage(thread._id, image_data, image_id);
                                 }
                                 catch (err) {
-                                    res.status(500).json({ error: ERROR.IMAGE_UPLOAD_FAILED });
+                                    res.status(500).json({ error: ERROR.IMAGE_VALIDATION_FAILED });
                                     return;
                                 }
                                 thread.body = thread.body.replace(REGEX_SRC, image_id);

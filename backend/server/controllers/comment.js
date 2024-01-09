@@ -4,7 +4,9 @@ const Comment = require('../models/comment');
 const Thread = require('../models/thread');
 const Box = require('../models/box');
 const User = require('../models/user');
+const { decode } = require('html-entities');
 const sanitizeHtml = require('sanitize-html');
+const striptags = require('striptags');
 const ERROR = require('./error');
 const PAGE_SIZE = 10;
 
@@ -12,11 +14,18 @@ module.exports = {
     createComment: async (req, res) => {
         let { body, replyTo, box_id } = req.body;
         body = sanitizeHtml(body);
-        console.log('Submitting comment:', body);
+        let rawText = striptags(decode(body));
         let thread_id = req.params.thread_id;
-        if (body == null || thread_id == null ) {
+        if (thread_id == null ) {
             res.status(400).json({ error: ERROR.INVALID_REQUEST });
-        } else {
+        } 
+        else if (!Boolean(body) || rawText.length === 0) {
+            res.status(400).json({ error: ERROR.COMMENT_BODY_TOO_SHORT });
+        }
+        else if (rawText.length > 10000) {
+            res.status(400).json({ error: ERROR.COMMENT_BODY_TOO_LONG });
+        }
+        else {
             const session = await mongoose.startSession();
             try {
                 const user = await userUtil.findUserById(req);
