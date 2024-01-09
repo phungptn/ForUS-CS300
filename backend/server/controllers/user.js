@@ -453,6 +453,37 @@ const updateNotificationStatus = async (req, res, next) => {
   }
 };
 
+const getThreadHistory = async (req, res, next) => {
+  try {
+    const user = await userUtil.findUserById(req);
+    if (user == null || user.role != "admin")
+      res.status(403).json({ error: "Not permitted." });
+    else {
+      let result = await userModel.find({});
+
+      const getableFields = [
+        "_id",
+        "username",
+        "fullname",
+        "email",
+        "lastAccessed",
+        "avatarUrl",
+        "role",
+      ];
+
+      result = result.map((e) => {
+        let x = {};
+        for (let i of getableFields) x[i] = e[i];
+        return x;
+      });
+
+      res.status(200).send({ message: "Fetched successfully", users: result });
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+};
+
 module.exports = {
   loginUser,
   logoutUser,
@@ -469,5 +500,5 @@ module.exports = {
   userProfile,
   updateAllNotificationIsRead,
   updateNotificationStatus,
-  getAllUsers,
+  getThreadHistory,
 };
