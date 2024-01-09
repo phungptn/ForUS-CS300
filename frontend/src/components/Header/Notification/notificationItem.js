@@ -55,13 +55,14 @@ export default function NotificationItem({ notification }) {
 
   return (
     <a
-      href={!!notification.thread ? "/thread/" + notification.thread : "#"}
+      href={!!notification.thread ? ("/thread/" + notification.thread  + (notification.comment ? '#' +notification.comment  : '') ) : "#"}
 
       class="dropdown-item list-group-item-action d-flex  gap-3 py-3 notificationItem  "
       id={notification._id}
       aria-current="true"
       onClick={updateNotificationStatus}
     >
+      {console.log(notification)}
       {notification.from === "admin" ? (
         <SettingsSuggestIcon
           fontSize="large"

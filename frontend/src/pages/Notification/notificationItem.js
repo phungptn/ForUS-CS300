@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
-import ReplyIcon from '@mui/icons-material/Reply';
+import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
+import ReplyIcon from "@mui/icons-material/Reply";
 export default function NotificationItem({ notification }) {
   // Calculate time difference between createdAt and now
   useEffect(() => {
@@ -30,7 +30,6 @@ export default function NotificationItem({ notification }) {
     console.log(notification.isRead);
     const notificationItem = document.getElementById(notification._id);
     console.log(notificationItem);
-
   }, []);
 
   const [diff, setDiff] = useState(0);
@@ -38,7 +37,13 @@ export default function NotificationItem({ notification }) {
 
   return (
     <a
-      href={!!notification.thread ? "/thread/" + notification.thread : "#"}
+      href={
+        !!notification.thread
+          ? "/thread/" +
+            notification.thread +
+            (notification.comment ? "#" + notification.comment : "")
+          : "#"
+      }
       className="dropdown-item list-group-item-action d-flex  gap-3 p-3 notificationItem  "
       id={notification._id}
       aria-current="true"
@@ -55,26 +60,22 @@ export default function NotificationItem({ notification }) {
         fontSize="large"
         className="rounded-circle flex-shrink-0"
       ></NotificationsIcon> */}
-      {
-        notification.from === "admin" ? (
-            <SettingsSuggestIcon
-                fontSize="large"
-                className="rounded-circle flex-shrink-0"
-            ></SettingsSuggestIcon>
-            ) : (
-                notification.from === "reply" ? (
-                    <ReplyIcon
-                        fontSize="large"
-                        className="rounded-circle flex-shrink-0"
-                    ></ReplyIcon>
-                    ) : (
-                        <NotificationsIcon
-                            fontSize="large"
-                            className="rounded-circle flex-shrink-0"
-                        ></NotificationsIcon>
-                        )
-            )
-      }
+      {notification.from === "admin" ? (
+        <SettingsSuggestIcon
+          fontSize="large"
+          className="rounded-circle flex-shrink-0"
+        ></SettingsSuggestIcon>
+      ) : notification.from === "reply" ? (
+        <ReplyIcon
+          fontSize="large"
+          className="rounded-circle flex-shrink-0"
+        ></ReplyIcon>
+      ) : (
+        <NotificationsIcon
+          fontSize="large"
+          className="rounded-circle flex-shrink-0"
+        ></NotificationsIcon>
+      )}
       <div className="d-lg-flex gap-2 w-100 justify-content-between">
         <div>
           <p className="mb-0  fw-bold">{notification.title}</p>
