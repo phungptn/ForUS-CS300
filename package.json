@@ -8,6 +8,7 @@
 		"sync": "cd ./backend && npm install && cd ../frontend && npm install && cd .. && npm install"
 	},
 	"dependencies": {
+		"@types/mongoose": "^5.11.97",
 		"bootstrap-icons": "^1.11.2",
 		"concurrently": "^8.2.2",
 		"mongoose": "^8.0.3",

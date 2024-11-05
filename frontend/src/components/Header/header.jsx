@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 // import "./header.css";
 import { downloadImage } from "../../utils/loadImage";
 import { infoUser } from "../../api/user";
-import { instance } from "../../api/config";
 import logo from "../../assets/icons/logo.png";
 import { logout } from "../../api/user";
 import { useLocation } from "react-router-dom";

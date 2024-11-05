@@ -18,8 +18,8 @@ export default function Home() {
   }
 
   useEffect(() => {
-    readGroups();
-    checkAdmin(setAdminStatus);
+    // readGroups();
+    //checkAdmin(setAdminStatus);
   }, []);
 
   return (
